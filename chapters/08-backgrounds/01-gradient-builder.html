@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>8-1 Gradient Builder</title>
+  <style>
+    .stage { width: min(880px, 100%); }
+    .preview {
+      inline-size: min(420px, 100%);
+      aspect-ratio: 4 / 3;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+    .side { flex: 1 1 300px; display: grid; gap: 12px; min-inline-size: 0; }
+    .stops { display: grid; gap: 8px; }
+    .stop { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--muted); }
+    .stop input[type="color"] { inline-size: 40px; block-size: 28px; padding: 0; border: 1px solid var(--border); border-radius: 6px; background: none; }
+    .stop input[type="range"] { flex: 1; min-inline-size: 0; }
+    .stop output { inline-size: 3.5em; text-align: end; }
+  </style>
+</head>
+<body class="demo">
+  <div class="controls">
+    <label class="control">type
+      <select id="type">
+        <option value="linear">linear</option>
+        <option value="radial">radial</option>
+        <option value="conic">conic</option>
+      </select>
+    </label>
+    <label class="control" id="angle-row">angle <input type="range" id="angle" min="0" max="360" value="135"> <output id="angle-out"></output></label>
+    <label class="control">interpolate in
+      <select id="space">
+        <option value="">sRGB (default)</option>
+        <option value="oklch" selected>oklch</option>
+        <option value="oklab">oklab</option>
+      </select>
+    </label>
+    <label class="control"><input type="checkbox" id="repeat"> repeating</label>
+    <label class="control"><input type="checkbox" id="hard"> hard stops</label>
+  </div>
+  <div class="stage">
+    <div class="preview" id="preview" role="img" aria-label="Gradient preview"></div>
+    <div class="side">
+      <div class="panel stops" id="stops">
+        <p class="label">Color stops</p>
+      </div>
+      <pre class="code" id="code"></pre>
+    </div>
+  </div>
+  <script>
+    const stops = [
+      { color: '#2563eb', pos: 0 },
+      { color: '#f59e0b', pos: 50 },
+      { color: '#ec4899', pos: 100 }
+    ];
+    const box = document.getElementById('stops');
+    stops.forEach((s, i) => {
+      const row = document.createElement('div');
+      row.className = 'stop';
+      row.innerHTML = `<input type="color" value="${s.color}" aria-label="Stop ${i + 1} color">
+        <input type="range" min="0" max="100" value="${s.pos}" aria-label="Stop ${i + 1} position">
+        <output></output>`;
+      const [color, pos] = row.querySelectorAll('input');
+      color.addEventListener('input', () => { s.color = color.value; update(); });
+      pos.addEventListener('input', () => { s.pos = Number(pos.value); update(); });
+      s.out = row.querySelector('output');
+      box.append(row);
+    });
+
+    function update() {
+      const type = document.getElementById('type').value;
+      const angle = document.getElementById('angle').value;
+      const space = document.getElementById('space').value;
+      const repeat = document.getElementById('repeat').checked;
+      const hard = document.getElementById('hard').checked;
+      document.getElementById('angle-out').textContent = angle + 'deg';
+      document.getElementById('angle-row').hidden = type === 'radial';
+      stops.forEach((s) => { s.out.textContent = s.pos + '%'; });
+
+      // Repeating gradients repeat the span of the stops, so shrink it to a stripe
+      const scale = repeat ? 0.2 : 1;
+      const pct = (n) => +(n * scale).toFixed(1) + '%';
+      const list = stops.map((s, i) => {
+        if (!hard) return `${s.color} ${pct(s.pos)}`;
+        // Hard stops: each color runs from the midpoint with its neighbors, no blending in between
+        const from = i === 0 ? 0 : (stops[i - 1].pos + s.pos) / 2;
+        const to = i === stops.length - 1 ? 100 : (s.pos + stops[i + 1].pos) / 2;
+        return `${s.color} ${pct(from)} ${pct(to)}`;
+      });
+      const head = {
+        linear: `${angle}deg`,
+        radial: 'circle at center',
+        conic: `from ${angle}deg at center`
+      }[type] + (space ? ` in ${space}` : '');
+      const fn = (repeat ? 'repeating-' : '') + type + '-gradient';
+      const value = `${fn}(\n    ${head},\n    ${list.join(',\n    ')}\n  )`;
+      document.getElementById('preview').style.backgroundImage = value.replace(/\s+/g, ' ');
+      document.getElementById('code').textContent = `.preview {\n  background-image: ${value};\n}`;
+    }
+    document.querySelectorAll('.controls input, .controls select').forEach((el) => el.addEventListener('input', update));
+    update();
+  </script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 8-2 (final): Buttons That Don't Jump</title>
+  <style>
+    .row { display: flex; flex-wrap: wrap; gap: 12px; }
+    .btn {
+      font-size: 15px;
+      padding: 10px 20px;
+      /* Reserve the border width up front so hovering does not change the size */
+      border: 2px solid transparent;
+      border-radius: 999px;
+      background: var(--accent);
+      color: white;
+      cursor: pointer;
+    }
+    .btn.ghost { background: transparent; color: var(--accent); border-color: var(--accent); }
+    .btn:hover { border-color: var(--fg); }
+    /* A keyboard focus ring that follows the pill shape and sits outside it */
+    .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  </style>
+</head>
+<body class="demo">
+  <div class="row">
+    <button class="btn" type="button">Save</button>
+    <button class="btn ghost" type="button">Cancel</button>
+    <button class="btn" type="button">Publish</button>
+  </div>
+</body>
+</html>

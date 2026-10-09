@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 8-1 (final): A Readable Hero Banner</title>
+  <style>
+    .hero {
+      inline-size: min(720px, 100%);
+      min-block-size: 320px;
+      padding: 32px;
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      color: white;
+      /* Two layers: the first one listed is painted on top */
+      background:
+        linear-gradient(to top, oklch(15% 0.03 250 / 0.85), oklch(15% 0.03 250 / 0) 70%),
+        url("hero.svg") center / cover no-repeat;
+      /* Shown while the image loads, or if it fails */
+      background-color: oklch(35% 0.05 250);
+    }
+    .hero h1 { font-size: 36px; line-height: 1.15; margin: 0 0 8px; }
+    .hero p { margin: 0; font-size: 16px; }
+  </style>
+</head>
+<body class="demo">
+  <header class="hero">
+    <h1>Weekend in the Hills</h1>
+    <p>Three trails, two lakes and one very long lunch.</p>
+  </header>
+</body>
+</html>

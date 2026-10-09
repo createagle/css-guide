@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>8-2 Layered Shadows</title>
+  <style>
+    .stage { width: min(900px, 100%); gap: 40px 32px; padding-block: 24px; }
+    .surface { background: var(--surface); border-radius: 16px; padding: 40px 32px; }
+    .card {
+      inline-size: 170px;
+      block-size: 120px;
+      border-radius: 12px;
+      background: var(--bg);
+      display: grid;
+      place-items: center;
+      font-size: 14px;
+      color: var(--muted);
+    }
+    .bubble {
+      position: relative;
+      inline-size: 170px;
+      padding: 20px;
+      border-radius: 12px;
+      background: var(--bg);
+      color: var(--muted);
+      font-size: 14px;
+      text-align: center;
+    }
+    /* The tail is a separate box drawn by a pseudo-element */
+    .bubble::after {
+      content: "";
+      position: absolute;
+      inset-block-start: 100%;
+      inset-inline-start: 32px;
+      border: 12px solid transparent;
+      border-block-start-color: var(--bg);
+    }
+    .bubble.shadowed { box-shadow: var(--shadow); }
+    .bubble.drop { filter: var(--drop); }
+    .stage figure { display: grid; justify-items: center; gap: 4px; }
+    pre.code { inline-size: min(880px, 100%); }
+  </style>
+</head>
+<body class="demo">
+  <div class="controls">
+    <label class="control">elevation <input type="range" id="elev" min="1" max="24" value="8"> <output id="elev-out"></output></label>
+    <label class="control">layers <input type="range" id="layers" min="1" max="6" value="4"> <output id="layers-out"></output></label>
+    <label class="control">opacity <input type="range" id="alpha" min="4" max="40" value="14"> <output id="alpha-out"></output></label>
+  </div>
+  <div class="stage surface" id="stage">
+    <figure>
+      <div class="card" id="single">one shadow</div>
+      <figcaption>Single box-shadow</figcaption>
+    </figure>
+    <figure>
+      <div class="card" id="layered">layered</div>
+      <figcaption>Layered box-shadow</figcaption>
+    </figure>
+    <figure>
+      <div class="bubble shadowed">box-shadow</div>
+      <figcaption>The tail gets no shadow</figcaption>
+    </figure>
+    <figure>
+      <div class="bubble drop">filter: drop-shadow()</div>
+      <figcaption>Follows the painted shape</figcaption>
+    </figure>
+  </div>
+  <pre class="code" id="code"></pre>
+  <script>
+    const stage = document.getElementById('stage');
+    function update() {
+      const elev = Number(document.getElementById('elev').value);
+      const n = Number(document.getElementById('layers').value);
+      const a = Number(document.getElementById('alpha').value) / 100;
+      document.getElementById('elev-out').textContent = elev + 'px';
+      document.getElementById('layers-out').textContent = n;
+      document.getElementById('alpha-out').textContent = Math.round(a * 100) + '%';
+
+      const color = (alpha) => `oklch(20% 0.02 260 / ${+alpha.toFixed(3)})`;
+      // One shadow: offset and blur both equal to the elevation
+      const single = `0 ${elev}px ${elev * 2}px ${color(a * 1.6)}`;
+      // Layered: each layer doubles the previous offset and blur, the largest one matches the elevation
+      const layers = Array.from({ length: n }, (_, i) => {
+        const d = +(elev * 2 ** i / 2 ** (n - 1)).toFixed(1);
+        return `0 ${d}px ${+(d * 2).toFixed(1)}px ${color(a)}`;
+      });
+      const drop = `drop-shadow(0 ${Math.round(elev / 2)}px ${Math.round(elev / 2)}px ${color(a * 1.6)})`;
+
+      document.getElementById('single').style.boxShadow = single;
+      document.getElementById('layered').style.boxShadow = layers.join(', ');
+      stage.style.setProperty('--shadow', single);
+      stage.style.setProperty('--drop', drop);
+      document.getElementById('code').textContent =
+`.single  { box-shadow: ${single}; }
+.layered { box-shadow:\n    ${layers.join(',\n    ')}; }
+.bubble  { filter: ${drop}; }`;
+    }
+    document.querySelectorAll('input').forEach((el) => el.addEventListener('input', update));
+    update();
+  </script>
+</body>
+</html>

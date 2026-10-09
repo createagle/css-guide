@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 8-3 (start): A Rounded Gradient Border</title>
+  <style>
+    .plan {
+      inline-size: min(320px, 100%);
+      padding: 24px;
+      border: 3px solid;
+      border-image: linear-gradient(135deg in oklch, #2563eb, #ec4899) 1;
+      border-radius: 16px;
+      background: var(--bg);
+    }
+    .plan h2 { margin: 0 0 4px; font-size: 20px; }
+    .plan .price { font-size: 32px; font-weight: 700; margin: 0 0 12px; }
+    .plan ul { margin: 0; padding-inline-start: 20px; color: var(--muted); }
+  </style>
+</head>
+<body class="demo">
+  <article class="plan">
+    <h2>Pro</h2>
+    <p class="price">$12 / month</p>
+    <ul>
+      <li>Unlimited projects</li>
+      <li>Priority support</li>
+      <li>Custom domains</li>
+    </ul>
+  </article>
+</body>
+</html>
