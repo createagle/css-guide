@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 4-1 · Final: Sizes That Follow the Font Size</title>
+  <style>
+    .row { display: flex; gap: 12px; align-items: center; }
+
+    /* Padding and radius in em scale with the button's own font size */
+    .btn {
+      font-size: 1rem;
+      padding: 0.5em 1em;
+      border-radius: 0.5em;
+      border: 0;
+      background: #2563eb;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* A size is now a single declaration */
+    .btn-sm { font-size: 0.8125rem; }
+    .btn-lg { font-size: 1.25rem; }
+  </style>
+</head>
+<body class="demo">
+  <div class="stage">
+    <div class="row">
+      <button class="btn btn-sm" type="button">Small</button>
+      <button class="btn" type="button">Default</button>
+      <button class="btn btn-lg" type="button">Large</button>
+    </div>
+  </div>
+</body>
+</html>

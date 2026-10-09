@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Exercise 4-2 · Final: A Full-screen Hero That Fits</title>
+  <style>
+    body { margin: 0; font: 16px/1.5 system-ui, sans-serif; }
+    .hero {
+      display: grid;
+      place-content: center;
+      gap: 12px;
+      padding: 24px;
+      text-align: center;
+      color: white;
+      background: linear-gradient(160deg, #0f172a, #134e4a 60%, #4d7c0f);
+    }
+    .hero h1 { margin: 0; font-size: 2.5rem; line-height: 1.1; }
+    .hero p { margin: 0; max-width: 32ch; }
+    .cta { justify-self: center; padding: 0.6em 1.2em; border-radius: 999px; background: white; color: #134e4a; font-weight: 700; text-decoration: none; }
+    main { padding: 24px; }
+    .hero {
+      min-height: 100vh;   /* fallback for browsers without the new units */
+      min-height: 100svh;  /* the viewport with the browser toolbars shown */
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <h1>Northern Lights Tours</h1>
+    <p>Three nights in Tromsø, with a guide who knows where the sky is clear.</p>
+    <a class="cta" href="#book">Book a trip</a>
+  </header>
+  <main id="book">
+    <p>Tours run from October to March.</p>
+  </main>
+</body>
+</html>

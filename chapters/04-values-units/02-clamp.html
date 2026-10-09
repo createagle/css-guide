@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>4-2 clamp(), min() and max() Simulator</title>
+  <style>
+    .stage { width: min(960px, 100%); flex-direction: column; align-items: center; }
+    /* The "viewport": a box whose width the slider controls.
+       Inside it, cqi works like vw does on a real page (chapter 18 explains cqi). */
+    .viewport { container-type: inline-size; width: var(--w, 600px); max-width: 100%; border: 2px solid var(--accent); border-radius: 10px; padding: 16px; overflow: hidden; }
+    .viewport h2 { margin: 0 0 8px; line-height: 1.15; font-size: clamp(1rem, 0.5rem + 4cqi, 2.5rem); }
+    .viewport p { margin: 0; color: var(--muted); }
+    .bars { display: grid; gap: 6px; margin-top: 14px; }
+    .bar { height: 22px; border-radius: 4px; background: var(--accent); color: var(--bg); font: 600 12px/22px var(--mono); padding: 0 8px; white-space: nowrap; overflow: hidden; }
+    .bar.min { width: min(100%, 360px); }
+    .bar.max { width: max(50%, 240px); opacity: .75; }
+    table { border-collapse: collapse; font: 13px var(--mono); }
+    td { padding: 4px 10px; border-bottom: 1px solid var(--border); }
+    td:first-child { color: var(--muted); }
+    .active { color: var(--accent); font-weight: 700; }
+  </style>
+</head>
+<body class="demo">
+  <div class="controls">
+    <label class="control">Viewport width <input type="range" id="w" min="240" max="940" value="600"> <output id="w-out">600px</output></label>
+  </div>
+  <div class="stage">
+    <div class="viewport" id="vp">
+      <h2>Fluid headline that never gets too small or too big</h2>
+      <p>The heading uses <code>clamp(1rem, 0.5rem + 4cqi, 2.5rem)</code>.</p>
+      <div class="bars">
+        <div class="bar min" id="bar-min">min(100%, 360px)</div>
+        <div class="bar max" id="bar-max">max(50%, 240px)</div>
+      </div>
+    </div>
+    <table aria-live="polite">
+      <tr><td>MIN</td><td id="t-min">1rem = 16px</td></tr>
+      <tr><td>PREFERRED</td><td id="t-pref"></td></tr>
+      <tr><td>MAX</td><td id="t-max">2.5rem = 40px</td></tr>
+      <tr><td>RESULT</td><td id="t-res"></td></tr>
+      <tr><td>min() bar</td><td id="t-minbar"></td></tr>
+      <tr><td>max() bar</td><td id="t-maxbar"></td></tr>
+    </table>
+  </div>
+  <script>
+    const vp = document.getElementById('vp');
+    const h2 = vp.querySelector('h2');
+    function update() {
+      const w = Number(document.getElementById('w').value);
+      document.getElementById('w-out').value = w + 'px';
+      vp.style.setProperty('--w', w + 'px');
+      // The container's content width is what 1cqi is 1% of
+      const inner = vp.clientWidth - 32;
+      const preferred = 8 + 0.04 * inner;
+      const result = parseFloat(getComputedStyle(h2).fontSize);
+      document.getElementById('t-pref').textContent = `0.5rem + 4cqi = 8 + ${(0.04 * inner).toFixed(1)} = ${preferred.toFixed(1)}px`;
+      document.getElementById('t-res').textContent = result.toFixed(1) + 'px';
+      const which = preferred < 16 ? 't-min' : preferred > 40 ? 't-max' : 't-pref';
+      ['t-min', 't-pref', 't-max'].forEach((id) => document.getElementById(id).classList.toggle('active', id === which));
+      document.getElementById('t-minbar').textContent = `min(${inner}px, 360px) = ${document.getElementById('bar-min').offsetWidth}px`;
+      document.getElementById('t-maxbar').textContent = `max(${inner / 2}px, 240px) = ${document.getElementById('bar-max').offsetWidth}px`;
+    }
+    document.getElementById('w').addEventListener('input', update);
+    update();
+  </script>
+</body>
+</html>

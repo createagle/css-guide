@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>4-1 em vs rem in Nested Elements</title>
+  <style>
+    .stage { width: min(900px, 100%); }
+    .stage > figure { flex: 1 1 380px; }
+    .nest { padding: 0 0 0 .75rem; margin: .4rem 0 0; border-left: 2px solid var(--border); list-style: none; font-size: var(--step); }
+    .nest > li { padding: .2rem 0; }
+    .nest > li > span { white-space: nowrap; }
+    .nest output { margin-left: .5em; font: 12px var(--mono); color: var(--muted); }
+    #em-tree { --step: 1.2em; }
+    #rem-tree { --step: 1.2rem; }
+    .box { margin-top: 12px; }
+  </style>
+</head>
+<body class="demo">
+  <div class="controls">
+    <label class="control">Root font size (html)
+      <select id="root">
+        <option value="12px">12px</option>
+        <option value="16px" selected>16px (default)</option>
+        <option value="20px">20px</option>
+      </select>
+    </label>
+    <label class="control">Each level <input type="range" id="factor" min="0.8" max="1.4" step="0.05" value="1.2"> <output id="factor-out">1.2</output></label>
+  </div>
+  <div class="stage">
+    <figure class="panel">
+      <p class="label">font-size: <span class="unit-em">1.2em</span> at every level</p>
+      <ul class="nest" id="em-tree"></ul>
+      <figcaption>em compounds: each level multiplies its parent</figcaption>
+    </figure>
+    <figure class="panel">
+      <p class="label">font-size: <span class="unit-rem">1.2rem</span> at every level</p>
+      <ul class="nest" id="rem-tree"></ul>
+      <figcaption>rem always looks at the root</figcaption>
+    </figure>
+  </div>
+  <script>
+    // Build five nested lists: ul > li > ul > li ...
+    function build(tree) {
+      let parent = tree;
+      for (let level = 1; level <= 5; level++) {
+        const li = document.createElement('li');
+        li.innerHTML = `<span>Level ${level}<output></output></span>`;
+        parent.append(li);
+        if (level < 5) {
+          const ul = document.createElement('ul');
+          ul.className = 'nest';
+          li.append(ul);
+          parent = ul;
+        }
+      }
+    }
+    const emTree = document.getElementById('em-tree');
+    const remTree = document.getElementById('rem-tree');
+    build(emTree); build(remTree);
+
+    function update() {
+      const f = document.getElementById('factor').value;
+      document.getElementById('factor-out').value = f;
+      document.documentElement.style.fontSize = document.getElementById('root').value;
+      emTree.style.setProperty('--step', f + 'em');
+      remTree.style.setProperty('--step', f + 'rem');
+      document.querySelectorAll('.unit-em').forEach((el) => el.textContent = f + 'em');
+      document.querySelectorAll('.unit-rem').forEach((el) => el.textContent = f + 'rem');
+      // Read back the computed font size of every level
+      document.querySelectorAll('.nest output').forEach((out) => {
+        out.value = '= ' + parseFloat(getComputedStyle(out.parentElement).fontSize).toFixed(1) + 'px';
+      });
+    }
+    document.getElementById('root').addEventListener('change', update);
+    document.getElementById('factor').addEventListener('input', update);
+    update();
+  </script>
+</body>
+</html>

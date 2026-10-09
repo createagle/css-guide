@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 4-1 · Start: Three Button Sizes in Pixels</title>
+  <style>
+    .row { display: flex; gap: 12px; align-items: center; }
+    .btn { border: 0; background: #2563eb; color: white; font-weight: 600; cursor: pointer; }
+
+    /* Every size repeats four pixel values that all depend on each other */
+    .btn    { font-size: 16px; padding: 8px 16px;  border-radius: 8px; }
+    .btn-sm { font-size: 13px; padding: 6px 12px;  border-radius: 6px; }
+    .btn-lg { font-size: 20px; padding: 10px 20px; border-radius: 10px; }
+  </style>
+</head>
+<body class="demo">
+  <div class="stage">
+    <div class="row">
+      <button class="btn btn-sm" type="button">Small</button>
+      <button class="btn" type="button">Default</button>
+      <button class="btn btn-lg" type="button">Large</button>
+    </div>
+  </div>
+</body>
+</html>
