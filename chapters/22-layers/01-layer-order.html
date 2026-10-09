@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>22-1 Layer Order Lab</title>
+  <style>
+    .stage { width: min(900px, 100%); }
+    .stage > section { flex: 1 1 380px; }
+    .order { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+    .order li { display: grid; grid-template-columns: 1fr auto auto auto; align-items: center; gap: 6px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; font: 13px var(--mono); }
+    .order li .swatch { inline-size: 14px; block-size: 14px; border-radius: 3px; display: inline-block; vertical-align: -2px; margin-inline-end: 6px; }
+    .order li.unlayered { border-style: dashed; }
+    .order button { font: inherit; padding: 2px 8px; }
+    .order label { font-size: 12px; color: var(--muted); display: flex; gap: 4px; align-items: center; }
+    #code { margin-top: 12px; }
+    .result { display: grid; place-items: center; gap: 12px; padding: 24px; border: 2px dashed var(--border); border-radius: 12px; }
+    .result p { margin: 0; font-size: 14px; text-align: center; }
+    #demo-btn { font: 600 16px system-ui, sans-serif; padding: 12px 24px; border: 0; border-radius: 10px; color: white; }
+  </style>
+  <style id="lab"></style>
+</head>
+<body class="demo">
+  <div class="stage">
+    <section aria-labelledby="h-order">
+      <p class="label" id="h-order">Layer order (first = lowest priority)</p>
+      <ol class="order" id="order"></ol>
+      <pre class="code" id="code"></pre>
+    </section>
+    <section class="result" aria-live="polite">
+      <button type="button" id="demo-btn" class="btn">Book a walk</button>
+      <p id="winner"></p>
+    </section>
+  </div>
+  <script>
+    // Each layer sets the same property on the same button, with a different selector and colour
+    const rules = {
+      reset: { selector: '#demo-btn', color: 'oklch(55% 0.02 260)', name: 'gray' },
+      base: { selector: ':where(.result) button', color: 'oklch(55% 0.15 250)', name: 'blue' },
+      components: { selector: '.btn', color: 'oklch(55% 0.14 155)', name: 'green' },
+      unlayered: { selector: '.btn', color: 'oklch(62% 0.17 50)', name: 'orange' }
+    };
+    const state = { order: ['reset', 'base', 'components'], important: new Set(), unlayered: true };
+    const $ = (id) => document.getElementById(id);
+    function render() {
+      const list = $('order');
+      list.innerHTML = '';
+      state.order.forEach((name, i) => {
+        const r = rules[name];
+        const li = document.createElement('li');
+        li.innerHTML = `<span><i class="swatch" style="background:${r.color}"></i>@layer ${name} { ${r.selector} }</span>
+          <button type="button" aria-label="Move ${name} up" ${i === 0 ? 'disabled' : ''}>↑</button>
+          <button type="button" aria-label="Move ${name} down" ${i === state.order.length - 1 ? 'disabled' : ''}>↓</button>
+          <label><input type="checkbox" ${state.important.has(name) ? 'checked' : ''}> !important</label>`;
+        const [up, down] = li.querySelectorAll('button');
+        up.onclick = () => { [state.order[i - 1], state.order[i]] = [state.order[i], state.order[i - 1]]; render(); };
+        down.onclick = () => { [state.order[i + 1], state.order[i]] = [state.order[i], state.order[i + 1]]; render(); };
+        li.querySelector('input').onchange = (e) => { e.target.checked ? state.important.add(name) : state.important.delete(name); render(); };
+        list.append(li);
+      });
+      const u = document.createElement('li');
+      u.className = 'unlayered';
+      u.innerHTML = `<span><i class="swatch" style="background:${rules.unlayered.color}"></i>unlayered { ${rules.unlayered.selector} }</span><span></span><span></span>
+        <label><input type="checkbox" ${state.unlayered ? 'checked' : ''}> include</label>`;
+      u.querySelector('input').onchange = (e) => { state.unlayered = e.target.checked; render(); };
+      list.append(u);
+
+      const imp = (n) => (state.important.has(n) ? ' !important' : '');
+      const css = [`@layer ${state.order.join(', ')};`]
+        .concat(state.order.map((n) => `@layer ${n} { ${rules[n].selector} { background: ${rules[n].color}${imp(n)}; } }`));
+      if (state.unlayered) css.push(`${rules.unlayered.selector} { background: ${rules.unlayered.color}; }`);
+      $('lab').textContent = css.join('\n');
+      $('code').textContent = css.join('\n').replaceAll(/oklch\([^)]*\)/g, (m) => Object.values(rules).find((r) => r.color === m).name);
+      // Read back the winner from the computed style
+      const bg = getComputedStyle($('demo-btn')).backgroundColor;
+      const probe = document.createElement('i');
+      document.body.append(probe);
+      const win = Object.entries(rules).find(([, r]) => { probe.style.background = r.color; return getComputedStyle(probe).backgroundColor === bg; });
+      probe.remove();
+      $('winner').textContent = win ? `Winner: ${win[0] === 'unlayered' ? 'unlayered styles' : '@layer ' + win[0]} (${win[1].name})` : '';
+    }
+    render();
+  </script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 22-2 (final): Layer Order</title>
+  <style>
+    /* The first time a layer name appears fixes its place. Say it up front: */
+    @layer base, components;
+
+    @layer components {
+      .btn { padding: 8px 16px; border: 0; border-radius: 99px; background: var(--accent); color: white; font: 600 15px system-ui, sans-serif; }
+    }
+    @layer base {
+      button { padding: 4px 8px; border: 1px solid var(--border); border-radius: 4px; background: var(--surface); color: var(--fg); font: inherit; }
+    }
+    .row { display: flex; gap: 12px; }
+  </style>
+</head>
+<body class="demo" id="page">
+  <div class="row">
+    <button type="button">Plain button</button>
+    <button class="btn" type="button">Primary button</button>
+  </div>
+</body>
+</html>

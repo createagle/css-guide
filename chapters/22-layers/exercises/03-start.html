@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 22-3 (start): A Third-party Widget</title>
+  <link rel="stylesheet" href="lib.css">
+  <style>
+    /* Our theme for the widget: it loses to the library's heavier selectors */
+    .lib-panel { inline-size: min(360px, 100%); border: 1px solid var(--border); border-radius: 12px; background: var(--surface); color: var(--fg); font: 15px/1.5 system-ui, sans-serif; }
+    .lib-head { border-bottom: 1px solid var(--border); font-weight: 600; text-transform: none; }
+    .lib-action { border: 0; border-radius: 8px; background: var(--accent); color: white; }
+  </style>
+</head>
+<body class="demo" id="page">
+  <section class="lib-panel" aria-labelledby="ph">
+    <header class="lib-head" id="ph">Pick a date</header>
+    <p>Saturday 14 June is available.</p>
+    <button class="lib-action" type="button">Choose</button>
+  </section>
+</body>
+</html>

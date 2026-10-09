@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>22-2 Taming Third-party Styles</title>
+  <!-- Filled in by the script: either a plain import or an import into a layer -->
+  <style id="vendor"></style>
+  <style>
+    .stage { width: min(820px, 100%); flex-direction: column; flex-wrap: nowrap; align-items: stretch; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr)); gap: 12px; }
+  </style>
+  <!-- Our own theme for the widget: simple, low-specificity selectors -->
+  <style>
+    @layer app {
+      .lib-card { border-radius: 12px; background: var(--surface); border-color: var(--border); color: var(--fg); }
+      .lib-title { font: 600 17px system-ui, sans-serif; color: var(--fg); }
+      .lib-btn { border-radius: 8px; background: var(--accent); font: 600 14px system-ui, sans-serif; text-transform: none; }
+    }
+  </style>
+</head>
+<body class="demo">
+  <div class="controls">
+    <label class="control">vendor CSS
+      <select id="mode">
+        <option value="plain">@import url(vendor-widget.css);</option>
+        <option value="layer" selected>@import url(vendor-widget.css) layer(vendor);</option>
+      </select>
+    </label>
+  </div>
+  <div class="stage" id="app">
+    <div class="cards">
+      <div class="lib-card"><h3 class="lib-title">Lake Loop</h3><p>6 km, easy.</p><button class="lib-btn" type="button">Book</button></div>
+      <div class="lib-card"><h3 class="lib-title">North Ridge</h3><p>12 km, hard.</p><button class="lib-btn" type="button">Book</button></div>
+    </div>
+    <pre class="code" id="code"></pre>
+  </div>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    function update() {
+      const layered = $('mode').value === 'layer';
+      // The layer order statement goes first: vendor is the lowest, app sits above it
+      const css = layered
+        ? '@layer vendor, app;\n@import url(vendor-widget.css) layer(vendor);'
+        : '@layer app;\n@import url(vendor-widget.css);';
+      $('vendor').textContent = css.replace('@layer vendor, app;\n', '').replace('@layer app;\n', '');
+      // @import must come before other rules, so the order statement lives in its own sheet
+      let order = document.getElementById('order');
+      if (!order) { order = document.createElement('style'); order.id = 'order'; $('vendor').before(order); }
+      order.textContent = layered ? '@layer vendor, app;' : '@layer app;';
+      $('code').textContent = `${css}\n\n@layer app {\n  .lib-card { border-radius: 12px; background: var(--surface); … }\n  .lib-title { font: 600 17px system-ui, sans-serif; color: var(--fg); }\n  .lib-btn { border-radius: 8px; background: var(--accent); … }\n}\n\n/* ${layered ? 'vendor is a layer below app: our simple selectors win' : 'vendor is unlayered: it beats every layer, whatever the specificity'} */`;
+    }
+    $('mode').addEventListener('input', update);
+    update();
+  </script>
+</body>
+</html>

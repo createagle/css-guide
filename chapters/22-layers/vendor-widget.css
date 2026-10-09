@@ -1,0 +1,4 @@
+/* A stand-in for a third-party widget library: heavy selectors and fixed colours */
+div.lib-card { padding: 16px; border-radius: 4px; background: #f1f1f1; border: 1px solid #ccc; color: #222; }
+div.lib-card > h3.lib-title { margin: 0 0 6px; font: 700 18px Georgia, serif; color: #8a1c1c; }
+#app div.lib-card .lib-btn { padding: 6px 12px; border: 0; border-radius: 2px; background: #8a1c1c; color: #fff; font: 13px Arial, sans-serif; text-transform: uppercase; }
