@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 27-3 (start): A Ticker People Can Stop</title>
+  <style>
+    .ticker { inline-size: min(560px, 100%); overflow: hidden; border: 1px solid var(--border); border-radius: 10px; }
+    .ticker ul { display: flex; gap: 32px; inline-size: max-content; margin: 0; padding: 10px 16px; list-style: none; animation: scroll 16s linear infinite; }
+    .ticker a { color: var(--fg); }
+    @keyframes scroll { to { translate: -50% 0; } }
+  </style>
+</head>
+<body class="demo">
+  <div class="ticker" aria-label="News">
+    <!-- The list appears twice so the loop has no gap; the copy is hidden from screen readers -->
+    <ul><li><a href="#">Lake Loop reopens on Saturday</a></li><li><a href="#">New map of North Ridge</a></li><li><a href="#">Guided walk at the Old Mill</a></li><li><a href="#">Coast Path: high tide at 14:20</a></li><li aria-hidden="true"><a href="#" tabindex="-1">Lake Loop reopens on Saturday</a></li><li aria-hidden="true"><a href="#" tabindex="-1">New map of North Ridge</a></li><li aria-hidden="true"><a href="#" tabindex="-1">Guided walk at the Old Mill</a></li><li aria-hidden="true"><a href="#" tabindex="-1">Coast Path: high tide at 14:20</a></li></ul>
+  </div>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 27-1 (start): A Staggered Entrance Without the Flash</title>
+  <style>
+    .list { display: grid; gap: 10px; inline-size: min(420px, 100%); margin: 0; padding: 0; list-style: none; }
+    .list li { padding: 12px 16px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg); }
+    @keyframes rise { from { opacity: 0; translate: 0 16px; } }
+    /* Each item starts a little later than the one before */
+    .list li { animation: rise 0.5s ease-out; }
+    .list li:nth-child(2) { animation-delay: 0.15s; }
+    .list li:nth-child(3) { animation-delay: 0.3s; }
+    .list li:nth-child(4) { animation-delay: 0.45s; }
+    .list li:nth-child(5) { animation-delay: 0.6s; }
+    @media (prefers-reduced-motion: reduce) {
+      @keyframes rise { from { opacity: 0; } }
+    }
+  </style>
+</head>
+<body class="demo">
+  <ul class="list">
+    <li>Lake Loop · 14 km</li>
+    <li>North Ridge · 12 km</li>
+    <li>Old Mill · 6 km</li>
+    <li>Coast Path · 18 km</li>
+    <li>Forest Trail · 9 km</li>
+  </ul>
+  <button type="button" id="again">Play again</button>
+  <script>
+    // Re-running the animations: remove them for one frame, then put them back
+    document.getElementById('again').addEventListener('click', () => {
+      const items = document.querySelectorAll('.list li');
+      items.forEach((li) => { li.style.animationName = 'none'; });
+      void document.body.offsetWidth;
+      items.forEach((li) => { li.style.animationName = ''; });
+    });
+  </script>
+</body>
+</html>

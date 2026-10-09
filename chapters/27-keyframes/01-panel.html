@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>27-1 Animation Properties Panel</title>
+  <style>
+    .stage { width: min(820px, 100%); flex-direction: column; flex-wrap: nowrap; align-items: stretch; gap: 16px; }
+    .track { position: relative; container-type: inline-size; padding: 12px; border: 1px dashed var(--border); border-radius: 12px; }
+    /* The box's own style, shown whenever no keyframe applies */
+    .box {
+      inline-size: 64px;
+      block-size: 64px;
+      border-radius: 12px;
+      background: oklch(70% 0.01 260);
+      display: grid;
+      place-items: center;
+      color: white;
+      font: 700 13px system-ui, sans-serif;
+      animation: slide var(--dur) var(--ease) var(--delay) var(--count) var(--dir) var(--fill) var(--state);
+    }
+    @keyframes slide {
+      from { translate: 0 0; background: oklch(58% 0.16 250); }
+      to { translate: calc(100cqi - 88px) 0; background: oklch(60% 0.15 150); }
+    }
+    .status { font: 13px var(--mono); color: var(--muted); margin: 0; }
+  </style>
+</head>
+<body class="demo">
+  <div class="controls">
+    <label class="control">duration <select id="dur"><option>0.6s</option><option selected>1.5s</option><option>3s</option></select></label>
+    <label class="control">delay <select id="delay"><option>0s</option><option selected>1s</option><option>-0.75s</option></select></label>
+    <label class="control">iteration-count <select id="count"><option selected>1</option><option>2.5</option><option>3</option><option>infinite</option></select></label>
+    <label class="control">direction <select id="dir"><option selected>normal</option><option>reverse</option><option>alternate</option><option>alternate-reverse</option></select></label>
+    <label class="control">fill-mode <select id="fill"><option selected>none</option><option>forwards</option><option>backwards</option><option>both</option></select></label>
+    <label class="control">timing <select id="ease"><option>linear</option><option selected>ease-in-out</option><option>steps(4)</option></select></label>
+    <button type="button" id="pause" aria-pressed="false">Pause</button>
+    <button type="button" id="restart">Restart</button>
+  </div>
+  <div class="stage" id="stage">
+    <div class="track"><div class="box" id="box">box</div></div>
+    <p class="status" id="status" aria-live="off"></p>
+    <pre class="code" id="code"></pre>
+  </div>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const box = $('box');
+    const ids = ['dur', 'delay', 'count', 'dir', 'fill', 'ease'];
+    let state = matchMedia('(prefers-reduced-motion: reduce)').matches ? 'paused' : 'running';
+    function restart() {
+      // Removing and re-adding the animation starts it again from the beginning
+      box.style.animationName = 'none';
+      void box.offsetWidth;
+      box.style.animationName = '';
+    }
+    function update() {
+      for (const id of ids) box.style.setProperty('--' + id, $(id).value);
+      box.style.setProperty('--state', state);
+      $('pause').textContent = state === 'paused' ? 'Play' : 'Pause';
+      $('pause').setAttribute('aria-pressed', state === 'paused');
+      $('code').textContent = `.box {\n  animation: slide ${$('dur').value} ${$('ease').value} ${$('delay').value} ${$('count').value} ${$('dir').value} ${$('fill').value} ${state};\n}\n@keyframes slide {\n  from { translate: 0 0; background: blue; }\n  to { translate: calc(100cqi - 88px) 0; background: green; }\n}`;
+    }
+    for (const id of ids) $(id).addEventListener('input', () => { update(); restart(); });
+    $('pause').addEventListener('click', () => { state = state === 'paused' ? 'running' : 'paused'; update(); });
+    $('restart').addEventListener('click', restart);
+    // Read the animation's progress from the Web Animations API
+    function tick() {
+      const a = box.getAnimations()[0];
+      if (a) {
+        const t = a.effect.getComputedTiming();
+        const phase = t.localTime < t.delay ? 'before' : t.localTime >= t.delay + t.activeDuration ? 'after' : 'active';
+        $('status').textContent = phase === 'active'
+          ? `phase: active · iteration ${t.currentIteration + 1} · progress ${t.progress.toFixed(2)}`
+          : `phase: ${phase} · ${t.progress === null ? 'no keyframe applies: the box shows its own style' : `fill-mode holds the keyframe at progress ${t.progress.toFixed(2)}`}`;
+      } else {
+        // A finished animation without a forwards fill is no longer listed
+        $('status').textContent = 'phase: after · no keyframe applies: the box shows its own style';
+      }
+      requestAnimationFrame(tick);
+    }
+    update();
+    tick();
+  </script>
+</body>
+</html>
