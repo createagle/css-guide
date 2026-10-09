@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>1-1 One Page, Three Stylesheets</title>
+  <!-- Demo chrome: always on -->
+  <style>
+    .frame { width: min(520px, 100%); border: 1px dashed var(--border); border-radius: 12px; padding: 20px; }
+    .controls fieldset { display: flex; flex-wrap: wrap; gap: 8px 16px; border: 0; padding: 0; margin: 0; }
+    .controls legend { float: left; margin-inline-end: 8px; font-size: 14px; color: var(--muted); }
+  </style>
+  <!-- The only stylesheet the radios swap: the HTML below never changes -->
+  <link rel="stylesheet" id="theme" href="themes/newspaper.css">
+</head>
+<body class="demo">
+  <div class="controls">
+    <fieldset>
+      <legend>Stylesheet</legend>
+      <label class="control"><input type="radio" name="theme" value="" > None</label>
+      <label class="control"><input type="radio" name="theme" value="themes/newspaper.css" checked> newspaper.css</label>
+      <label class="control"><input type="radio" name="theme" value="themes/card.css"> card.css</label>
+      <label class="control"><input type="radio" name="theme" value="themes/terminal.css"> terminal.css</label>
+    </fieldset>
+  </div>
+  <div class="stage">
+    <div class="frame">
+      <article class="post">
+        <header>
+          <p class="kicker">Field notes</p>
+          <h1>Why the sky turns orange at sunset</h1>
+          <p class="byline">By Lin Wei · 4 min read</p>
+        </header>
+        <p>Sunlight is a mix of every color. On its way to your eyes it bumps into air molecules, and the short blue waves scatter far more than the long red ones.</p>
+        <p>At noon the light crosses a thin slice of air, so we see the scattered blue. At sunset it crosses <em>forty times</em> more air, the blue is scattered away, and the reds and oranges are what reach us.</p>
+        <blockquote>The color of the sky is the color of the light that was left over.</blockquote>
+        <ul class="tags">
+          <li>physics</li>
+          <li>light</li>
+          <li>weather</li>
+        </ul>
+      </article>
+    </div>
+  </div>
+  <script>
+    const theme = document.getElementById('theme');
+    document.querySelectorAll('input[name="theme"]').forEach((radio) => {
+      radio.addEventListener('change', () => {
+        // An empty choice disables the stylesheet; the page falls back to browser defaults
+        theme.disabled = radio.value === '';
+        if (radio.value) theme.href = radio.value;
+      });
+    });
+  </script>
+</body>
+</html>

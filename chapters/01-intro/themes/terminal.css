@@ -1,0 +1,14 @@
+/* terminal.css — monospace, green on black, whatever the system theme */
+.post { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 14px; line-height: 1.6; background: #0b0f0c; color: #7cf29a; padding: 20px; border-radius: 6px; }
+.post .kicker { margin: 0; color: #4fae69; }
+.post .kicker::before { content: "$ cat "; }
+.post h1 { margin: 4px 0; font-size: 1.15rem; text-transform: uppercase; }
+.post h1::before { content: "# "; color: #4fae69; }
+.post .byline { margin: 0 0 16px; color: #4fae69; }
+.post em { font-style: normal; background: #7cf29a; color: #0b0f0c; }
+.post blockquote { margin: 16px 0; padding: 0; }
+.post blockquote::before { content: "> "; }
+.post .tags { padding: 0; list-style: none; }
+.post .tags li { display: inline; }
+.post .tags li::before { content: "--"; }
+.post .tags li::after { content: " "; }

@@ -1,0 +1,10 @@
+/* newspaper.css — serif type, narrow measure, rules between sections */
+.post { font-family: Georgia, "Times New Roman", "Songti SC", serif; line-height: 1.6; }
+.post header { border-block: 3px double currentColor; padding-block: 8px 12px; margin-block-end: 16px; text-align: center; }
+.post .kicker { margin: 0; font: 600 11px/1.4 system-ui, sans-serif; letter-spacing: .2em; text-transform: uppercase; }
+.post h1 { margin: 4px 0; font-size: 1.9rem; line-height: 1.15; }
+.post .byline { margin: 0; font-style: italic; color: var(--muted); }
+.post > p:first-of-type::first-letter { float: left; font-size: 3.2em; line-height: .9; margin: 4px 6px 0 0; }
+.post blockquote { margin: 16px 0; padding: 0 16px; border-inline-start: 3px solid currentColor; font-size: 1.15rem; font-style: italic; }
+.post .tags { display: flex; gap: 8px; padding: 0; list-style: none; font: 12px system-ui, sans-serif; text-transform: uppercase; letter-spacing: .1em; }
+.post .tags li + li::before { content: "·"; margin-inline-end: 8px; }

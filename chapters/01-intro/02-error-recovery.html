@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>1-2 What the Browser Keeps</title>
+  <style>
+    .stage { width: min(960px, 100%); }
+    .stage > * { flex: 1 1 300px; }
+    textarea { width: 100%; min-height: 340px; font: 13px/1.55 var(--mono); padding: 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--fg); tab-size: 2; }
+    .result { display: grid; gap: 16px; }
+    #report { list-style: none; margin: 0; padding: 0; font: 13px/1.5 var(--mono); }
+    #report li { padding: 3px 0; border-bottom: 1px solid var(--border); }
+    #report .rule { margin-top: 8px; font-weight: 600; border: 0; }
+    #report .why { display: block; color: var(--muted); font-family: system-ui, sans-serif; font-size: 12px; }
+    #preview-host { display: block; min-height: 120px; }
+  </style>
+</head>
+<body class="demo">
+  <div class="controls">
+    <label class="control" for="example">Example</label>
+    <select id="example">
+      <option value="0">Typos and bad values</option>
+      <option value="1">One bad selector in a list</option>
+      <option value="2">Forgiving :is()</option>
+    </select>
+  </div>
+  <div class="stage">
+    <div>
+      <p class="label"><label for="source">Your CSS</label></p>
+      <textarea id="source" spellcheck="false"></textarea>
+    </div>
+    <div class="result">
+      <div class="panel">
+        <p class="label">What the browser kept</p>
+        <ul id="report" aria-live="polite"></ul>
+      </div>
+      <div class="panel">
+        <p class="label">Rendered</p>
+        <span id="preview-host"></span>
+      </div>
+    </div>
+  </div>
+  <script>
+    const examples = [
+`.card {
+  color: #1d4ed8;
+  colr: crimson;
+  padding: 16px;
+  margin: 0 auto 0 0 8px;
+  border: 2px solid;
+  width: 280 px;
+  border-radius: 12px;
+  background: oklch(95% 0.03 250);
+}
+.card p {
+  line-height: 1.6;
+  font-size: 15px
+}`,
+`.card {
+  padding: 16px;
+  border: 2px solid;
+  border-radius: 12px;
+}
+.card h2, .card h2:hovr {
+  color: crimson;
+}
+.card p {
+  color: #1d4ed8;
+}`,
+`.card {
+  padding: 16px;
+  border: 2px solid;
+  border-radius: 12px;
+}
+:is(.card h2, .card h2:hovr) {
+  color: crimson;
+}
+.card p {
+  color: #1d4ed8;
+}`];
+
+    const source = document.getElementById('source');
+    const report = document.getElementById('report');
+    const host = document.getElementById('preview-host');
+    const shadow = host.attachShadow({ mode: 'open' });
+    shadow.innerHTML = '<div class="card"><h2>Sunset</h2><p>The light that is left over.</p></div>';
+
+    // A tiny tokenizer: top-level "selector { declarations }" blocks, comments removed
+    function blocks(css) {
+      css = css.replace(/\/\*[\s\S]*?\*\//g, '');
+      const out = [];
+      const re = /([^{}]+)\{([^{}]*)\}/g;
+      let m;
+      while ((m = re.exec(css))) out.push({ selector: m[1].trim(), body: m[2] });
+      return out;
+    }
+
+    function li(text, cls, why) {
+      const item = document.createElement('li');
+      item.className = cls;
+      item.textContent = text;
+      if (why) {
+        const note = document.createElement('span');
+        note.className = 'why';
+        note.textContent = why;
+        item.append(note);
+      }
+      report.append(item);
+    }
+
+    function run() {
+      // The real browser parser does the work; we only compare its result with the source
+      const sheet = new CSSStyleSheet();
+      sheet.replaceSync(source.value);
+      shadow.adoptedStyleSheets = [sheet];
+      const kept = [...sheet.cssRules].filter((r) => r.selectorText !== undefined);
+      report.replaceChildren();
+      const norm = (s) => s.replace(/\s+/g, ' ');
+      let next = 0;
+      for (const block of blocks(source.value)) {
+        // Rules come back in source order; a forgiving :is() list may be serialized shorter
+        const candidate = kept[next];
+        const same = candidate && (norm(candidate.selectorText) === norm(block.selector)
+          || (/^:(is|where)\(/.test(block.selector) && candidate.selectorText.slice(0, 4) === block.selector.slice(0, 4)));
+        const rule = same ? kept[next++] : null;
+        if (!rule) {
+          li(block.selector + ' { … }', 'rule bad', 'Whole rule dropped: one selector in the list is invalid');
+          continue;
+        }
+        li(rule.selectorText + ' {', 'rule', '');
+        for (const decl of block.body.split(';')) {
+          const [prop, ...rest] = decl.split(':');
+          if (!prop || !prop.trim() || !rest.length) continue;
+          const name = prop.trim();
+          const value = rest.join(':').trim();
+          const got = rule.style.getPropertyValue(name);
+          if (got) li(`  ✓ ${name}: ${value}`, 'good');
+          else li(`  ✗ ${name}: ${value}`, 'bad', CSS.supports(name, 'initial') ? 'Invalid value: declaration dropped' : 'Unknown property: declaration dropped');
+        }
+      }
+    }
+
+    const example = document.getElementById('example');
+    example.addEventListener('change', () => { source.value = examples[example.value]; run(); });
+    source.addEventListener('input', run);
+    source.value = examples[0];
+    run();
+  </script>
+</body>
+</html>
