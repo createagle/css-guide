@@ -7,14 +7,14 @@
   <title>Exercise 27-2 (final): A Typewriter</title>
   <style>
     .type {
-      inline-size: 22ch;
+      inline-size: 20ch;
       font: 600 24px/1.4 ui-monospace, Menlo, Consolas, monospace;
       white-space: nowrap;
       overflow: hidden;
       border-inline-end: 3px solid var(--accent);
     }
-    /* 22 characters, 22 steps: one whole character appears at a time */
-    .type { animation: typing 2.2s steps(22, end), caret 0.8s step-end infinite; }
+    /* 20 characters, 20 steps: one whole character appears at a time */
+    .type { animation: typing 2.2s steps(20, end), caret 0.8s step-end infinite; }
     @keyframes typing { from { inline-size: 0; } }
     /* The cursor blinks by switching its colour, with no fade in between */
     @keyframes caret { 50% { border-color: transparent; } }
