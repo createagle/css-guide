@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>28-1 Reading Progress</title>
+  <style>
+    body.demo { display: block; }
+    .article { inline-size: min(640px, 100%); margin-inline: auto; padding-block: 24px 60vh; line-height: 1.7; }
+    .article h1 { font-size: 28px; margin: 0 0 16px; }
+    .terms { block-size: 160px; overflow-y: auto; margin-block: 24px; padding: 12px 16px; border: 1px solid var(--border); border-radius: 10px; position: relative; }
+    .terms p { margin: 0 0 10px; font-size: 14px; }
+    .progress, .percent, .terms-bar { display: none; }
+    @property --p { syntax: "<integer>"; inherits: false; initial-value: 0; }
+
+    /* Only where scroll-driven animations exist; elsewhere the page simply has no bar */
+    @supports (animation-timeline: scroll()) {
+      /* 1. The page: the nearest scroller of a fixed element is the root */
+      .progress {
+        display: block;
+        position: fixed;
+        inset: 0 0 auto;
+        block-size: 6px;
+        background: var(--accent);
+        transform-origin: left;
+        animation: grow linear both;
+        animation-timeline: scroll(root block);
+      }
+      @keyframes grow { from { scale: 0 1; } }
+
+      /* A registered integer (see the top of this sheet) can be animated, then printed with a counter */
+      .percent {
+        display: block;
+        position: fixed;
+        inset: 12px 12px auto auto;
+        padding: 4px 10px;
+        border-radius: 99px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        font: 600 13px var(--mono);
+        animation: count linear both;
+        animation-timeline: scroll(root);
+        counter-reset: p var(--p);
+      }
+      .percent::after { content: counter(p) "%"; }
+      @keyframes count { to { --p: 100; } }
+
+      /* 2. A box with its own scroller: scroll(nearest) finds it */
+      .terms-bar {
+        display: block;
+        position: sticky;
+        inset-block-start: -12px;
+        block-size: 4px;
+        margin: -12px -16px 8px;
+        background: var(--good);
+        transform-origin: left;
+        animation: grow linear both;
+        animation-timeline: scroll(nearest);
+      }
+    }
+  </style>
+</head>
+<body class="demo">
+  <div class="progress" aria-hidden="true"></div>
+  <div class="percent" aria-hidden="true"></div>
+  <article class="article">
+    <h1>The Coast Path</h1>
+      <p>The coast path starts at the harbour wall and climbs quickly onto the cliffs. For the first kilometre the sea is on your left and sheep fields on your right.</p>
+      <p>After the old coastguard station the path dips into a wooded valley. The stream at the bottom is easy to cross in summer, but after rain it is worth using the footbridge a little upstream.</p>
+      <p>The climb out of the valley is the hardest part of the day. Take it slowly: there is a bench at the top with the best view on the whole route.</p>
+    <section class="terms" tabindex="0" aria-label="Safety notes">
+      <div class="terms-bar" aria-hidden="true"></div>
+      <p>Check the tide times before you set off. Parts of the beach route are cut off at high tide.</p>
+      <p>Wear boots with a good grip. The cliff path is muddy after rain.</p>
+      <p>Keep dogs on a lead near the cliff edge and in fields with sheep.</p>
+      <p>Mobile signal is poor between the valley and the lighthouse.</p>
+      <p>Tell someone your route and when you expect to be back.</p>
+    </section>
+      <p>From the bench the path is level for three kilometres. Look out for seals on the rocks below the lighthouse, especially at low tide.</p>
+      <p>At the lighthouse you can either turn inland back to the village or carry on to the next cove, which adds about an hour.</p>
+      <p>If you carry on, the path narrows and runs close to the edge. It is safe in good weather but not a place to be in strong wind.</p>
+      <p>The cove has a small café that opens at weekends from Easter to October. In winter, bring a flask.</p>
+      <p>The return route follows a farm track and then a quiet lane. The last kilometre is downhill all the way to the harbour.</p>
+  </article>
+</body>
+</html>

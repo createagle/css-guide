@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 28-3 (final): A Header That Settles</title>
+  <style>
+    body.demo { display: block; }
+    .article { inline-size: min(600px, 100%); margin-inline: auto; padding-block: 24px 50vh; line-height: 1.7; }
+    .article h1 { font-size: 26px; margin: 0 0 12px; }
+    .site { position: sticky; inset-block-start: 0; z-index: 1; display: flex; align-items: center; padding: 20px 24px; isolation: isolate; }
+    .site::before { content: ""; position: absolute; inset: 0; z-index: -1; background: var(--bg); border-block-end: 1px solid var(--border); box-shadow: 0 4px 12px oklch(0% 0 0 / 0.12); opacity: 0; }
+    .site h1 { margin: 0; font-size: 32px; transform-origin: left center; }
+    @supports (animation-timeline: scroll()) {
+      /* Only the first 200px of scrolling drive the change; after that it stays put */
+      .site::before { animation: solid linear both; animation-timeline: scroll(root); animation-range: 0 200px; }
+      .site h1 { animation: shrink linear both; animation-timeline: scroll(root); animation-range: 0 200px; }
+      @keyframes solid { to { opacity: 1; } }
+      @keyframes shrink { to { scale: 0.7; } }
+    }
+    /* Without scroll timelines, show the header in its compact, solid state */
+    @supports not (animation-timeline: scroll()) {
+      .site::before { opacity: 1; }
+    }
+  </style>
+</head>
+<body class="demo">
+  <header class="site"><h1>Valley Walks</h1></header>
+  <article class="article">
+    <p>Most walks in the valley start from the village green, where there is free parking and a bus stop.</p>
+    <p>The river path is flat and good for families. It follows the water for four kilometres to the mill.</p>
+    <p>From the mill, a steep lane leads up to the ridge. The view from the top takes in three counties on a clear day.</p>
+    <p>The ridge path is exposed, so bring a windproof layer even in summer.</p>
+    <p>Coming down, you can choose the short way through the woods or the long way past the reservoir.</p>
+    <p>Both routes end back at the green, close to the pub and the tea room.</p>
+    <p>Most walks in the valley start from the village green, where there is free parking and a bus stop.</p>
+    <p>The river path is flat and good for families. It follows the water for four kilometres to the mill.</p>
+    <p>From the mill, a steep lane leads up to the ridge. The view from the top takes in three counties on a clear day.</p>
+    <p>The ridge path is exposed, so bring a windproof layer even in summer.</p>
+    <p>Coming down, you can choose the short way through the woods or the long way past the reservoir.</p>
+    <p>Both routes end back at the green, close to the pub and the tea room.</p>
+  </article>
+</body>
+</html>

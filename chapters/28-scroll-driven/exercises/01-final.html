@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 28-1 (final): A Reading Progress Bar</title>
+  <style>
+    body.demo { display: block; }
+    .article { inline-size: min(600px, 100%); margin-inline: auto; padding-block: 24px 50vh; line-height: 1.7; }
+    .article h1 { font-size: 26px; margin: 0 0 12px; }
+    .bar { position: fixed; inset: 0 0 auto; block-size: 5px; background: var(--accent); transform-origin: left; scale: 0 1; }
+    @supports (animation-timeline: scroll()) {
+      /* The bar's scale follows the page's scroll position instead of time */
+      .bar { animation: fill linear both; animation-timeline: scroll(root); }
+      @keyframes fill { to { scale: 1 1; } }
+    }
+    /* Where scroll timelines are missing, hide the bar rather than show an empty one */
+    @supports not (animation-timeline: scroll()) {
+      .bar { display: none; }
+    }
+  </style>
+</head>
+<body class="demo">
+  <div class="bar" aria-hidden="true"></div>
+  <article class="article">
+    <h1>Walking the Valley</h1>
+    <p>Most walks in the valley start from the village green, where there is free parking and a bus stop.</p>
+    <p>The river path is flat and good for families. It follows the water for four kilometres to the mill.</p>
+    <p>From the mill, a steep lane leads up to the ridge. The view from the top takes in three counties on a clear day.</p>
+    <p>The ridge path is exposed, so bring a windproof layer even in summer.</p>
+    <p>Coming down, you can choose the short way through the woods or the long way past the reservoir.</p>
+    <p>Both routes end back at the green, close to the pub and the tea room.</p>
+    <p>Most walks in the valley start from the village green, where there is free parking and a bus stop.</p>
+    <p>The river path is flat and good for families. It follows the water for four kilometres to the mill.</p>
+    <p>From the mill, a steep lane leads up to the ridge. The view from the top takes in three counties on a clear day.</p>
+    <p>The ridge path is exposed, so bring a windproof layer even in summer.</p>
+    <p>Coming down, you can choose the short way through the woods or the long way past the reservoir.</p>
+    <p>Both routes end back at the green, close to the pub and the tea room.</p>
+  </article>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>28-2 Reveal on Scroll</title>
+  <style>
+    body.demo { display: block; }
+    .controls { position: sticky; inset-block-start: 0; z-index: 1; background: var(--bg); padding-block: 8px; border-block-end: 1px solid var(--border); }
+    .page { inline-size: min(720px, 100%); margin-inline: auto; padding-block: 40vh; display: grid; gap: 48px; }
+    .cards { display: grid; gap: 16px; margin: 0; padding: 0; list-style: none; }
+    .card { padding: 20px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }
+    .card h2 { margin: 0 0 4px; font-size: 18px; }
+    .card p { margin: 0; color: var(--muted); }
+    /* A horizontal gallery and an indicator outside it */
+    .gallery-wrap { display: grid; gap: 8px; }
+    .gallery { display: flex; gap: 12px; overflow-x: auto; margin: 0; padding: 0 0 8px; list-style: none; scroll-snap-type: x mandatory; }
+    .shot { flex: 0 0 70%; aspect-ratio: 16 / 9; display: grid; place-items: center; border-radius: 12px; scroll-snap-align: center; font: 700 32px system-ui, sans-serif; color: white; background: linear-gradient(135deg, oklch(60% 0.14 250), oklch(62% 0.14 170)); }
+    .indicator { block-size: 4px; border-radius: 2px; background: var(--border); overflow: hidden; }
+    .indicator span { display: block; block-size: 100%; inline-size: 25%; background: var(--accent); }
+
+    @supports (animation-timeline: view()) {
+      /* 1. Each card animates while it moves through the scrollport */
+      .card {
+        animation: reveal linear both;
+        animation-timeline: view();
+        animation-range: var(--range, entry 0% cover 40%);
+      }
+      @keyframes reveal { from { opacity: 0; translate: 0 40px; scale: 0.96; } }
+
+      /* 2. A named timeline, shared upwards with timeline-scope */
+      .gallery-wrap { timeline-scope: --gallery; }
+      .gallery { scroll-timeline: --gallery inline; }
+      .indicator span { animation: slide linear both; animation-timeline: --gallery; }
+      @keyframes slide { to { translate: 300% 0; } }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      @keyframes reveal { from { opacity: 0; } }
+    }
+  </style>
+</head>
+<body class="demo">
+  <div class="controls">
+    <label class="control">animation-range
+      <select id="range">
+        <option>entry 0% cover 40%</option>
+        <option>entry 0% entry 100%</option>
+        <option>cover 0% cover 100%</option>
+        <option>contain 0% contain 100%</option>
+        <option>exit 0% exit 100%</option>
+      </select>
+    </label>
+  </div>
+  <main class="page">
+    <ul class="cards">
+      <li class="card"><h2>Lake Loop</h2><p>6 km</p></li>
+      <li class="card"><h2>North Ridge</h2><p>8 km</p></li>
+      <li class="card"><h2>Old Mill</h2><p>10 km</p></li>
+      <li class="card"><h2>Coast Path</h2><p>12 km</p></li>
+      <li class="card"><h2>Forest Trail</h2><p>14 km</p></li>
+      <li class="card"><h2>River Walk</h2><p>16 km</p></li>
+      <li class="card"><h2>Castle Hill</h2><p>18 km</p></li>
+      <li class="card"><h2>Moor Edge</h2><p>20 km</p></li>
+    </ul>
+    <section class="gallery-wrap" aria-label="Photos">
+      <ul class="gallery" tabindex="0">
+          <li class="shot">1</li>
+          <li class="shot">2</li>
+          <li class="shot">3</li>
+          <li class="shot">4</li>
+          <li class="shot">5</li>
+          <li class="shot">6</li>
+          <li class="shot">7</li>
+          <li class="shot">8</li>
+      </ul>
+      <div class="indicator" aria-hidden="true"><span></span></div>
+    </section>
+  </main>
+  <script>
+    const range = document.getElementById('range');
+    range.addEventListener('input', () => document.querySelector('.cards').style.setProperty('--range', range.value));
+  </script>
+</body>
+</html>
