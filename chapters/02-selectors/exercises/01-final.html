@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 2-1 · Final: Style a Site Header</title>
+  <style>
+    .site-header {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 32px;
+      align-items: center;
+      width: min(640px, 100%);
+      padding: 12px 20px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+
+    /* The site name: the link that is a direct child of the header */
+    .site-header > a {
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--fg);
+      text-decoration: none;
+    }
+
+    /* Only the list inside the nav, not every ul on the page */
+    .site-header nav ul {
+      display: flex;
+      gap: 4px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .site-header nav a {
+      display: block;
+      padding: 4px 10px;
+      border-radius: 6px;
+      color: var(--muted);
+      text-decoration: none;
+    }
+
+    .site-header nav a:hover { color: var(--fg); background: var(--surface); }
+
+    /* The current page, marked in HTML with aria-current */
+    .site-header nav a[aria-current="page"] { color: var(--accent); font-weight: 600; }
+
+    /* Links that leave the site get an arrow */
+    .site-header nav a[href^="https://"]::after { content: " ↗"; }
+
+    /* A divider before every item except the first */
+    .site-header nav li + li { border-inline-start: 1px solid var(--border); padding-inline-start: 4px; }
+  </style>
+</head>
+<body class="demo">
+  <div class="stage">
+    <header class="site-header">
+      <a href="/">Field Notes</a>
+      <nav aria-label="Main">
+        <ul>
+          <li><a href="/" aria-current="page">Home</a></li>
+          <li><a href="/archive">Archive</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="https://github.com/createagle">GitHub</a></li>
+        </ul>
+      </nav>
+    </header>
+  </div>
+</body>
+</html>

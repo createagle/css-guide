@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 2-2 · Final: A Zebra-striped Table</title>
+  <style>
+    .scores { border-collapse: collapse; min-width: 360px; font-variant-numeric: tabular-nums; }
+    .scores caption { margin-bottom: 8px; font-weight: 600; text-align: start; }
+    .scores th, .scores td { padding: 8px 12px; text-align: end; }
+
+    /* The first cell of each row is the team name: align it to the start */
+    .scores tr > :first-child { text-align: start; }
+
+    .scores thead th { border-bottom: 2px solid var(--fg); font-size: 13px; color: var(--muted); }
+
+    /* Zebra stripes on body rows only */
+    .scores tbody tr:nth-child(even) { background: var(--surface); }
+
+    /* The top three teams */
+    .scores tbody tr:nth-child(-n+3) th { color: var(--accent); }
+
+    /* The last column is the one that matters */
+    .scores tr > :last-child { font-weight: 700; }
+
+    .scores tbody tr:hover { background: color-mix(in oklch, var(--accent) 15%, transparent); }
+  </style>
+</head>
+<body class="demo">
+  <div class="stage">
+    <table class="scores">
+      <caption>Spring league standings</caption>
+      <thead>
+        <tr><th scope="col">Team</th><th scope="col">Played</th><th scope="col">Won</th><th scope="col">Points</th></tr>
+      </thead>
+      <tbody>
+        <tr><th scope="row">Harbor FC</th><td>12</td><td>9</td><td>29</td></tr>
+        <tr><th scope="row">Riverside</th><td>12</td><td>8</td><td>26</td></tr>
+        <tr><th scope="row">Old Town</th><td>12</td><td>7</td><td>23</td></tr>
+        <tr><th scope="row">Northfield</th><td>12</td><td>5</td><td>17</td></tr>
+        <tr><th scope="row">Hillside</th><td>12</td><td>3</td><td>11</td></tr>
+        <tr><th scope="row">Lakeview</th><td>12</td><td>1</td><td>4</td></tr>
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>

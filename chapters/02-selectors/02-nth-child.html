@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>2-2 :nth-child() Formula Visualizer</title>
+  <style>
+    .controls input[type="text"] { width: 9em; font: 14px var(--mono); padding: 6px 8px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--fg); }
+    .grid { display: grid; grid-template-columns: repeat(10, 44px); gap: 6px; padding: 0; margin: 0; list-style: none; }
+    .grid li { display: grid; place-items: center; height: 44px; border: 1px solid var(--border); border-radius: 8px; font: 600 14px var(--mono); color: var(--muted); transition: background-color .2s, color .2s; }
+    #readout { width: min(520px, 100%); }
+    #error { min-height: 1.5em; margin: 0; }
+    @media (width < 560px) { .grid { grid-template-columns: repeat(5, 44px); } }
+  </style>
+  <!-- The demo writes one real CSS rule into this element -->
+  <style id="live"></style>
+</head>
+<body class="demo">
+  <div class="controls">
+    <label class="control">Pseudo-class
+      <select id="kind">
+        <option>:nth-child</option>
+        <option>:nth-last-child</option>
+      </select>
+    </label>
+    <label class="control">An+B <input type="text" id="formula" value="3n+1" spellcheck="false"></label>
+    <label class="control">Try
+      <select id="presets">
+        <option value="">…</option>
+        <option>odd</option>
+        <option>even</option>
+        <option>3n</option>
+        <option>3n+1</option>
+        <option>n+5</option>
+        <option>-n+3</option>
+        <option>2n+3</option>
+        <option>-2n+9</option>
+        <option>7</option>
+      </select>
+    </label>
+  </div>
+  <div class="stage">
+    <ol class="grid" id="grid"></ol>
+  </div>
+  <div id="readout">
+    <pre class="code" id="rule"></pre>
+    <p id="error" class="bad" aria-live="polite"></p>
+  </div>
+  <script>
+    const grid = document.getElementById('grid');
+    for (let i = 1; i <= 20; i++) grid.insertAdjacentHTML('beforeend', `<li>${i}</li>`);
+    const live = document.getElementById('live');
+    const kind = document.getElementById('kind');
+    const formula = document.getElementById('formula');
+    const rule = document.getElementById('rule');
+    const error = document.getElementById('error');
+
+    function run() {
+      const selector = `.grid li${kind.value}(${formula.value})`;
+      const css = `${selector} {\n  background: var(--accent);\n  color: var(--bg);\n}`;
+      // CSS.supports('selector(...)') tells us whether the browser can parse it
+      if (!CSS.supports(`selector(${selector})`)) {
+        error.textContent = 'Not a valid An+B expression: the rule would be dropped.';
+        live.textContent = '';
+        rule.textContent = css;
+        return;
+      }
+      error.textContent = '';
+      live.textContent = css;
+      const hits = [...grid.children].filter((li) => li.matches(selector)).map((li) => li.textContent);
+      rule.textContent = css + `\n\n/* matches: ${hits.join(', ') || 'none'} */`;
+    }
+
+    kind.addEventListener('change', run);
+    formula.addEventListener('input', run);
+    document.getElementById('presets').addEventListener('change', (event) => {
+      if (!event.target.value) return;
+      formula.value = event.target.value;
+      event.target.value = '';
+      run();
+    });
+    run();
+  </script>
+</body>
+</html>
