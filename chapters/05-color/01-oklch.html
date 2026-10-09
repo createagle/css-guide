@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>5-1 OKLCH vs HSL: Same Lightness?</title>
+  <style>
+    .stage { width: min(940px, 100%); flex-direction: column; align-items: stretch; }
+    .row { display: grid; grid-template-columns: repeat(12, 1fr); gap: 6px; }
+    .row figure { margin: 0; }
+    .sw { aspect-ratio: 1; border-radius: 8px; transition: filter .3s; }
+    .row figcaption { font: 11px var(--mono); color: var(--muted); text-align: center; margin-top: 4px; }
+    .gray .sw { filter: grayscale(1); }
+    .label { margin-top: 8px; }
+    @media (width < 640px) { .row { grid-template-columns: repeat(6, 1fr); } }
+  </style>
+</head>
+<body class="demo">
+  <div class="controls">
+    <label class="control">HSL lightness <input type="range" id="hsl-l" min="20" max="80" value="50"> <output id="hsl-l-out">50%</output></label>
+    <label class="control">OKLCH lightness <input type="range" id="ok-l" min="30" max="90" value="70"> <output id="ok-l-out">70%</output></label>
+    <label class="control">OKLCH chroma <input type="range" id="ok-c" min="0" max="0.3" step="0.01" value="0.13"> <output id="ok-c-out">0.13</output></label>
+    <label class="control"><input type="checkbox" id="gray"> Grayscale</label>
+  </div>
+  <div class="stage" id="stage">
+    <p class="label" id="hsl-title"></p>
+    <div class="row" id="hsl-row"></div>
+    <p class="label" id="ok-title"></p>
+    <div class="row" id="ok-row"></div>
+  </div>
+  <script>
+    // sRGB (0-255) -> OKLab lightness, to show how light each swatch really looks
+    const lin = (c) => { c /= 255; return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; };
+    function oklabL([r, g, b]) {
+      [r, g, b] = [lin(r), lin(g), lin(b)];
+      const l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b);
+      const m = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b);
+      const s = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b);
+      return 0.2104542553 * l + 0.7936177850 * m - 0.0040720468 * s;
+    }
+    // Let a 1×1 canvas convert any CSS color (hsl, oklch…) to sRGB bytes
+    const ctx = document.createElement('canvas').getContext('2d', { willReadFrequently: true });
+    const rgbOf = (el) => { ctx.clearRect(0, 0, 1, 1); ctx.fillStyle = getComputedStyle(el).backgroundColor; ctx.fillRect(0, 0, 1, 1); return [...ctx.getImageData(0, 0, 1, 1).data].slice(0, 3); };
+
+    const hues = Array.from({ length: 12 }, (_, i) => i * 30);
+    function row(id) {
+      const el = document.getElementById(id);
+      el.innerHTML = hues.map((h) => `<figure><div class="sw" data-h="${h}"></div><figcaption></figcaption></figure>`).join('');
+      return [...el.querySelectorAll('.sw')];
+    }
+    const hslSw = row('hsl-row'), okSw = row('ok-row');
+
+    function update() {
+      const L = document.getElementById('hsl-l').value, oL = document.getElementById('ok-l').value, oC = document.getElementById('ok-c').value;
+      document.getElementById('hsl-l-out').value = L + '%';
+      document.getElementById('ok-l-out').value = oL + '%';
+      document.getElementById('ok-c-out').value = oC;
+      document.getElementById('hsl-title').textContent = `hsl(H 100% ${L}%) — real lightness varies a lot`;
+      document.getElementById('ok-title').textContent = `oklch(${oL}% ${oC} H) — real lightness stays the same`;
+      hslSw.forEach((sw) => { sw.style.background = `hsl(${sw.dataset.h} 100% ${L}%)`; });
+      okSw.forEach((sw) => { sw.style.background = `oklch(${oL}% ${oC} ${sw.dataset.h})`; });
+      // Caption: the hue, and the perceived lightness measured in OKLab
+      [...hslSw, ...okSw].forEach((sw) => {
+        sw.nextElementSibling.textContent = `${sw.dataset.h}° · L${Math.round(oklabL(rgbOf(sw)) * 100)}`;
+      });
+    }
+    document.querySelectorAll('input[type="range"]').forEach((r) => r.addEventListener('input', update));
+    document.getElementById('gray').addEventListener('change', (e) => document.getElementById('stage').classList.toggle('gray', e.target.checked));
+    update();
+  </script>
+</body>
+</html>

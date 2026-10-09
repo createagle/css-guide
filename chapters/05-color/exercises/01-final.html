@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 5-1 · Final: One Brand Color, Everything Derived</title>
+  <style>
+    .theme {
+      --brand: oklch(55% 0.21 262);
+      display: grid; gap: 12px; justify-items: start; width: 240px;
+    }
+    .alert {
+      margin: 0; padding: 12px 14px; border-radius: 8px;
+      border: 1px solid color-mix(in oklch, var(--brand) 45%, var(--bg));
+      background: color-mix(in oklch, var(--brand) 15%, var(--bg));
+      color: color-mix(in oklch, var(--brand) 60%, var(--fg));
+    }
+    .btn { padding: 8px 18px; border: 0; border-radius: 8px; background: var(--brand); color: white; font-weight: 600; cursor: pointer; }
+    .btn:hover { background: oklch(from var(--brand) calc(l - 0.08) c h); }
+
+    /* Rebranding is now one line per theme */
+    .teal { --brand: oklch(55% 0.11 190); }
+    .rose { --brand: oklch(56% 0.2 15); }
+  </style>
+</head>
+<body class="demo">
+  <div class="stage">
+      <div class="theme">
+        <p class="alert">Your trial ends in 3 days.</p>
+        <button type="button" class="btn">Upgrade</button>
+      </div>
+      <div class="theme teal">
+        <p class="alert">Your trial ends in 3 days.</p>
+        <button type="button" class="btn">Upgrade</button>
+      </div>
+      <div class="theme rose">
+        <p class="alert">Your trial ends in 3 days.</p>
+        <button type="button" class="btn">Upgrade</button>
+      </div>
+  </div>
+</body>
+</html>

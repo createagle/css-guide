@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>5-2 color-mix() Palette Generator</title>
+  <style>
+    .stage { width: min(940px, 100%); flex-direction: column; align-items: stretch; }
+    .palette { display: grid; grid-template-columns: repeat(11, 1fr); gap: 4px; }
+    .palette div { height: 64px; border-radius: 6px; display: grid; place-items: end center; padding-bottom: 4px; font: 600 11px var(--mono); }
+    .derived { display: flex; flex-wrap: wrap; gap: 10px; }
+    .chip { padding: 10px 14px; border-radius: 8px; font: 600 13px system-ui, sans-serif; }
+    .controls input[type="color"] { width: 44px; height: 32px; padding: 0; border: 1px solid var(--border); border-radius: 6px; background: none; }
+    @media (width < 640px) { .palette { grid-template-columns: repeat(6, 1fr); } }
+  </style>
+</head>
+<body class="demo">
+  <div class="controls">
+    <label class="control">Brand color <input type="color" id="base" value="#2563eb"></label>
+    <label class="control">Mix in
+      <select id="space">
+        <option value="oklch" selected>oklch</option>
+        <option value="srgb">srgb</option>
+      </select>
+    </label>
+  </div>
+  <div class="stage">
+    <p class="label">Tints and shades: color-mix() with white and black</p>
+    <div class="palette" id="palette"></div>
+    <p class="label">Relative colors derived from the same brand color</p>
+    <div class="derived" id="derived"></div>
+    <pre class="code" id="css"></pre>
+  </div>
+  <script>
+    const steps = [95, 90, 75, 55, 30, 0, 20, 40, 55, 70, 80];  // % of white (first 5) or black (last 5)
+    const names = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950];
+    function update() {
+      const base = document.getElementById('base').value;
+      const space = document.getElementById('space').value;
+      const root = document.documentElement.style;
+      root.setProperty('--brand', base);
+      const lines = [`--brand: ${base};`];
+      document.getElementById('palette').innerHTML = steps.map((p, i) => {
+        const mix = i < 5 ? `color-mix(in ${space}, var(--brand), white ${p}%)`
+                  : i === 5 ? 'var(--brand)'
+                  : `color-mix(in ${space}, var(--brand), black ${p}%)`;
+        lines.push(`--brand-${names[i]}: ${mix};`);
+        const text = i < 5 ? '#1c1917' : 'white';
+        return `<div style="background: ${mix}; color: ${text}">${names[i]}</div>`;
+      }).join('');
+      const derived = [
+        ['Lighter', 'oklch(from var(--brand) calc(l + 0.15) c h)', '#1c1917'],
+        ['Muted', 'oklch(from var(--brand) l calc(c * 0.4) h)', 'white'],
+        ['Complement', 'oklch(from var(--brand) l c calc(h + 180))', 'white'],
+        ['50% alpha', 'rgb(from var(--brand) r g b / 50%)', 'var(--fg)'],
+      ];
+      document.getElementById('derived').innerHTML = derived.map(([n, v, t]) =>
+        `<span class="chip" style="background: ${v}; color: ${t}">${n}</span>`).join('');
+      derived.forEach(([n, v]) => lines.push(`/* ${n} */ ${v};`));
+      document.getElementById('css').textContent = lines.join('\n');
+    }
+    document.getElementById('base').addEventListener('input', update);
+    document.getElementById('space').addEventListener('change', update);
+    update();
+  </script>
+</body>
+</html>

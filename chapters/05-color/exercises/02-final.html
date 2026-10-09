@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 5-2 · Final: Gradients Interpolated in OKLCH</title>
+  <style>
+    .stack { display: grid; gap: 12px; width: 560px; max-width: 100%; }
+    .bar { height: 56px; border-radius: 10px; }
+    /* Fallbacks first, then the version with an interpolation color space */
+    .a { background: linear-gradient(90deg, blue, yellow); background: linear-gradient(90deg in oklch, blue, yellow); }
+    .b { background: linear-gradient(90deg, #e11d48, #16a34a); background: linear-gradient(90deg in oklch, #e11d48, #16a34a); }
+    /* "longer hue" goes the other way round the color wheel */
+    .c { background: linear-gradient(90deg, #f97316, #8b5cf6); background: linear-gradient(90deg in oklch longer hue, #f97316, #8b5cf6); }
+  </style>
+</head>
+<body class="demo">
+  <div class="stage">
+    <div class="stack">
+      <div class="bar a" role="img" aria-label="Blue to yellow"></div>
+      <div class="bar b" role="img" aria-label="Rose to green"></div>
+      <div class="bar c" role="img" aria-label="Orange to violet, the long way round"></div>
+    </div>
+  </div>
+</body>
+</html>
