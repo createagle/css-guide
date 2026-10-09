@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>6-2 Margin Collapsing Lab</title>
+  <style>
+    .stage { width: min(880px, 100%); align-items: flex-start; }
+    .stage > figure { flex: 1 1 260px; margin: 0; }
+    .page { background: repeating-linear-gradient(0deg, var(--surface) 0 9px, var(--border) 9px 10px); border-radius: 8px; padding: 1px 0; }
+    .card { background: var(--bg); outline: 2px solid var(--accent); }
+    .card h2 { margin: 32px 0 16px; font-size: 16px; background: color-mix(in oklch, var(--accent) 20%, var(--bg)); }
+    .card p { margin: 24px 0; background: color-mix(in oklch, var(--accent) 10%, var(--bg)); }
+    .empty { margin: 20px 0; }
+    /* What the checkboxes switch on */
+    .pad .card { padding-block: 1px; }
+    .root .card { display: flow-root; }
+    .flex .card { display: flex; flex-direction: column; }
+    .readout { font: 13px var(--mono); }
+  </style>
+</head>
+<body class="demo">
+  <div class="controls">
+    <label class="control"><input type="checkbox" id="pad"> padding-block: 1px</label>
+    <label class="control"><input type="checkbox" id="root"> display: flow-root</label>
+    <label class="control"><input type="checkbox" id="flex"> display: flex (column)</label>
+    <label class="control"><input type="checkbox" id="empty" checked> empty div between paragraphs</label>
+  </div>
+  <div class="stage" id="stage">
+    <figure>
+      <div class="page"><div class="card" id="card">
+        <h2 id="h2">h2: margin 32px 0 16px</h2>
+        <p id="p1">p: margin 24px 0</p>
+        <div class="empty" id="empty-div"></div>
+        <p id="p2">p: margin 24px 0</p>
+      </div></div>
+      <figcaption>The blue outline is the card. Grid lines are 10px apart.</figcaption>
+    </figure>
+    <div class="panel readout" id="readout"></div>
+  </div>
+  <script>
+    const stage = document.getElementById('stage');
+    const gap = (a, b) => Math.round(b.getBoundingClientRect().top - a.getBoundingClientRect().bottom);
+    function update() {
+      ['pad', 'root', 'flex'].forEach((k) => stage.classList.toggle(k, document.getElementById(k).checked));
+      document.getElementById('empty-div').hidden = !document.getElementById('empty').checked;
+      const card = document.getElementById('card'), h2 = document.getElementById('h2');
+      const p1 = document.getElementById('p1'), p2 = document.getElementById('p2');
+      const insideTop = Math.round(h2.getBoundingClientRect().top - card.getBoundingClientRect().top);
+      document.getElementById('readout').innerHTML = `
+        <p class="label">Measured</p>
+        <p>Card top → h2 top: <b>${insideTop}px</b>${insideTop <= 1 ? ' <span class="bad">(h2 margin escaped the card)</span>' : ''}</p>
+        <p>h2 → first p: <b>${gap(h2, p1)}px</b> ${gap(h2, p1) === 24 ? '(max of 16 and 24)' : ''}</p>
+        <p>first p → second p: <b>${gap(p1, p2)}px</b></p>`;
+    }
+    document.querySelectorAll('input').forEach((el) => el.addEventListener('change', update));
+    update();
+  </script>
+</body>
+</html>

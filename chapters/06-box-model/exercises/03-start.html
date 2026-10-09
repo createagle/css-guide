@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 6-3 · Start: A Quote That Breaks in Arabic</title>
+  <style>
+    .pair { display: grid; gap: 16px; width: 360px; max-width: 100%; }
+    .quote {
+      margin: 0;
+      padding: 12px 16px 12px 20px;
+      border-left: 4px solid var(--accent);
+      border-radius: 0 8px 8px 0;
+      background: var(--surface);
+      text-align: left;
+    }
+    .quote p { margin: 0 0 6px; font-size: 1.1rem; }
+    .quote footer { color: var(--muted); font-size: 0.9rem; }
+  </style>
+</head>
+<body class="demo">
+  <div class="stage">
+  <div class="pair">
+    <blockquote class="quote" lang="en">
+      <p>Good design is as little design as possible.</p>
+      <footer>Dieter Rams</footer>
+    </blockquote>
+    <blockquote class="quote" lang="ar" dir="rtl">
+      <p>التصميم الجيد هو أقل قدر ممكن من التصميم.</p>
+      <footer>ديتر رامز</footer>
+    </blockquote>
+  </div>
+  </div>
+</body>
+</html>

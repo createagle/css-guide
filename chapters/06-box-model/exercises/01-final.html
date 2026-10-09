@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Exercise 6-1 · Final: Two Halves That Fit</title>
+  <style>
+    /* No shared stylesheet here: the browser default box-sizing is part of the exercise */
+    :root { color-scheme: light dark; }
+    body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 16px; font: 15px/1.5 system-ui, sans-serif; }
+    /* width now includes padding and border */
+    *, *::before, *::after { box-sizing: border-box; }
+    .row { display: flex; flex-wrap: wrap; width: 560px; max-width: 100%; outline: 2px dashed GrayText; }
+    .col { width: 50%; padding: 16px 20px; border: 2px solid #2563eb; border-radius: 8px; }
+    .col h2 { margin: 0 0 4px; font-size: 1.1rem; }
+    .col p { margin: 0; }
+  </style>
+</head>
+<body>
+  <div class="row">
+    <section class="col"><h2>Plan</h2><p>Pick a route and a date.</p></section>
+    <section class="col"><h2>Pack</h2><p>Water, snacks, a warm layer.</p></section>
+  </div>
+</body>
+</html>

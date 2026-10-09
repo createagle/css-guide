@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>6-1 Box Model Inspector</title>
+  <style>
+    :root { --c-content: oklch(75% 0.1 240 / .55); --c-padding: oklch(80% 0.12 145 / .55); --c-border: oklch(85% 0.14 90); --c-margin: oklch(80% 0.12 55 / .45); }
+    .stage { width: min(900px, 100%); align-items: center; }
+    .arena { flex: 1 1 400px; min-height: 320px; display: grid; place-items: center; border: 1px dashed var(--border); border-radius: 12px; overflow: auto; padding: 12px; }
+    /* The margin can't be painted, so a wrapper with the same padding shows it */
+    .margin-vis { background: var(--c-margin); padding: var(--m); }
+    .target {
+      box-sizing: var(--bs);
+      width: var(--w);
+      padding: var(--p);
+      border: var(--b) solid var(--c-border);
+      /* content box and padding box painted in different colors */
+      background: linear-gradient(var(--c-content), var(--c-content)) content-box, var(--c-padding);
+      color: var(--fg);
+      font-size: 14px;
+    }
+    .readout { flex: 0 1 300px; }
+    .readout table { border-collapse: collapse; font: 13px var(--mono); width: 100%; }
+    .readout td { padding: 4px 6px; border-bottom: 1px solid var(--border); }
+    .readout td:last-child { text-align: end; font-weight: 600; }
+    .key { display: inline-block; width: .9em; height: .9em; border-radius: 2px; vertical-align: -.1em; margin-right: 4px; }
+  </style>
+</head>
+<body class="demo">
+  <div class="controls">
+    <label class="control">box-sizing
+      <select id="bs"><option>content-box</option><option>border-box</option></select>
+    </label>
+    <label class="control">width <input type="range" id="w" min="80" max="300" value="200"> <output id="w-out"></output></label>
+    <label class="control">padding <input type="range" id="p" min="0" max="40" value="20"> <output id="p-out"></output></label>
+    <label class="control">border <input type="range" id="b" min="0" max="20" value="6"> <output id="b-out"></output></label>
+    <label class="control">margin <input type="range" id="m" min="0" max="40" value="16"> <output id="m-out"></output></label>
+  </div>
+  <div class="stage">
+    <div class="arena">
+      <div class="margin-vis"><div class="target" id="target">The content box holds this text.</div></div>
+    </div>
+    <div class="readout">
+      <table>
+        <tr><td><span class="key" style="background: var(--c-content)"></span>content width</td><td id="r-content"></td></tr>
+        <tr><td><span class="key" style="background: var(--c-padding)"></span>+ padding × 2</td><td id="r-padding"></td></tr>
+        <tr><td><span class="key" style="background: var(--c-border)"></span>+ border × 2</td><td id="r-border"></td></tr>
+        <tr><td>= border box (offsetWidth)</td><td id="r-box"></td></tr>
+        <tr><td><span class="key" style="background: var(--c-margin)"></span>+ margin × 2</td><td id="r-margin"></td></tr>
+        <tr><td>= space taken in layout</td><td id="r-total"></td></tr>
+      </table>
+      <pre class="code" id="css" style="margin-top: 12px"></pre>
+    </div>
+  </div>
+  <script>
+    const ids = ['w', 'p', 'b', 'm'];
+    const target = document.getElementById('target');
+    function update() {
+      const v = Object.fromEntries(ids.map((id) => [id, Number(document.getElementById(id).value)]));
+      const bs = document.getElementById('bs').value;
+      ids.forEach((id) => { document.getElementById(id + '-out').value = v[id] + 'px'; document.documentElement.style.setProperty('--' + id, v[id] + 'px'); });
+      document.documentElement.style.setProperty('--bs', bs);
+      const box = target.offsetWidth;
+      const content = box - 2 * v.p - 2 * v.b;
+      document.getElementById('r-content').textContent = content + 'px';
+      document.getElementById('r-padding').textContent = 2 * v.p + 'px';
+      document.getElementById('r-border').textContent = 2 * v.b + 'px';
+      document.getElementById('r-box').textContent = box + 'px';
+      document.getElementById('r-margin').textContent = 2 * v.m + 'px';
+      document.getElementById('r-total').textContent = box + 2 * v.m + 'px';
+      document.getElementById('css').textContent =
+        `.target {\n  box-sizing: ${bs};\n  width: ${v.w}px;\n  padding: ${v.p}px;\n  border: ${v.b}px solid;\n  margin: ${v.m}px;\n}`;
+    }
+    document.querySelectorAll('.controls input, .controls select').forEach((el) => el.addEventListener('input', update));
+    update();
+  </script>
+</body>
+</html>
