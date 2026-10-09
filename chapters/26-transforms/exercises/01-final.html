@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 26-1 (final): Tilt and Lift</title>
+  <style>
+    .cards { display: grid; grid-template-columns: repeat(3, minmax(0, 160px)); gap: 20px; padding: 20px; }
+    .card { padding: 16px; border: 1px solid var(--border); border-radius: 12px; background: var(--bg); box-shadow: 0 2px 6px oklch(0% 0 0 / 0.08); }
+    .card h2 { margin: 0 0 4px; font-size: 16px; }
+    .card p { margin: 0; font-size: 14px; color: var(--muted); }
+    .featured { border-color: var(--accent); }
+    .card { transition: translate 0.2s ease-out, rotate 0.2s ease-out; }
+    /* Each property can be set on its own, so these no longer overwrite each other */
+    .featured { rotate: -3deg; }
+    .card:hover { translate: 0 -6px; }
+    @media (prefers-reduced-motion: reduce) {
+      .card:hover { translate: none; }
+    }
+  </style>
+</head>
+<body class="demo">
+  <div class="cards">
+    <article class="card"><h2>Lake Loop</h2><p>14 km · easy</p></article>
+    <article class="card featured"><h2>North Ridge</h2><p>Walk of the month</p></article>
+    <article class="card"><h2>Old Mill</h2><p>6 km · easy</p></article>
+  </div>
+</body>
+</html>

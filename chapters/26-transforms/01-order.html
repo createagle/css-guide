@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>26-1 Transform Order</title>
+  <style>
+    .stage { width: min(980px, 100%); display: grid; grid-template-columns: repeat(auto-fit, minmax(min(290px, 100%), 1fr)); gap: 16px; }
+    .field { position: relative; block-size: 240px; border-radius: 8px; overflow: hidden;
+      /* A 20px grid to read distances against */
+      background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 20px 20px; }
+    .ghost, .shape { position: absolute; inset-block-start: 80px; inset-inline-start: 40px; inline-size: 80px; block-size: 80px; border-radius: 6px; }
+    /* Where the box sits in the layout: transforms never move this */
+    .ghost { border: 2px dashed var(--muted); }
+    .shape { display: grid; place-items: center; background: color-mix(in oklch, var(--accent) 75%, transparent); color: white; font: 700 14px system-ui, sans-serif; transform-origin: var(--origin); }
+    /* The box's own x axis, so rotation of the coordinate system is visible */
+    .shape::after { content: ""; position: absolute; inset-inline-start: 50%; inset-block-start: 50%; inline-size: 56px; block-size: 2px; background: white; }
+    .a .shape { transform: translate(var(--x), 0) rotate(var(--r)) scale(var(--s)); }
+    .b .shape { transform: scale(var(--s)) rotate(var(--r)) translate(var(--x), 0); }
+    .c .shape { translate: var(--x) 0; rotate: var(--r); scale: var(--s); }
+    .panel pre.code { margin: 10px 0 0; }
+  </style>
+</head>
+<body class="demo">
+  <div class="controls">
+    <label class="control">translate <input type="range" id="x" min="0" max="160" step="10" value="120"> <output id="x-out">120px</output></label>
+    <label class="control">rotate <input type="range" id="r" min="0" max="180" step="15" value="45"> <output id="r-out">45deg</output></label>
+    <label class="control">scale <input type="range" id="s" min="0.5" max="1.5" step="0.1" value="1"> <output id="s-out">1</output></label>
+    <label class="control">transform-origin
+      <select id="origin"><option>center</option><option>top left</option><option>bottom right</option></select>
+    </label>
+  </div>
+  <div class="stage" id="stage">
+    <section class="panel a">
+      <p class="label">translate → rotate → scale</p>
+      <div class="field"><div class="ghost"></div><div class="shape">A</div></div>
+      <pre class="code" id="code-a"></pre>
+    </section>
+    <section class="panel b">
+      <p class="label">scale → rotate → translate</p>
+      <div class="field"><div class="ghost"></div><div class="shape">B</div></div>
+      <pre class="code" id="code-b"></pre>
+    </section>
+    <section class="panel c">
+      <p class="label">individual properties</p>
+      <div class="field"><div class="ghost"></div><div class="shape">C</div></div>
+      <pre class="code" id="code-c"></pre>
+    </section>
+  </div>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const stage = $('stage');
+    function update() {
+      const x = $('x').value + 'px', r = $('r').value + 'deg', s = $('s').value, o = $('origin').value;
+      stage.style.setProperty('--x', x);
+      stage.style.setProperty('--r', r);
+      stage.style.setProperty('--s', s);
+      stage.style.setProperty('--origin', o);
+      $('x-out').textContent = x; $('r-out').textContent = r; $('s-out').textContent = s;
+      $('code-a').textContent = `transform: translate(${x}, 0) rotate(${r}) scale(${s});`;
+      $('code-b').textContent = `transform: scale(${s}) rotate(${r}) translate(${x}, 0);`;
+      $('code-c').textContent = `translate: ${x} 0;\nrotate: ${r};\nscale: ${s};`;
+    }
+    for (const id of ['x', 'r', 's', 'origin']) $(id).addEventListener('input', update);
+    update();
+  </script>
+</body>
+</html>

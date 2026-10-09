@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>26-2 A 3D Flip Card</title>
+  <style>
+    .stage { width: min(760px, 100%); flex-direction: column; flex-wrap: nowrap; align-items: center; gap: 20px; }
+    /* The viewer: perspective sets how far away the eye is */
+    .scene { perspective: var(--p, 800px); }
+    .card {
+      position: relative;
+      inline-size: min(320px, 80vw);
+      block-size: 200px;
+      /* Children keep their own 3D positions instead of being flattened */
+      transform-style: preserve-3d;
+      transition: rotate 0.7s ease-in-out;
+    }
+    .card.flipped { rotate: var(--axis, y) 180deg; }
+    .face {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-content: center;
+      gap: 6px;
+      padding: 20px;
+      border-radius: 16px;
+      text-align: center;
+      backface-visibility: var(--backface, hidden);
+    }
+    .front { background: linear-gradient(135deg, oklch(60% 0.15 250), oklch(55% 0.16 290)); color: white; }
+    /* The back face starts turned around, so it faces the viewer after the flip */
+    .back { background: var(--surface); color: var(--fg); border: 1px solid var(--border); rotate: var(--axis, y) 180deg; }
+    .face strong { font-size: 22px; }
+    .face span { font-size: 14px; opacity: 0.85; }
+    @media (prefers-reduced-motion: reduce) {
+      .card { transition-duration: 0.01s; }
+    }
+  </style>
+</head>
+<body class="demo">
+  <div class="controls">
+    <button type="button" id="flip" aria-pressed="false">Flip the card</button>
+    <label class="control">perspective <input type="range" id="p" min="200" max="2000" step="100" value="800"> <output id="p-out">800px</output></label>
+    <label class="control">axis <select id="axis"><option value="y">y</option><option value="x">x</option></select></label>
+    <label class="control"><input type="checkbox" id="bf"> backface-visibility: visible</label>
+  </div>
+  <div class="stage" id="stage">
+    <div class="scene">
+      <div class="card" id="card">
+        <div class="face front"><strong>Lake Loop</strong><span>14 km · 5 hours</span></div>
+        <div class="face back"><strong>Bring</strong><span>Water, a map and a warm layer</span></div>
+      </div>
+    </div>
+    <pre class="code" id="code"></pre>
+  </div>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const stage = $('stage');
+    function update() {
+      stage.style.setProperty('--p', $('p').value + 'px');
+      stage.style.setProperty('--axis', $('axis').value);
+      stage.style.setProperty('--backface', $('bf').checked ? 'visible' : 'hidden');
+      $('p-out').textContent = $('p').value + 'px';
+      $('code').textContent = `.scene { perspective: ${$('p').value}px; }\n.card { transform-style: preserve-3d; }\n.card.flipped { rotate: ${$('axis').value} 180deg; }\n.face { backface-visibility: ${$('bf').checked ? 'visible' : 'hidden'}; }`;
+    }
+    for (const id of ['p', 'axis', 'bf']) $(id).addEventListener('input', update);
+    $('flip').addEventListener('click', () => {
+      const on = $('card').classList.toggle('flipped');
+      $('flip').setAttribute('aria-pressed', on);
+    });
+    update();
+  </script>
+</body>
+</html>
