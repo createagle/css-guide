@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>17-2 Mobile-first Layout</title>
+  <style>
+    .controls { max-width: 900px; }
+    .stage { width: 100%; flex-direction: column; align-items: center; }
+    .frame { inline-size: calc(var(--w) * 1px); max-inline-size: 100%; block-size: 460px; border: 2px solid var(--border); border-radius: 12px; background: var(--bg); }
+    .active { font: 13px var(--mono); color: var(--muted); margin: 0; }
+    .active b { color: var(--good); font-weight: 600; }
+  </style>
+</head>
+<body class="demo">
+  <div class="controls">
+    <label class="control">viewport width <input type="range" id="w" min="320" max="1200" step="10" value="360"> <output id="w-out"></output></label>
+  </div>
+  <div class="stage" id="stage">
+    <!-- The layout lives in its own document, so its media queries see the frame's width, not the window's -->
+    <iframe class="frame" id="frame" title="Mobile-first page layout"></iframe>
+    <p class="active" id="active"></p>
+  </div>
+  <template id="page">
+    <!doctype html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="stylesheet" href="../../assets/style.css">
+      <style>
+        body { margin: 0; }
+        .page { display: grid; gap: 12px; padding: 12px; }
+        .page > * { padding: 12px; border-radius: 8px; background: var(--surface); border: 1px solid var(--border); }
+        .page h1 { margin: 0; font-size: 18px; }
+        .page p { margin: 0; font-size: 14px; color: var(--muted); }
+        .page nav ul { display: flex; flex-wrap: wrap; gap: 4px 12px; margin: 0; padding: 0; list-style: none; font-size: 14px; }
+        /* Mobile first: everything above is the one-column layout.
+           Each query only adds what changes at that width. */
+        @media (width >= 40em) {
+          .page { grid-template-columns: 12em 1fr; }
+          .page header, .page footer { grid-column: 1 / -1; }
+          .page nav ul { flex-direction: column; }
+        }
+        @media (width >= 64em) {
+          .page { grid-template-columns: 12em 1fr 14em; max-inline-size: 72em; margin-inline: auto; }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="page">
+        <header><h1>Trail Journal</h1></header>
+        <nav aria-label="Main"><ul><li><a href="#">Trails</a></li><li><a href="#">Maps</a></li><li><a href="#">Gear</a></li><li><a href="#">About</a></li></ul></nav>
+        <main><p>Main content comes first in the HTML after the navigation. On a phone it fills the whole width; from 40em the navigation moves into a sidebar; from 64em a third column appears for related links.</p></main>
+        <aside><p>Related: weather, huts, and trail conditions.</p></aside>
+        <footer><p>© Trail Journal</p></footer>
+      </div>
+    </body>
+    </html>
+  </template>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const frame = $('frame');
+    // srcdoc documents resolve relative URLs against this page, so the shared stylesheet still loads
+    frame.srcdoc = $('page').innerHTML;
+    const queries = ['(width >= 40em)', '(width >= 64em)'];
+    function report() {
+      const win = frame.contentWindow;
+      if (!win || !win.document.body) return;
+      $('active').innerHTML = `frame: ${win.innerWidth}px · ` + queries.map((q) => win.matchMedia(q).matches ? `<b>${q} ✓</b>` : `${q} ✗`).join(' · ');
+    }
+    function update() {
+      $('stage').style.setProperty('--w', $('w').value);
+      $('w-out').textContent = $('w').value + 'px';
+      requestAnimationFrame(report);
+    }
+    frame.addEventListener('load', () => { frame.contentWindow.addEventListener('resize', report); report(); });
+    $('w').addEventListener('input', update);
+    update();
+  </script>
+</body>
+</html>

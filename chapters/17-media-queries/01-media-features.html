@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>17-1 Live Media Features</title>
+  <style>
+    .stage { width: min(760px, 100%); flex-direction: column; align-items: stretch; }
+    table { inline-size: 100%; border-collapse: collapse; font-size: 14px; }
+    th, td { padding: 7px 10px; border-block-end: 1px solid var(--border); text-align: start; vertical-align: top; }
+    thead th { font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+    td:first-child { font-family: var(--mono); font-size: 13px; white-space: nowrap; }
+    td.value { font-weight: 600; }
+    td.query { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+    tr.changed td { animation: flash 1s; }
+    @keyframes flash { from { background: color-mix(in oklch, var(--accent) 25%, transparent); } }
+    @media (prefers-reduced-motion: reduce) { tr.changed td { animation: none; } }
+    /* A swatch styled only by media queries: it reacts without any script */
+    .swatch { display: flex; gap: 12px; align-items: center; padding: 12px; border-radius: 10px; border: 1px solid var(--border); }
+    .swatch i { inline-size: 40px; block-size: 40px; border-radius: 8px; background: oklch(70% 0.15 250); flex: none; }
+    .swatch span::before { content: "Viewport narrower than 40em"; }
+    .swatch span::after { content: " · light color scheme"; }
+    @media (width >= 40em) {
+      .swatch i { border-radius: 50%; }
+      .swatch span::before { content: "Viewport 40em or wider"; }
+    }
+    @media (prefers-color-scheme: dark) {
+      .swatch i { background: oklch(80% 0.12 80); }
+      .swatch span::after { content: " · dark color scheme"; }
+    }
+    @media (forced-colors: active) { .swatch i { background: CanvasText; } }
+  </style>
+</head>
+<body class="demo">
+  <div class="stage">
+    <div class="swatch"><i aria-hidden="true"></i><span></span></div>
+    <table>
+      <thead><tr><th scope="col">Feature</th><th scope="col">Current value</th><th scope="col">Matching query</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </div>
+  <script>
+    // Each discrete feature lists its possible values; the first one that matches is the current value
+    const discrete = {
+      'orientation': ['portrait', 'landscape'],
+      'hover': ['hover', 'none'],
+      'any-hover': ['hover', 'none'],
+      'pointer': ['fine', 'coarse', 'none'],
+      'any-pointer': ['fine', 'coarse', 'none'],
+      'prefers-color-scheme': ['dark', 'light'],
+      'prefers-reduced-motion': ['reduce', 'no-preference'],
+      'prefers-contrast': ['more', 'less', 'custom', 'no-preference'],
+      'forced-colors': ['active', 'none'],
+      'prefers-reduced-transparency': ['reduce', 'no-preference'],
+      'color-gamut': ['rec2020', 'p3', 'srgb'],
+      'dynamic-range': ['high', 'standard'],
+      'scripting': ['enabled', 'initial-only', 'none'],
+      'display-mode': ['fullscreen', 'standalone', 'minimal-ui', 'browser'],
+      'update': ['fast', 'slow', 'none']
+    };
+    const rows = document.getElementById('rows');
+    const cells = {};
+    function addRow(name) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${name}</td><td class="value"></td><td class="query"></td>`;
+      rows.append(tr);
+      cells[name] = tr;
+    }
+    ['width', 'height', 'aspect-ratio', 'resolution', ...Object.keys(discrete)].forEach(addRow);
+    function set(name, value, query) {
+      const tr = cells[name];
+      const v = tr.querySelector('.value');
+      if (v.textContent && v.textContent !== value) { tr.classList.remove('changed'); void tr.offsetWidth; tr.classList.add('changed'); }
+      v.textContent = value;
+      tr.querySelector('.query').textContent = query;
+    }
+    function update() {
+      const w = innerWidth, h = innerHeight;
+      const em = w / parseFloat(getComputedStyle(document.documentElement).fontSize);
+      set('width', `${w}px (${em.toFixed(1)}em)`, `(width >= ${Math.floor(em)}em)`);
+      set('height', `${h}px`, `(height <= ${h}px)`);
+      set('aspect-ratio', `${w}/${h} ≈ ${(w / h).toFixed(2)}`, w >= h ? '(aspect-ratio >= 1)' : '(aspect-ratio < 1)');
+      set('resolution', `${devicePixelRatio}dppx`, `(resolution >= ${devicePixelRatio}dppx)`);
+      for (const [name, values] of Object.entries(discrete)) {
+        const hit = values.find((v) => matchMedia(`(${name}: ${v})`).matches);
+        // A feature the browser does not know never matches any value
+        const known = matchMedia(`(${name})`).media !== 'not all';
+        set(name, hit ?? (known ? '(none matched)' : 'not supported'), hit ? `(${name}: ${hit})` : '—');
+      }
+    }
+    addEventListener('resize', update);
+    // Re-check when any preference changes (e.g. switching the OS to dark mode)
+    for (const [name, values] of Object.entries(discrete)) values.forEach((v) => matchMedia(`(${name}: ${v})`).addEventListener('change', update));
+    update();
+  </script>
+</body>
+</html>

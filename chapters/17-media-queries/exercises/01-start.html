@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 17-1 (start): Mobile First</title>
+  <style>
+    .site { inline-size: min(960px, 100%); }
+    .site > * { padding: 12px; border-radius: 10px; background: var(--surface); border: 1px solid var(--border); }
+    .site h1, .site h2 { margin: 0 0 6px; font-size: 16px; }
+    .site p { margin: 0; font-size: 14px; color: var(--muted); }
+    .features { margin: 0; padding: 0; list-style: none; }
+    .features li { padding: 10px; border-radius: 8px; background: var(--bg); border: 1px solid var(--border); font-size: 14px; }
+    /* Written for a wide screen only */
+    .site { display: grid; grid-template-columns: 220px 1fr; gap: 16px; }
+    .site header { grid-column: 1 / -1; }
+    .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  </style>
+</head>
+<body class="demo">
+  <div class="site">
+    <header><h1>Summit Club</h1><p>Guided walks in the northern hills.</p></header>
+    <nav aria-label="Main"><h2>Menu</h2><p><a href="#">Walks</a> · <a href="#">Guides</a> · <a href="#">Prices</a> · <a href="#">Contact</a></p></nav>
+    <main>
+      <h2>Why walk with us</h2>
+      <ul class="features">
+        <li>Small groups of eight people at most, so everyone keeps the same pace.</li>
+        <li>Local guides who know the weather, the plants and the history.</li>
+        <li>Transport from the station and back is included in the price.</li>
+      </ul>
+    </main>
+  </div>
+</body>
+</html>

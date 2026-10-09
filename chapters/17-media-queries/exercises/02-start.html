@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 17-2 (start): Hover-only Buttons</title>
+  <style>
+    .list { inline-size: min(420px, 100%); margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+    .card { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); }
+    .card h2 { margin: 0; font-size: 15px; }
+    .card p { margin: 0; font-size: 13px; color: var(--muted); }
+    .actions { display: flex; gap: 6px; }
+    .actions button { padding: 4px 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); color: var(--fg); cursor: pointer; }
+    /* Buttons only show up on hover */
+    .actions { opacity: 0; }
+    .card:hover .actions { opacity: 1; }
+  </style>
+</head>
+<body class="demo">
+  <ul class="list">
+    <li class="card">
+      <div><h2>Lake Loop</h2><p>Saturday · 6 km</p></div>
+      <div class="actions"><button type="button" aria-label="Edit Lake Loop">Edit</button><button type="button" aria-label="Delete Lake Loop">Delete</button></div>
+    </li>
+    <li class="card">
+      <div><h2>Pine Valley</h2><p>Sunday · 9 km</p></div>
+      <div class="actions"><button type="button" aria-label="Edit Pine Valley">Edit</button><button type="button" aria-label="Delete Pine Valley">Delete</button></div>
+    </li>
+    <li class="card">
+      <div><h2>North Ridge</h2><p>Next week · 12 km</p></div>
+      <div class="actions"><button type="button" aria-label="Edit North Ridge">Edit</button><button type="button" aria-label="Delete North Ridge">Delete</button></div>
+    </li>
+  </ul>
+</body>
+</html>

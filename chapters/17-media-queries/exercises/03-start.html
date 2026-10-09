@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 17-3 (start): A Print Stylesheet</title>
+  <style>
+    .article { inline-size: min(600px, 100%); }
+    .article header nav { display: flex; gap: 12px; padding: 8px 0 12px; border-block-end: 1px solid var(--border); font-size: 14px; }
+    .article h1 { margin: 16px 0 8px; font-size: 26px; }
+    .article h2 { margin: 20px 0 8px; font-size: 18px; }
+    .article p { margin: 0 0 12px; line-height: 1.6; }
+    .article figure { margin: 16px 0; }
+    .article .map { block-size: 160px; border-radius: 10px; background: linear-gradient(135deg in oklch, oklch(80% 0.08 150), oklch(60% 0.1 200)); }
+    .article figcaption { font-size: 13px; color: var(--muted); margin-top: 6px; }
+    .share { display: flex; gap: 8px; margin-top: 16px; }
+    .share button { padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--fg); }
+  </style>
+</head>
+<body class="demo">
+  <article class="article">
+    <header>
+      <nav aria-label="Main"><a href="#">Home</a><a href="#">Trails</a><a href="#">Maps</a></nav>
+      <h1>The North Ridge in One Day</h1>
+    </header>
+    <p>The North Ridge is the classic long walk of the region: twelve kilometres, almost nine hundred metres of ascent and views over three valleys. Print this page and take it with you; there is no phone signal on the ridge.</p>
+    <h2>Before you go</h2>
+    <p>Check the forecast from the <a href="https://www.example.org/weather">mountain weather service</a> the evening before. The last bus back leaves the village at six.</p>
+    <figure>
+      <div class="map" role="img" aria-label="Map of the ridge route"></div>
+      <figcaption>The route runs from the village to the summit and back along the ridge.</figcaption>
+    </figure>
+    <h2>The route</h2>
+    <p>Follow the red and white stripes from the church. After the bridge, keep left and follow the river; the steep part starts at the old mill and ends at the first cairn.</p>
+    <div class="share"><button type="button">Share</button><button type="button">Save</button></div>
+  </article>
+</body>
+</html>
