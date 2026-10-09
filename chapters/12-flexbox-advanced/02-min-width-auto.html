@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>12-2 The min-width: auto Trap</title>
+  <style>
+    .stage { width: min(720px, 100%); flex-direction: column; align-items: stretch; }
+    .layout {
+      display: flex;
+      gap: 12px;
+      inline-size: 100%;
+      padding: 8px;
+      border: 2px dashed var(--accent);
+      border-radius: 10px;
+    }
+    .sidebar { flex: 0 0 140px; padding: 12px; border-radius: 8px; background: var(--surface); font-size: 14px; }
+    .main {
+      flex: 1;
+      padding: 12px;
+      border-radius: 8px;
+      background: color-mix(in oklch, var(--accent) 10%, var(--bg));
+      font-size: 14px;
+    }
+    .main.fixed { min-inline-size: 0; }
+    .main pre { margin: 8px 0 0; padding: 8px; background: var(--surface); border-radius: 6px; overflow: auto; font-size: 12px; }
+    /* break-word wraps the word but, unlike anywhere, does not lower the min-content width */
+    .main p { overflow-wrap: break-word; }
+    .wide { inline-size: 520px; block-size: 60px; border-radius: 6px; background: linear-gradient(90deg in oklch, #2563eb, #ec4899); margin-block-start: 8px; }
+    .readout { font: 13px var(--mono); margin: 0; }
+    .readout b { color: var(--bad); }
+    .readout .ok { color: var(--good); }
+  </style>
+</head>
+<body class="demo">
+  <div class="controls">
+    <label class="control">content in .main
+      <select id="content">
+        <option value="pre">a &lt;pre&gt; code block</option>
+        <option value="word">a very long word</option>
+        <option value="wide">a 520px wide box</option>
+      </select>
+    </label>
+    <label class="control">container width <input type="range" id="w" min="320" max="720" value="520"> <output id="w-out"></output></label>
+    <label class="control"><input type="checkbox" id="fix"> .main { min-width: 0 }</label>
+  </div>
+  <div class="stage">
+    <div class="layout" id="layout">
+      <aside class="sidebar">Sidebar<br>flex: 0 0 140px</aside>
+      <div class="main" id="main"></div>
+    </div>
+    <p class="readout" id="readout"></p>
+  </div>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const content = {
+      pre: '<strong>.main { flex: 1 }</strong><pre>const veryLongVariableName = await fetch("/api/trails?region=north&amp;sort=popular");</pre>',
+      word: '<strong>.main { flex: 1 }</strong><p>Supercalifragilisticexpialidocious_and_then_some_more_letters_that_never_break</p>',
+      wide: '<strong>.main { flex: 1 }</strong><div class="wide" role="img" aria-label="A wide box"></div>'
+    };
+    function update() {
+      $('main').innerHTML = content[$('content').value];
+      $('main').classList.toggle('fixed', $('fix').checked);
+      $('layout').style.inlineSize = $('w').value + 'px';
+      $('w-out').textContent = $('w').value + 'px';
+      const L = $('layout').getBoundingClientRect(), M = $('main').getBoundingClientRect();
+      const over = Math.round(M.right - (L.right - 10));
+      $('readout').innerHTML = over > 0
+        ? `.main is ${Math.round(M.width)}px wide and <b>overflows the container by ${over}px</b>`
+        : `.main is ${Math.round(M.width)}px wide and <span class="ok">fits inside the container</span>`;
+    }
+    document.querySelectorAll('input, select').forEach((el) => el.addEventListener('input', update));
+    update();
+  </script>
+</body>
+</html>

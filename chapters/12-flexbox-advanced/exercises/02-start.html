@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 12-2 (start): Three Equal Plans</title>
+  <style>
+    .plans { display: flex; gap: 12px; inline-size: min(760px, 100%); }
+    .plan {
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--bg);
+    }
+    .plan h2 { margin: 0 0 4px; font-size: 18px; }
+    .plan .price { font-size: 24px; font-weight: 700; margin: 0 0 8px; }
+    .plan ul { margin: 0 0 16px; padding-inline-start: 18px; color: var(--muted); font-size: 14px; }
+    .plan a { display: block; padding: 8px; border-radius: 8px; background: var(--accent); color: white; text-align: center; text-decoration: none; }
+  </style>
+</head>
+<body class="demo">
+  <div class="plans">
+    <article class="plan">
+      <h2>Free</h2><p class="price">$0</p>
+      <ul><li>3 saved trails</li></ul>
+      <a href="#">Start</a>
+    </article>
+    <article class="plan">
+      <h2>Pro</h2><p class="price">$12</p>
+      <ul><li>Unlimited saved trails and offline maps for every region</li><li>Weather alerts</li><li>Elevation profiles</li></ul>
+      <a href="#">Upgrade</a>
+    </article>
+    <article class="plan">
+      <h2>Team</h2><p class="price">$30</p>
+      <ul><li>Everything in Pro</li><li>Shared lists</li></ul>
+      <a href="#">Contact us</a>
+    </article>
+  </div>
+</body>
+</html>

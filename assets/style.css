@@ -80,7 +80,8 @@ pre.code {
 .bad { color: var(--bad); }
 
 /* Index page */
-main { max-width: 880px; margin: 0 auto; padding: 24px 16px 64px; }
+/* Scoped to the index page so demo pages can use <main> freely */
+body:not(.demo) > main { max-width: 880px; margin: 0 auto; padding: 24px 16px 64px; }
 h1 { font-size: 1.6rem; margin: 0 0 4px; }
 .chapters { list-style: none; padding: 0; }
 .chapters li { padding: 8px 0; border-bottom: 1px solid var(--border); }

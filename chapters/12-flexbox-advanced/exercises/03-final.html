@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 12-3 (final): Long File Names</title>
+  <style>
+    .files { inline-size: min(380px, 100%); margin: 0; padding: 0; list-style: none; border: 1px solid var(--border); border-radius: 10px; }
+    .file { display: flex; align-items: center; gap: 10px; padding: 10px 12px; }
+    .file + .file { border-block-start: 1px solid var(--border); }
+    .file .icon { flex: none; inline-size: 28px; block-size: 34px; border-radius: 4px; background: oklch(70% 0.14 250); }
+    .file .name {
+      flex: 1;
+      /* Allow the item to shrink below its longest word */
+      min-inline-size: 0;
+      font-size: 14px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    /* The size never shrinks or wraps */
+    .file .size { flex: none; font: 12px var(--mono); color: var(--muted); }
+  </style>
+</head>
+<body class="demo">
+  <ul class="files">
+    <li class="file"><span class="icon" aria-hidden="true"></span><span class="name">notes.txt</span><span class="size">2 KB</span></li>
+    <li class="file"><span class="icon" aria-hidden="true"></span><span class="name" title="trail-map_north-ridge_2025-final-version.gpx">trail-map_north-ridge_2025-final-version.gpx</span><span class="size">184 KB</span></li>
+    <li class="file"><span class="icon" aria-hidden="true"></span><span class="name" title="IMG_20250914_083215_HDR_panorama.jpg">IMG_20250914_083215_HDR_panorama.jpg</span><span class="size">6.2 MB</span></li>
+  </ul>
+</body>
+</html>

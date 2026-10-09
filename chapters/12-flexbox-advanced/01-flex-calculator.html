@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>12-1 Free Space Calculator</title>
+  <style>
+    .stage { width: min(900px, 100%); flex-direction: column; align-items: stretch; }
+    .track { padding: 6px; border: 2px dashed var(--accent); border-radius: 8px; background: var(--surface); }
+    .row { display: flex; gap: 0; inline-size: calc(var(--w) * 1px); max-inline-size: 100%; }
+    .item {
+      /* Let the pure grow/shrink arithmetic show: no content-based minimum */
+      min-inline-size: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      /* No inline padding or border: flex-shrink weighs the content-box size, which then equals flex-basis */
+      padding: 10px 0;
+      text-indent: 6px;
+      font: 13px var(--mono);
+      color: oklch(20% 0.03 260);
+      box-shadow: inset -2px 0 var(--bg);
+    }
+    .item:nth-child(1) { background: oklch(80% 0.1 250); }
+    .item:nth-child(2) { background: oklch(82% 0.12 150); }
+    .item:nth-child(3) { background: oklch(85% 0.11 80); }
+    table { inline-size: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { padding: 6px 8px; border-block-end: 1px solid var(--border); text-align: end; }
+    th:first-child, td:first-child { text-align: start; }
+    td input { inline-size: 64px; }
+    td.formula { font-family: var(--mono); font-size: 12px; color: var(--muted); text-align: start; }
+    .summary { font-size: 14px; margin: 0; }
+  </style>
+</head>
+<body class="demo">
+  <div class="controls">
+    <label class="control">container width <input type="range" id="w" min="200" max="860" value="600"> <output id="w-out"></output></label>
+  </div>
+  <div class="stage">
+    <div class="track"><div class="row" id="row"><div class="item">A</div><div class="item">B</div><div class="item">C</div></div></div>
+    <p class="summary" id="summary"></p>
+    <div class="panel">
+      <table>
+        <thead><tr><th>Item</th><th>flex-basis</th><th>flex-grow</th><th>flex-shrink</th><th>Calculation</th><th>Computed</th><th>Measured</th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+  </div>
+  <script>
+    const items = [
+      { name: 'A', basis: 100, grow: 1, shrink: 1 },
+      { name: 'B', basis: 150, grow: 2, shrink: 1 },
+      { name: 'C', basis: 50, grow: 1, shrink: 3 }
+    ];
+    const tbody = document.getElementById('rows');
+    const els = [...document.querySelectorAll('.item')];
+    items.forEach((it, i) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${it.name}</td>
+        <td><input type="number" min="0" max="600" step="10" value="${it.basis}" data-k="basis" aria-label="${it.name} flex-basis"></td>
+        <td><input type="number" min="0" max="5" step="1" value="${it.grow}" data-k="grow" aria-label="${it.name} flex-grow"></td>
+        <td><input type="number" min="0" max="5" step="1" value="${it.shrink}" data-k="shrink" aria-label="${it.name} flex-shrink"></td>
+        <td class="formula"></td><td class="calc"></td><td class="meas"></td>`;
+      tr.querySelectorAll('input').forEach((inp) => inp.addEventListener('input', () => { it[inp.dataset.k] = Number(inp.value) || 0; update(); }));
+      it.tr = tr;
+      tbody.append(tr);
+    });
+
+    function update() {
+      const W = Number(document.getElementById('w').value);
+      document.getElementById('w-out').textContent = W + 'px';
+      const row = document.getElementById('row');
+      row.style.setProperty('--w', W);
+      items.forEach((it, i) => { els[i].style.flex = `${it.grow} ${it.shrink} ${it.basis}px`; els[i].textContent = `${it.name}: flex ${it.grow} ${it.shrink} ${it.basis}px`; });
+
+      const free = row.clientWidth - items.reduce((s, it) => s + it.basis, 0);
+      const growSum = items.reduce((s, it) => s + it.grow, 0);
+      const scaledSum = items.reduce((s, it) => s + it.shrink * it.basis, 0);
+      document.getElementById('summary').innerHTML = free >= 0
+        ? `Free space = ${row.clientWidth} − (${items.map((it) => it.basis).join(' + ')}) = <b>${free}px</b>, shared by flex-grow (total ${growSum}).`
+        : `Free space = ${row.clientWidth} − (${items.map((it) => it.basis).join(' + ')}) = <b>${free}px</b>: the overflow is taken back in proportion to flex-shrink × flex-basis (total ${scaledSum}).`;
+      items.forEach((it, i) => {
+        let size, f;
+        if (free >= 0) {
+          const share = growSum ? free * it.grow / growSum : 0;
+          size = it.basis + share;
+          f = `${it.basis} + ${free} × ${it.grow}/${growSum}`;
+        } else {
+          const loss = scaledSum ? -free * it.shrink * it.basis / scaledSum : 0;
+          size = Math.max(0, it.basis - loss);
+          f = `${it.basis} − ${-free} × ${it.shrink * it.basis}/${scaledSum}`;
+        }
+        it.tr.querySelector('.formula').textContent = f;
+        it.tr.querySelector('.calc').textContent = size.toFixed(1);
+        it.tr.querySelector('.meas').textContent = els[i].getBoundingClientRect().width.toFixed(1);
+      });
+    }
+    document.getElementById('w').addEventListener('input', update);
+    addEventListener('resize', update);
+    update();
+  </script>
+</body>
+</html>
