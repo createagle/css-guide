@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 30-3 (start): Duotone Photos</title>
+  <style>
+    .cards { display: flex; flex-wrap: wrap; gap: 16px; }
+    .duo { margin: 0; inline-size: 220px; border-radius: 12px; overflow: hidden; }
+    .duo img { display: block; inline-size: 100%; block-size: auto; }
+    .duo figcaption { padding: 8px 12px; font-size: 14px; background: var(--surface); }
+    .blue { background: oklch(55% 0.17 255); }
+    .pink { background: oklch(62% 0.2 350); }
+    .green { background: oklch(58% 0.14 160); }
+  </style>
+</head>
+<body class="demo">
+  <div class="cards">
+    <figure class="duo blue"><img src="../scene.svg" alt="Sunset over a lake" width="800" height="500"><figcaption>Lake</figcaption></figure>
+    <figure class="duo pink"><img src="../scene.svg" alt="Sunset over a lake" width="800" height="500"><figcaption>Dusk</figcaption></figure>
+    <figure class="duo green"><img src="../scene.svg" alt="Sunset over a lake" width="800" height="500"><figcaption>Valley</figcaption></figure>
+  </div>
+</body>
+</html>

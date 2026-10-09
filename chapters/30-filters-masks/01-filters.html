@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>30-1 Filter Workbench</title>
+  <style>
+    .stage { width: min(980px, 100%); display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 20px; align-items: start; }
+    @media (width < 760px) { .stage { grid-template-columns: 1fr; } }
+    .photo { position: relative; margin: 0; border-radius: 12px; overflow: hidden; isolation: isolate; }
+    .photo img { display: block; inline-size: 100%; block-size: auto; filter: var(--filter, none); }
+    /* A caption that blurs whatever is behind it */
+    .stage .glass {
+      position: absolute;
+      inset: auto 16px 16px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      margin: 0;
+      color: white;
+      font-size: 14px;
+      text-align: start;
+      background: oklch(20% 0.02 260 / 0.4);
+      backdrop-filter: var(--backdrop, none);
+    }
+    /* Without backdrop-filter, a darker panel keeps the text readable */
+    @supports not (backdrop-filter: blur(1px)) {
+      .stage .glass { background: oklch(20% 0.02 260 / 0.7); }
+    }
+    .glass strong { display: block; font-size: 18px; }
+    /* A coloured shape blended with the photo underneath */
+    .blend { position: absolute; inset-block-start: 16px; inset-inline-start: 16px; inline-size: 34%; aspect-ratio: 1; border-radius: 50%; background: oklch(70% 0.2 330); mix-blend-mode: var(--blend, normal); }
+    .sliders { display: grid; gap: 8px; }
+    .sliders label { display: grid; grid-template-columns: 9em 1fr 4.5em; gap: 8px; align-items: center; font-size: 13px; }
+    .sliders output { font: 12px var(--mono); text-align: end; }
+    .sliders fieldset { margin: 0; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; display: grid; gap: 8px; }
+    .sliders legend { padding: 0 4px; font-weight: 600; font-size: 13px; }
+  </style>
+</head>
+<body class="demo">
+  <div class="stage">
+    <div>
+      <figure class="photo" id="photo">
+        <img src="scene.svg" alt="Sunset over a lake with mountains" width="800" height="500">
+        <div class="blend" aria-hidden="true"></div>
+        <figcaption class="glass"><strong>Lake at dusk</strong>The caption blurs the photo behind it.</figcaption>
+      </figure>
+      <pre class="code" id="code"></pre>
+    </div>
+    <form class="sliders" id="form">
+      <fieldset>
+        <legend>filter (on the photo)</legend>
+        <label>blur <input type="range" name="blur" min="0" max="10" value="0" data-unit="px"><output></output></label>
+        <label>brightness <input type="range" name="brightness" min="0" max="200" value="100" data-unit="%"><output></output></label>
+        <label>contrast <input type="range" name="contrast" min="0" max="200" value="100" data-unit="%"><output></output></label>
+        <label>grayscale <input type="range" name="grayscale" min="0" max="100" value="0" data-unit="%"><output></output></label>
+        <label>hue-rotate <input type="range" name="hue-rotate" min="0" max="360" value="0" data-unit="deg"><output></output></label>
+        <label>saturate <input type="range" name="saturate" min="0" max="300" value="100" data-unit="%"><output></output></label>
+        <label>sepia <input type="range" name="sepia" min="0" max="100" value="0" data-unit="%"><output></output></label>
+        <label>invert <input type="range" name="invert" min="0" max="100" value="0" data-unit="%"><output></output></label>
+      </fieldset>
+      <fieldset>
+        <legend>backdrop-filter (on the caption)</legend>
+        <label>blur <input type="range" name="b-blur" min="0" max="24" value="8" data-unit="px"><output></output></label>
+      </fieldset>
+      <fieldset>
+        <legend>mix-blend-mode (pink circle)</legend>
+        <label>mode
+          <select name="blend">
+            <option>normal</option><option>multiply</option><option>screen</option><option>overlay</option>
+            <option>darken</option><option>lighten</option><option>difference</option><option>color</option><option>luminosity</option>
+          </select><span></span>
+        </label>
+      </fieldset>
+      <button type="reset">Reset</button>
+    </form>
+  </div>
+  <script>
+    const form = document.getElementById('form');
+    const photo = document.getElementById('photo');
+    const defaults = { blur: 0, brightness: 100, contrast: 100, grayscale: 0, 'hue-rotate': 0, saturate: 100, sepia: 0, invert: 0 };
+    function update() {
+      const parts = [];
+      for (const input of form.querySelectorAll('fieldset:first-of-type input')) {
+        const v = input.value + input.dataset.unit;
+        input.nextElementSibling.textContent = v;
+        // Only list the functions that differ from their neutral value
+        if (+input.value !== defaults[input.name]) parts.push(`${input.name}(${v})`);
+      }
+      const filter = parts.join(' ') || 'none';
+      const b = form.elements['b-blur'];
+      b.nextElementSibling.textContent = b.value + 'px';
+      const backdrop = +b.value ? `blur(${b.value}px)` : 'none';
+      const blend = form.elements.blend.value;
+      photo.style.setProperty('--filter', filter);
+      photo.style.setProperty('--backdrop', backdrop);
+      photo.style.setProperty('--blend', blend);
+      document.getElementById('code').textContent = `.photo img { filter: ${filter}; }\n.glass { backdrop-filter: ${backdrop}; }\n.blend { mix-blend-mode: ${blend}; }`;
+    }
+    form.addEventListener('input', update);
+    form.addEventListener('reset', () => setTimeout(update));
+    update();
+  </script>
+</body>
+</html>

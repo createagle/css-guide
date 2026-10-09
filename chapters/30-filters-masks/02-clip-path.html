@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>30-2 Clip-path and Mask Gallery</title>
+  <style>
+    .stage { width: min(980px, 100%); display: grid; grid-template-columns: repeat(auto-fill, minmax(min(210px, 100%), 1fr)); gap: 16px; }
+    .tile { margin: 0; display: grid; gap: 8px; }
+    .tile img { display: block; inline-size: 100%; aspect-ratio: 1; object-fit: cover; transition: clip-path 0.4s ease-in-out; }
+    .tile figcaption { font: 12px/1.4 var(--mono); color: var(--muted); }
+    .circle img { clip-path: circle(45%); }
+    .ellipse img { clip-path: ellipse(48% 34% at 50% 50%); }
+    .inset img { clip-path: inset(10% round 24px); }
+    .triangle img { clip-path: polygon(50% 5%, 95% 95%, 5% 95%); }
+    .hexagon img { clip-path: polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0 50%); }
+    .arrow img { clip-path: polygon(0 30%, 60% 30%, 60% 10%, 100% 50%, 60% 90%, 60% 70%, 0 70%); }
+    /* shape() uses responsive units; browsers without it keep a rounded inset */
+    .wave img { clip-path: inset(0 round 16px); }
+    @supports (clip-path: shape(from 0 0, line to 100% 0)) {
+      .wave img { clip-path: shape(from 0 15%, curve to 100% 15% with 50% -10%, line to 100% 100%, line to 0 100%, close); }
+    }
+    /* Same number of points, so the shape can transition on hover */
+    .morph img { clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); }
+    .morph:hover img, .morph:focus-within img { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+    /* Masks use transparency instead of a hard edge */
+    .fade img { mask-image: linear-gradient(to bottom, black 50%, transparent); }
+    .spot img { mask-image: radial-gradient(circle at 50% 45%, black 30%, transparent 62%); }
+    .stripes img { mask-image: repeating-linear-gradient(45deg, black 0 12px, transparent 12px 20px); }
+    @media (prefers-reduced-motion: reduce) { .tile img { transition: none; } }
+  </style>
+</head>
+<body class="demo">
+  <div class="stage">
+    <figure class="tile circle"><img src="scene.svg" alt=""><figcaption>clip-path: circle(45%)</figcaption></figure>
+    <figure class="tile ellipse"><img src="scene.svg" alt=""><figcaption>clip-path: ellipse(48% 34%)</figcaption></figure>
+    <figure class="tile inset"><img src="scene.svg" alt=""><figcaption>clip-path: inset(10% round 24px)</figcaption></figure>
+    <figure class="tile triangle"><img src="scene.svg" alt=""><figcaption>clip-path: polygon(…3 points)</figcaption></figure>
+    <figure class="tile hexagon"><img src="scene.svg" alt=""><figcaption>clip-path: polygon(…6 points)</figcaption></figure>
+    <figure class="tile arrow"><img src="scene.svg" alt=""><figcaption>clip-path: polygon(…arrow)</figcaption></figure>
+    <figure class="tile wave"><img src="scene.svg" alt=""><figcaption>clip-path: shape(…curve)</figcaption></figure>
+    <figure class="tile morph"><a href="#" aria-label="Hover or focus to morph the shape"><img src="scene.svg" alt=""></a><figcaption>polygon → polygon on :hover</figcaption></figure>
+    <figure class="tile fade"><img src="scene.svg" alt=""><figcaption>mask-image: linear-gradient(…)</figcaption></figure>
+    <figure class="tile spot"><img src="scene.svg" alt=""><figcaption>mask-image: radial-gradient(…)</figcaption></figure>
+    <figure class="tile stripes"><img src="scene.svg" alt=""><figcaption>mask-image: repeating-linear-gradient(…)</figcaption></figure>
+  </div>
+</body>
+</html>
