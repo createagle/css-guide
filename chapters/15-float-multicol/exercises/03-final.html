@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 15-3 (final): A Drop Cap</title>
+  <style>
+    .story { inline-size: min(560px, 100%); padding: 16px 20px; border: 1px solid var(--border); border-radius: 12px; }
+    .story p { margin: 0 0 12px; line-height: 1.6; }
+    /* Fallback: float the first letter so the next lines wrap beside it */
+    .story p:first-child::first-letter {
+      float: inline-start;
+      font-size: 3.6em;
+      line-height: 0.85;
+      margin: 0.06em 0.08em 0 0;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    /* Where supported, initial-letter sinks it exactly 3 lines deep */
+    @supports (initial-letter: 3) or (-webkit-initial-letter: 3) {
+      .story p:first-child::first-letter {
+        float: none;
+        font-size: inherit;
+        line-height: inherit;
+        margin: 0 0.1em 0 0;
+        -webkit-initial-letter: 3;
+        initial-letter: 3;
+      }
+    }
+  </style>
+</head>
+<body class="demo">
+  <article class="story">
+    <p>Once upon a time, every printed book began its chapters with a large ornamented capital. The letter sank three or four lines into the text, and the first words of the paragraph wrapped neatly around it. Printers called it a drop cap.</p>
+    <p>On the web, the same effect needs the first letter to leave the line, like a float, and to be sized so that its top lines up with the first line and its bottom with the third.</p>
+  </article>
+</body>
+</html>

@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 15-2 (start): Cards in Columns</title>
+  <style>
+    .board { inline-size: min(720px, 100%); columns: 200px; column-gap: 16px; }
+    .board article { padding: 12px 14px; border-radius: 10px; background: var(--surface); border: 1px solid var(--border); margin-block-end: 16px; }
+    .board h2 { margin: 0 0 4px; font-size: 15px; }
+    .board p { margin: 0; font-size: 13px; color: var(--muted); line-height: 1.5; }
+  </style>
+</head>
+<body class="demo">
+  <div class="board">
+    <article><h2>Release 4.2</h2><p>Faster start-up, a new dark theme and fixes for keyboard focus in the settings panel.</p></article>
+    <article><h2>Team offsite</h2><p>We meet in Lisbon on 12 June. Travel details and the agenda are in the shared folder.</p></article>
+    <article><h2>Hiring</h2><p>Two open roles: a front-end developer who loves CSS and a technical writer. Referrals welcome.</p></article>
+    <article><h2>Office hours</h2><p>The design team is free on Thursdays from 2 to 4 for reviews, questions and quick fixes.</p></article>
+    <article><h2>Library</h2><p>New books on typography, accessibility and data visualization are on the second shelf.</p></article>
+    <article><h2>Lunch talk</h2><p>Friday: what we learned from moving our layout from floats to Grid, with before and after code.</p></article>
+    <article><h2>Parking</h2><p>Level B2 is closed for painting next week. Please use the street level or bring your bike.</p></article>
+  </div>
+</body>
+</html>

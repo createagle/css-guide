@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>15-2 Multi-column Article</title>
+  <style>
+    .controls { max-width: 760px; }
+    .stage { width: min(900px, 100%); flex-direction: column; align-items: stretch; }
+    .article {
+      column-width: calc(var(--cw) * 1px);
+      column-gap: calc(var(--cg) * 1px);
+      padding: 16px 20px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+    .article p { margin: 0 0 12px; line-height: 1.6; }
+    .article h2 { margin: 4px 0 12px; font-size: 18px; }
+    .article .note { padding: 10px 12px; margin: 0 0 12px; border-radius: 8px; background: color-mix(in oklch, var(--accent) 14%, var(--bg)); border: 1px solid color-mix(in oklch, var(--accent) 40%, var(--bg)); }
+    .article .note p { margin: 0; }
+    .rule .article { column-rule: 1px solid var(--border); }
+    .span .article h2 { column-span: all; }
+    .avoid .article .note { break-inside: avoid; }
+  </style>
+</head>
+<body class="demo">
+  <div class="controls">
+    <label class="control">column-width <input type="range" id="cw" min="120" max="420" value="220"> <output id="cw-out"></output></label>
+    <label class="control">column-gap <input type="range" id="cg" min="0" max="48" value="24"> <output id="cg-out"></output></label>
+    <label class="control"><input type="checkbox" id="rule" checked> column-rule</label>
+    <label class="control"><input type="checkbox" id="span" checked> h2 { column-span: all }</label>
+    <label class="control"><input type="checkbox" id="avoid" checked> .note { break-inside: avoid }</label>
+  </div>
+  <div class="stage" id="stage">
+    <article class="article" id="article">
+      <p>Multi-column layout pours one flow of content into columns, like a newspaper. You do not decide which paragraph goes into which column: the browser balances the content so the columns end at about the same height.</p>
+      <p>Give it a column width rather than a column count, and the number of columns follows the width of the container. A wide screen gets three or four columns, a phone gets one, and no media query is needed.</p>
+      <div class="note"><p>Boxes such as this note can be split across two columns. break-inside: avoid keeps each one in one piece.</p></div>
+      <p>Columns work best for short items that can be read in any order, such as lists of links, tags or footnotes. For long articles on a screen, the reader has to scroll down, back up, and down again.</p>
+      <h2>Spanning heading</h2>
+      <p>A heading with column-span: all cuts across every column. The content before it is balanced into one set of columns, and the content after it starts a new set below.</p>
+      <p>Column rules are drawn in the middle of each gap. They take no space, so they never change the width of a column, much like an outline.</p>
+      <div class="note"><p>A second note, also kept in one piece when break-inside is set.</p></div>
+      <p>If the container has a fixed height, columns that do not fit overflow sideways instead of growing downwards. That is almost never what you want on a web page, so let the height follow the content.</p>
+    </article>
+    <pre class="code" id="code"></pre>
+  </div>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    function update() {
+      const stage = $('stage');
+      stage.style.setProperty('--cw', $('cw').value);
+      stage.style.setProperty('--cg', $('cg').value);
+      $('cw-out').textContent = $('cw').value + 'px';
+      $('cg-out').textContent = $('cg').value + 'px';
+      ['rule', 'span', 'avoid'].forEach((k) => stage.classList.toggle(k, $(k).checked));
+      // Count the columns the browser actually made: one per distinct left edge of the paragraphs
+      const lefts = new Set([...document.querySelectorAll('.article > p, .article > .note')].flatMap((p) => [...p.getClientRects()].map((r) => Math.round(r.left))));
+      $('code').textContent = `.article {\n  column-width: ${$('cw').value}px;   /* columns: ${lefts.size} at this width */\n  column-gap: ${$('cg').value}px;${$('rule').checked ? '\n  column-rule: 1px solid var(--border);' : ''}\n}` +
+        ($('span').checked ? '\n.article h2 { column-span: all; }' : '') +
+        ($('avoid').checked ? '\n.article .note { break-inside: avoid; }' : '');
+    }
+    document.querySelectorAll('input').forEach((el) => el.addEventListener('input', update));
+    addEventListener('resize', update);
+    update();
+  </script>
+</body>
+</html>

@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>15-1 shape-outside Text Wrap</title>
+  <style>
+    .stage { width: min(720px, 100%); flex-direction: column; align-items: stretch; }
+    .article { padding: 16px 20px; border: 1px solid var(--border); border-radius: 12px; }
+    .article p { margin: 0 0 12px; line-height: 1.6; }
+    .shape {
+      float: inline-start;
+      inline-size: 200px;
+      block-size: 200px;
+      margin-inline-end: 8px;
+      background: linear-gradient(150deg in oklch, oklch(80% 0.12 200), oklch(55% 0.16 280));
+      shape-outside: var(--shape);
+      shape-margin: calc(var(--gap) * 1px);
+    }
+    /* Optional: clip the float to the same shape, so you can see what the text follows */
+    .clip .shape { clip-path: var(--shape); }
+    /* The float's own box, drawn behind it */
+    .show-box .shape { outline: 2px dashed var(--bad); outline-offset: 0; }
+    .clip.show-box .shape { clip-path: none; background: none; position: relative; }
+    .clip.show-box .shape::before { content: ""; position: absolute; inset: 0; background: linear-gradient(150deg in oklch, oklch(80% 0.12 200), oklch(55% 0.16 280)); clip-path: var(--shape); }
+  </style>
+</head>
+<body class="demo">
+  <div class="controls">
+    <label class="control">shape-outside
+      <select id="shape">
+        <option value="none">none</option>
+        <option value="circle(50%)" selected>circle(50%)</option>
+        <option value="ellipse(40% 50% at 30% 50%)">ellipse(40% 50% at 30% 50%)</option>
+        <option value="polygon(0 0, 100% 0, 0 100%)">polygon(0 0, 100% 0, 0 100%)</option>
+        <option value="inset(20px round 40px)">inset(20px round 40px)</option>
+      </select>
+    </label>
+    <label class="control">shape-margin <input type="range" id="gap" min="0" max="40" value="12"> <output id="gap-out"></output></label>
+    <label class="control"><input type="checkbox" id="clip" checked> clip-path the same shape</label>
+    <label class="control"><input type="checkbox" id="box"> outline the float box</label>
+  </div>
+  <div class="stage">
+    <div class="article" id="article">
+      <div class="shape" aria-hidden="true"></div>
+      <p>A float takes an element out of the normal line flow and pushes it to one side. Lines of text then shorten to make room for it. By default, text wraps around the float's margin box, which is always a rectangle, even when the image inside looks round.</p>
+      <p>The shape-outside property changes that. It gives the float a different wrapping shape: a circle, an ellipse, a polygon, an inset rectangle with rounded corners, or the transparent parts of an image. The float itself does not change size or shape; only the lines around it do.</p>
+      <p>Use shape-margin to keep the text away from the edge of the shape. Without it, the letters touch the curve. This is a small detail, but magazines have done it for a long time and it makes a page feel designed.</p>
+    </div>
+    <pre class="code" id="code"></pre>
+  </div>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    function update() {
+      const shape = $('shape').value, gap = $('gap').value;
+      const a = $('article');
+      a.style.setProperty('--shape', shape);
+      a.style.setProperty('--gap', gap);
+      a.classList.toggle('clip', $('clip').checked && shape !== 'none');
+      a.classList.toggle('show-box', $('box').checked);
+      $('gap-out').textContent = gap + 'px';
+      $('code').textContent = `.shape {\n  float: inline-start;\n  inline-size: 200px;\n  block-size: 200px;\n  shape-outside: ${shape};\n  shape-margin: ${gap}px;${$('clip').checked && shape !== 'none' ? `\n  clip-path: ${shape};` : ''}\n}`;
+    }
+    document.querySelectorAll('select, input').forEach((el) => el.addEventListener('input', update));
+    update();
+  </script>
+</body>
+</html>

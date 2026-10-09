@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 15-1 (final): A Round Portrait</title>
+  <style>
+    .bio { inline-size: min(560px, 100%); padding: 16px 20px; border: 1px solid var(--border); border-radius: 12px; }
+    .bio p { margin: 0 0 12px; line-height: 1.5; }
+    .bio h2 { margin: 0 0 8px; font-size: 20px; }
+    .portrait {
+      float: inline-start;
+      inline-size: 180px;
+      block-size: 180px;
+      margin-inline-end: 12px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 40% 35%, oklch(85% 0.08 60), oklch(60% 0.12 40) 70%);
+    }
+    /* Wrap the text around the circle, not the square box, and keep it 12px away */
+    .portrait {
+      shape-outside: circle(50%);
+      shape-margin: 12px;
+    }
+  </style>
+</head>
+<body class="demo">
+  <article class="bio">
+    <h2>Ada Lin</h2>
+    <div class="portrait" role="img" aria-label="Portrait of Ada Lin"></div>
+    <p>Ada Lin is a type designer and letterpress printer. She spent ten years drawing signage alphabets for railway stations before setting up her own small studio by the harbour, where she still prints a small book of poems every winter.</p>
+    <p>Her work mixes old and new: metal type and hand-set pages on one side, variable fonts and web typography on the other. She teaches a weekend course on both, and likes to say that a good page is mostly about the white space.</p>
+  </article>
+</body>
+</html>
