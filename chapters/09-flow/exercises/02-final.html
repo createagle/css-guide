@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 9-2 (final): One Grid Across Wrappers</title>
+  <style>
+    .cards {
+      inline-size: min(640px, 100%);
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    /* The wrapper generates no box: its children become grid items of .cards */
+    .group { display: contents; }
+    /* Each heading spans the full row above its cards */
+    .group h2 { grid-column: 1 / -1; font-size: 15px; margin: 8px 0 0; color: var(--muted); }
+    .card { padding: 16px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); }
+  </style>
+</head>
+<body class="demo">
+  <div class="cards">
+    <div class="group">
+      <h2>Fruit</h2>
+      <div class="card">Apple</div>
+      <div class="card">Pear</div>
+      <div class="card">Plum</div>
+    </div>
+    <div class="group">
+      <h2>Vegetables</h2>
+      <div class="card">Leek</div>
+      <div class="card">Kale</div>
+      <div class="card">Bean</div>
+    </div>
+  </div>
+</body>
+</html>

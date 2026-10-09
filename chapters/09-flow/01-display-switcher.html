@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>9-1 Display Switcher</title>
+  <style>
+    .stage { width: min(880px, 100%); align-items: stretch; }
+    .flow { flex: 1 1 380px; line-height: 1.6; }
+    .flow p { margin: 0; }
+    /* The element whose display value is switched */
+    .target {
+      width: 180px;
+      height: 56px;
+      padding: 8px 12px;
+      margin: 16px;
+      border: 2px dashed var(--accent);
+      background: color-mix(in oklch, var(--accent) 14%, var(--bg));
+    }
+    .target > * { border: 1px solid var(--muted); border-radius: 4px; padding: 0 4px; }
+    .side { flex: 1 1 260px; display: grid; gap: 12px; align-content: start; }
+    table { border-collapse: collapse; font-size: 13px; inline-size: 100%; }
+    td { padding: 4px 6px; border-block-end: 1px solid var(--border); }
+    td:first-child { color: var(--muted); }
+    td:last-child { font-family: var(--mono); text-align: end; }
+  </style>
+</head>
+<body class="demo">
+  <div class="controls">
+    <label class="control">display
+      <select id="display">
+        <option>inline</option>
+        <option>block</option>
+        <option>inline-block</option>
+        <option>flow-root</option>
+        <option>flex</option>
+        <option>inline-flex</option>
+        <option>grid</option>
+        <option>contents</option>
+        <option>none</option>
+      </select>
+    </label>
+  </div>
+  <div class="stage">
+    <div class="panel flow">
+      <p>Text before the element runs along the line, then
+        <span class="target" id="target"><b>child A</b> <b>child B</b></span>
+        and the text after it continues on the same line if it can, wrapping onto the next line when it runs out of room.</p>
+    </div>
+    <div class="side">
+      <div class="panel">
+        <p class="label">What the browser did</p>
+        <table id="facts"></table>
+      </div>
+    </div>
+  </div>
+  <script>
+    const two = {
+      inline: 'inline flow', block: 'block flow', 'inline-block': 'inline flow-root',
+      'flow-root': 'block flow-root', flex: 'block flex', 'inline-flex': 'inline flex',
+      grid: 'block grid', contents: 'contents', none: 'none'
+    };
+    const target = document.getElementById('target');
+    function update() {
+      const d = document.getElementById('display').value;
+      target.style.display = d;
+      const r = target.getBoundingClientRect();
+      const boxed = d !== 'contents' && d !== 'none';
+      // box-sizing is border-box, so an applied width measures exactly 180px; inline boxes ignore it
+      const sized = boxed && Math.round(r.width) === 180;
+      const lines = target.getClientRects().length;
+      const rows = [
+        ['Two-value form', two[d]],
+        ['Outer role', { inline: 'inline', 'inline-block': 'inline', 'inline-flex': 'inline' }[d] || (boxed ? 'block' : '—')],
+        ['Box width (px)', boxed ? Math.round(r.width) : 'no box'],
+        ['width: 180px applied', boxed ? (sized ? 'yes' : 'no') : '—'],
+        ['Fragments (line boxes)', boxed ? lines : '—'],
+        ['Children laid out by', { flex: 'flex', 'inline-flex': 'flex', grid: 'grid', contents: 'the parent', none: '—' }[d] || 'normal flow']
+      ];
+      document.getElementById('facts').innerHTML = rows.map(([k, v]) => `<tr><td>${k}</td><td>${v}</td></tr>`).join('');
+    }
+    document.getElementById('display').addEventListener('input', update);
+    addEventListener('resize', update);
+    update();
+  </script>
+</body>
+</html>

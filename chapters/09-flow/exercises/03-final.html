@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 9-3 (final): A Comment With an Avatar</title>
+  <style>
+    .comments { inline-size: min(420px, 100%); }
+    .comment + .comment { margin-block-start: 12px; }
+    /* flow-root: the card is a new BFC, so it grows to contain the floated avatar */
+    .comment { display: flow-root; border: 1px solid var(--border); border-radius: 10px; padding: 12px; background: var(--bg); }
+    /* A BFC never overlaps a float: the text becomes a column beside the avatar */
+    .comment .body { display: flow-root; }
+    .avatar {
+      float: inline-start;
+      inline-size: 72px;
+      block-size: 72px;
+      margin-inline-end: 12px;
+      border-radius: 50%;
+      background: oklch(75% 0.12 200);
+    }
+    .comment h3 { margin: 0 0 4px; font-size: 15px; }
+    .comment p { margin: 0; font-size: 14px; line-height: 1.5; color: var(--muted); }
+  </style>
+</head>
+<body class="demo">
+  <div class="comments">
+    <article class="comment">
+      <div class="avatar" aria-hidden="true"></div>
+      <div class="body">
+        <h3>Mei</h3>
+        <p>Great trail.</p>
+      </div>
+    </article>
+    <article class="comment">
+      <div class="avatar" aria-hidden="true"></div>
+      <div class="body">
+        <h3>Jonas</h3>
+        <p>We did the long loop in early spring. The first hour is steep but the views from the ridge are worth it, and the lake at the end is perfect for a swim if you do not mind cold water.</p>
+      </div>
+    </article>
+  </div>
+</body>
+</html>

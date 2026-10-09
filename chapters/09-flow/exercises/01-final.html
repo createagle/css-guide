@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 9-1 (final): Icons and Images on the Line</title>
+  <style>
+    .card { inline-size: min(360px, 100%); border: 1px solid var(--border); border-radius: 10px; overflow: clip; }
+    .frame { background: oklch(60% 0.2 25); }
+    /* A block image is no longer on a line box, so no room is left for descenders */
+    .frame img { display: block; inline-size: 100%; block-size: auto; }
+    .meta { padding: 12px 16px; margin: 0; font-size: 18px; line-height: 1.6; }
+    .icon { inline-size: 1.25em; block-size: 1.25em; fill: none; stroke: var(--accent); stroke-width: 2.5;
+      /* Center the icon on the lowercase letters instead of sitting on the baseline */
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body class="demo">
+  <article class="card">
+    <div class="frame"><img src="photo.svg" width="320" height="160" alt="Hills under a pale sky"></div>
+    <p class="meta">
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l3 3 5-6"/></svg>
+      Verified trail, 6 km
+    </p>
+  </article>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>9-2 Block Formatting Contexts</title>
+  <style>
+    .stage { width: min(960px, 100%); }
+    .stage figure { flex: 1 1 280px; max-inline-size: 300px; }
+    .case { display: grid; gap: 8px; }
+    .case .control { font-size: 13px; }
+    .page { background: var(--surface); border-radius: 8px; padding: 12px; min-block-size: 220px; }
+    .flowbox { font-size: 13px; line-height: 1.5; }
+    .flowbox p { margin: 0; }
+    .float {
+      float: inline-start;
+      inline-size: 72px;
+      block-size: 96px;
+      margin-inline-end: 10px;
+      border-radius: 6px;
+      background: color-mix(in oklch, oklch(70% 0.15 60) 70%, var(--bg));
+    }
+    .container { border: 2px solid var(--accent); padding: 8px; }
+    /* No border or top padding on this card, so nothing separates its margin from the h3 margin */
+    .container.child { padding-block-start: 0; border: none; outline: 2px solid var(--accent); }
+    .child h3 { margin: 24px 0 0; font-size: 14px; background: color-mix(in oklch, var(--accent) 18%, var(--bg)); }
+    .side-text { background: color-mix(in oklch, var(--accent) 12%, var(--bg)); }
+    /* What each checkbox switches on */
+    .bfc { display: flow-root; }
+    .readout { font: 12px var(--mono); color: var(--muted); }
+    .readout b { color: var(--fg); }
+  </style>
+</head>
+<body class="demo">
+  <div class="stage">
+    <figure class="case">
+      <label class="control"><input type="checkbox" data-target="c1"> container: display: flow-root</label>
+      <div class="page">
+        <div class="flowbox container" id="c1">
+          <div class="float"></div>
+          <p>A short caption.</p>
+        </div>
+      </div>
+      <figcaption class="readout" id="r1"></figcaption>
+    </figure>
+    <figure class="case">
+      <label class="control"><input type="checkbox" data-target="c2"> card: display: flow-root</label>
+      <div class="page">
+        <div class="flowbox container child" id="c2">
+          <h3 id="h3">h3 with margin-top: 24px</h3>
+          <p>Card body text.</p>
+        </div>
+      </div>
+      <figcaption class="readout" id="r2"></figcaption>
+    </figure>
+    <figure class="case">
+      <label class="control"><input type="checkbox" data-target="c3"> text block: display: flow-root</label>
+      <div class="page">
+        <div class="flowbox">
+          <div class="float"></div>
+          <p class="side-text" id="c3">This paragraph sits next to a float. Its line boxes get shorter to avoid the float, but its own box still runs underneath it, and once the float ends the text wraps back to the left edge.</p>
+        </div>
+      </div>
+      <figcaption class="readout" id="r3"></figcaption>
+    </figure>
+  </div>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    function update() {
+      document.querySelectorAll('[data-target]').forEach((cb) => $(cb.dataset.target).classList.toggle('bfc', cb.checked));
+      const c1 = $('c1'), f1 = c1.querySelector('.float');
+      const sticksOut = f1.getBoundingClientRect().bottom > c1.getBoundingClientRect().bottom;
+      $('r1').innerHTML = `Float ${sticksOut ? '<b>sticks out</b> of' : 'is <b>contained</b> by'} the container`;
+      const inset = Math.round($('h3').getBoundingClientRect().top - $('c2').getBoundingClientRect().top);
+      $('r2').innerHTML = `Card top → h3: <b>${inset}px</b> ${inset <= 10 ? '(margin escaped the card)' : '(margin stays inside)'}`;
+      const p = $('c3'), f3 = p.parentElement.querySelector('.float');
+      const under = p.getBoundingClientRect().left < f3.getBoundingClientRect().right;
+      $('r3').innerHTML = under ? 'Paragraph box <b>runs under</b> the float' : 'Paragraph box <b>sits beside</b> the float';
+    }
+    document.querySelectorAll('input').forEach((el) => el.addEventListener('input', update));
+    addEventListener('resize', update);
+    update();
+  </script>
+</body>
+</html>
