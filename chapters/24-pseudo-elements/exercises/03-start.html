@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 24-3 (start): Form Pseudo-elements</title>
+  <style>
+    form { display: grid; gap: 14px; inline-size: min(420px, 100%); }
+    .field { display: grid; gap: 4px; }
+    .field label { font-size: 14px; font-weight: 600; }
+    .field input:not([type=file]) { font: inherit; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--fg); }
+    .bio { margin: 0; line-height: 1.6; }
+  </style>
+</head>
+<body class="demo">
+  <form>
+    <div class="field">
+      <label for="handle">Display name</label>
+      <input id="handle" placeholder="For example: Trail Runner">
+    </div>
+    <div class="field">
+      <label for="photo">Profile photo</label>
+      <input id="photo" type="file" accept="image/*">
+    </div>
+    <p class="bio">Select some of this text to see the selection colours. Your profile is shown next to the routes you share.</p>
+  </form>
+</body>
+</html>

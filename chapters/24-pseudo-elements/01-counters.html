@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>24-1 Automatic Numbering with Counters</title>
+  <style>
+    .stage { width: min(960px, 100%); align-items: flex-start; }
+    .doc { flex: 1 1 420px; padding: 20px 24px; border: 1px solid var(--border); border-radius: 12px; }
+    .doc h2 { margin: 20px 0 8px; font-size: 20px; }
+    .doc section:first-child h2 { margin-top: 0; }
+    .doc h3 { margin: 12px 0 6px; font-size: 16px; }
+    .doc p { margin: 0 0 8px; line-height: 1.6; }
+    .doc figure { margin: 12px 0; }
+    .doc figure > div { block-size: 56px; border-radius: 8px; background: linear-gradient(90deg, oklch(70% 0.12 250), oklch(75% 0.12 160)); }
+    .doc figcaption { margin-top: 6px; font-size: 14px; color: var(--muted); }
+    .doc section.new h2 { color: var(--accent); }
+    .side { flex: 1 1 320px; }
+  </style>
+  <style id="counters">
+.doc { counter-reset: h2 figure; }
+.doc h2 { counter-increment: h2; counter-reset: h3; }
+.doc h2::before { content: counter(h2, var(--style)) ". "; }
+.doc h3 { counter-increment: h3; }
+.doc h3::before { content: counter(h2, var(--style)) "." counter(h3) " "; }
+.doc figure { counter-increment: figure; }
+.doc figcaption::before { content: "Figure " counter(figure) ": "; font-weight: 600; }
+.doc ol { counter-reset: item; list-style: none; padding-inline-start: 1.5em; }
+.doc ol > li { counter-increment: item; }
+.doc ol > li::before { content: counters(item, ".") " "; color: var(--muted); }
+  </style>
+</head>
+<body class="demo">
+  <div class="controls">
+    <label class="control">--style
+      <select id="style">
+        <option>decimal</option>
+        <option>upper-roman</option>
+        <option>lower-alpha</option>
+        <option>decimal-leading-zero</option>
+        <option>cjk-decimal</option>
+      </select>
+    </label>
+    <button type="button" id="add">Add a section after the first</button>
+    <button type="button" id="remove">Remove added sections</button>
+  </div>
+  <div class="stage">
+    <article class="doc" id="doc">
+      <section>
+        <h2>Planning</h2>
+        <p>Pick a route that fits the shortest day of your trip.</p>
+        <h3>Distance</h3>
+        <h3>Water</h3>
+        <figure><div></div><figcaption>Daylight hours through the year</figcaption></figure>
+      </section>
+      <section>
+        <h2>Packing</h2>
+        <ol>
+          <li>Shelter
+            <ol><li>Tent</li><li>Pegs</li></ol>
+          </li>
+          <li>Kitchen
+            <ol><li>Stove</li><li>Fuel</li><li>Pot</li></ol>
+          </li>
+        </ol>
+        <figure><div></div><figcaption>Pack weight by category</figcaption></figure>
+      </section>
+      <section>
+        <h2>On the trail</h2>
+        <h3>Pace</h3>
+        <h3>Breaks</h3>
+      </section>
+    </article>
+    <div class="side">
+      <p class="label">The counter rules on this page</p>
+      <pre class="code" id="code"></pre>
+    </div>
+  </div>
+  <script>
+    const doc = document.getElementById('doc');
+    document.getElementById('code').textContent = document.getElementById('counters').textContent.trim();
+    const style = document.getElementById('style');
+    const apply = () => doc.style.setProperty('--style', style.value);
+    style.addEventListener('input', apply);
+    apply();
+    let n = 0;
+    document.getElementById('add').addEventListener('click', () => {
+      n += 1;
+      const s = document.createElement('section');
+      s.className = 'new';
+      s.innerHTML = `<h2>Added section ${n}</h2><h3>A sub-section</h3><figure><div></div><figcaption>An added figure</figcaption></figure>`;
+      doc.firstElementChild.after(s);
+    });
+    document.getElementById('remove').addEventListener('click', () => {
+      doc.querySelectorAll('section.new').forEach((s) => s.remove());
+      n = 0;
+    });
+  </script>
+</body>
+</html>

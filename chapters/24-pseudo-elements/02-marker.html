@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>24-2 Custom List Markers</title>
+  <style>
+    .stage { width: min(960px, 100%); display: grid; grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr)); gap: 16px; }
+    .panel ul, .panel ol { margin: 0; padding-inline-start: 1.6em; line-height: 1.8; }
+    .label { font-family: var(--mono); }
+
+    /* 1. Style the marker box itself */
+    .m-color li::marker { color: var(--accent); font-weight: 700; }
+
+    /* 2. Any string can be the marker */
+    .m-string { list-style-type: "✓  "; }
+    .m-string li::marker { color: var(--good); }
+
+    /* 3. Per-item markers from an attribute */
+    .m-attr li::marker { content: attr(data-icon) "  "; }
+
+    /* 4. A custom counter style; browsers without it fall back to decimal */
+    @counter-style circled {
+      system: fixed;
+      symbols: "①" "②" "③" "④" "⑤" "⑥" "⑦" "⑧" "⑨" "⑩";
+      suffix: " ";
+    }
+    .m-custom { list-style: circled; }
+
+    /* 5. Rewrite the number format; start and reversed still work */
+    .m-paren li::marker { content: counter(list-item) ") "; font-variant-numeric: tabular-nums; }
+
+    /* 6. The disclosure triangle is a marker too */
+    .m-details summary { cursor: pointer; font-weight: 600; }
+    .m-details summary::marker { content: "+  "; color: var(--accent); }
+    .m-details details[open] > summary::marker { content: "−  "; }
+    .m-details details p { margin: 4px 0 8px 1.4em; color: var(--muted); }
+  </style>
+</head>
+<body class="demo">
+  <div class="stage">
+    <section class="panel">
+      <p class="label">li::marker { color; font-weight }</p>
+      <ul class="m-color"><li>Map</li><li>Compass</li><li>Head torch</li></ul>
+    </section>
+    <section class="panel">
+      <p class="label">list-style-type: "✓  "</p>
+      <ul class="m-string"><li>Tickets booked</li><li>Bags packed</li><li>Route shared</li></ul>
+    </section>
+    <section class="panel">
+      <p class="label">::marker { content: attr(data-icon) }</p>
+      <ul class="m-attr"><li data-icon="☀">Sunny on Saturday</li><li data-icon="☁">Cloudy on Sunday</li><li data-icon="☂">Rain on Monday</li></ul>
+    </section>
+    <section class="panel">
+      <p class="label">@counter-style circled</p>
+      <ol class="m-custom"><li>Fill the bottles</li><li>Light the stove</li><li>Boil for one minute</li></ol>
+    </section>
+    <section class="panel">
+      <p class="label">counter(list-item) ") " · start="7" reversed</p>
+      <ol class="m-paren" start="7" reversed><li>Seven days to go</li><li>Six days to go</li><li>Five days to go</li></ol>
+    </section>
+    <section class="panel m-details">
+      <p class="label">summary::marker</p>
+      <details><summary>What should I bring?</summary><p>Water, a map and a warm layer.</p></details>
+      <details open><summary>Is the path marked?</summary><p>Yes, with yellow arrows.</p></details>
+    </section>
+  </div>
+</body>
+</html>
