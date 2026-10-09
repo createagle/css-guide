@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 18-2 (start): Container Units</title>
+  <style>
+    .layout { inline-size: min(900px, 100%); display: grid; grid-template-columns: 1fr 240px; gap: 16px; align-items: start; }
+    @media (width < 40em) { .layout { grid-template-columns: 1fr; } }
+    .banner { padding: 16px; border-radius: 12px; color: white; background: linear-gradient(135deg in oklch, oklch(55% 0.15 280), oklch(45% 0.13 220)); }
+    .banner p { margin: 6px 0 0; font-size: 14px; opacity: 0.9; }
+    /* Sized by the viewport: the same size in the wide column and in the narrow sidebar */
+    .banner h2 { margin: 0; font-size: 5vw; line-height: 1.1; }
+  </style>
+</head>
+<body class="demo">
+  <div class="layout">
+    <main><section class="banner" aria-labelledby="b1"><h2 id="b1">Autumn walks</h2><p>Six guided routes through the colours of the season.</p></section></main>
+    <aside><section class="banner" aria-labelledby="b2"><h2 id="b2">Autumn walks</h2><p>Six guided routes through the colours of the season.</p></section></aside>
+  </div>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 18-1 (final): Media Query to Container Query</title>
+  <style>
+    .layout { inline-size: min(900px, 100%); display: grid; grid-template-columns: 1fr 240px; gap: 16px; align-items: start; }
+    @media (width < 40em) { .layout { grid-template-columns: 1fr; } }
+    .label { margin: 0 0 6px; }
+    .card { display: grid; gap: 10px; padding: 12px; border-radius: 10px; background: var(--surface); border: 1px solid var(--border); }
+    .card .photo { aspect-ratio: 16 / 9; border-radius: 8px; background: linear-gradient(135deg in oklch, oklch(78% 0.12 160), oklch(55% 0.13 230)); }
+    .card h2 { margin: 0; font-size: 17px; }
+    .card p { margin: 0; font-size: 14px; color: var(--muted); }
+    /* The slot around each card is the container */
+    .card-slot { container-type: inline-size; }
+    /* Side by side only when the card itself has room */
+    @container (width >= 26em) {
+      .card { grid-template-columns: 160px 1fr; align-items: start; }
+      .card .photo { grid-row: span 2; aspect-ratio: 1; }
+    }
+  </style>
+</head>
+<body class="demo">
+  <div class="layout">
+    <main><p class="label">Main column</p>
+      <div class="card-slot"><article class="card"><div class="photo" role="img" aria-label="Forest path"></div><h2>Pine Valley</h2><p>Shady forest paths with two small bridges and a picnic area.</p></article></div>
+    </main>
+    <aside><p class="label">Sidebar</p>
+      <div class="card-slot"><article class="card"><div class="photo" role="img" aria-label="Forest path"></div><h2>Pine Valley</h2><p>Shady forest paths with two small bridges and a picnic area.</p></article></div>
+    </aside>
+  </div>
+</body>
+</html>

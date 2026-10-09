@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>18-1 One Card, Three Containers</title>
+  <style>
+    .stage { width: min(1000px, 100%); flex-direction: column; flex-wrap: nowrap; align-items: stretch; }
+    .row { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; }
+    .slot {
+      /* Every slot is a size container; the card inside only looks at its slot */
+      container: card / inline-size;
+      padding: 8px;
+      border: 2px dashed var(--border);
+      border-radius: 12px;
+    }
+    .slot.s { inline-size: 200px; }
+    .slot.m { inline-size: 380px; }
+    .slot.l { flex: 1 1 560px; }
+    .slot.free { inline-size: calc(var(--w) * 1px); max-inline-size: 100%; }
+    .slot-label { margin: 0 0 6px; font: 12px var(--mono); color: var(--muted); }
+    /* Small: stacked */
+    .card { display: grid; gap: 10px; padding: 12px; border-radius: 10px; background: var(--surface); }
+    .card .photo { aspect-ratio: 16 / 9; border-radius: 8px; background: linear-gradient(135deg in oklch, oklch(78% 0.12 160), oklch(55% 0.13 230)); }
+    .card h2 { margin: 0; font-size: clamp(1rem, 0.6rem + 4cqi, 1.6rem); line-height: 1.2; }
+    .card p { margin: 0; font-size: 14px; color: var(--muted); }
+    .card .more { display: none; }
+    .card .meta { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 13px; }
+    /* Medium: image beside the text */
+    @container card (width >= 22em) {
+      /* The last text row takes whatever height the photo leaves over */
+      .card { grid-template-columns: 40% 1fr; grid-template-rows: auto auto 1fr; align-items: start; }
+      .card .photo { grid-row: 1 / span 3; aspect-ratio: 1; }
+    }
+    /* Large: bigger image and the extra paragraph */
+    @container card (width >= 34em) {
+      .card { grid-template-columns: 45% 1fr; grid-template-rows: auto auto auto 1fr; padding: 16px; gap: 12px 20px; }
+      .card .photo { grid-row: 1 / span 4; aspect-ratio: 4 / 3; }
+      .card .more { display: block; }
+    }
+  </style>
+</head>
+<body class="demo">
+  <div class="controls">
+    <label class="control">last container <input type="range" id="w" min="160" max="900" value="300"> <output id="w-out"></output></label>
+  </div>
+  <div class="stage" id="stage">
+    <div class="row" id="row"></div>
+  </div>
+  <template id="card">
+    <article class="card">
+      <div class="photo" role="img" aria-label="Lake and mountains"></div>
+      <h2>Lake Loop</h2>
+      <p class="meta"><span>6 km</span><span>1 h 40</span><span>Easy</span></p>
+      <p>An easy circuit around the water with two benches and a café.</p>
+      <p class="more">The path is flat and wide enough for prams. In spring the meadow on the north shore is full of wild flowers.</p>
+    </article>
+  </template>
+  <script>
+    const row = document.getElementById('row');
+    const tpl = document.getElementById('card');
+    // The same markup goes into four slots of different widths
+    ['s', 'm', 'l', 'free'].forEach((size) => {
+      const slot = document.createElement('div');
+      slot.className = 'slot ' + size;
+      slot.innerHTML = '<p class="slot-label"></p>';
+      slot.append(tpl.content.cloneNode(true));
+      row.append(slot);
+    });
+    const labels = () => document.querySelectorAll('.slot').forEach((s) => {
+      const w = s.getBoundingClientRect().width - 20; // minus padding and border: the container's content box
+      const em = w / 16;
+      s.querySelector('.slot-label').textContent = `${Math.round(w)}px · ${em.toFixed(1)}em · ${em >= 34 ? 'large' : em >= 22 ? 'medium' : 'small'}`;
+    });
+    function update() {
+      const w = document.getElementById('w').value;
+      document.getElementById('stage').style.setProperty('--w', w);
+      document.getElementById('w-out').textContent = w + 'px';
+      labels();
+    }
+    document.getElementById('w').addEventListener('input', update);
+    new ResizeObserver(labels).observe(row);
+    update();
+  </script>
+</body>
+</html>

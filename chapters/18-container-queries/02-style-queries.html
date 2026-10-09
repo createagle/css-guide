@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>18-2 Style Queries</title>
+  <style>
+    .stage { width: min(820px, 100%); flex-direction: column; flex-wrap: nowrap; align-items: stretch; }
+    .sections { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr)); gap: 16px; }
+    /* Each section only sets a custom property. No container-type is needed for style queries. */
+    .section { padding: 12px; border-radius: 12px; border: 1px solid var(--border); }
+    .section > .label { margin: 0 0 8px; }
+    .card { padding: 14px; border-radius: 10px; background: var(--surface); color: var(--fg); border: 1px solid var(--border); }
+    .card h2 { margin: 0 0 4px; font-size: 16px; }
+    .card p { margin: 0; font-size: 14px; }
+    .card .badge { display: none; margin-top: 8px; padding: 2px 8px; border-radius: 99px; font-size: 12px; inline-size: fit-content; }
+    /* The card asks its nearest container (here: its parent section) what --tone it has */
+    @container style(--tone: inverted) {
+      .card { background: oklch(25% 0.03 260); color: oklch(96% 0.01 260); border-color: transparent; }
+    }
+    @container style(--tone: brand) {
+      .card { background: oklch(62% 0.17 300); color: white; border-color: transparent; }
+      .card .badge { display: block; background: white; color: oklch(40% 0.15 300); }
+    }
+    @container style(--tone: warning) {
+      .card { background: oklch(93% 0.07 85); color: oklch(30% 0.06 70); border-color: oklch(75% 0.12 80); }
+      .card .badge { display: block; background: oklch(75% 0.14 75); color: oklch(25% 0.05 70); }
+    }
+    .note { margin: 0; font-size: 13px; color: var(--muted); }
+  </style>
+</head>
+<body class="demo">
+  <div class="stage">
+    <div class="sections" id="sections"></div>
+    <p class="note" id="note"></p>
+  </div>
+  <script>
+    const tones = ['default', 'inverted', 'brand', 'warning'];
+    const wrap = document.getElementById('sections');
+    tones.forEach((t, i) => {
+      const sec = document.createElement('section');
+      sec.className = 'section';
+      sec.setAttribute('aria-labelledby', 'h' + i);
+      sec.innerHTML = `
+        <label class="control label" for="t${i}">--tone
+          <select id="t${i}">${tones.map((v) => `<option${v === t ? ' selected' : ''}>${v}</option>`).join('')}</select>
+        </label>
+        <article class="card"><h2 id="h${i}">Weekend walk</h2><p>Saturday, 9:00 at the station.</p><p class="badge">Members only</p></article>`;
+      const sel = sec.querySelector('select');
+      const apply = () => sec.style.setProperty('--tone', sel.value);
+      sel.addEventListener('input', apply);
+      apply();
+      wrap.append(sec);
+    });
+    // Feature test: does a style query match on this element?
+    const probe = document.createElement('div');
+    probe.style.setProperty('--probe', 'yes');
+    probe.innerHTML = '<span></span>';
+    const style = document.createElement('style');
+    style.textContent = '@container style(--probe: yes) { .probe-target { order: 7; } }';
+    document.head.append(style);
+    probe.firstChild.className = 'probe-target';
+    document.body.append(probe);
+    const ok = getComputedStyle(probe.firstChild).order === '7';
+    probe.remove();
+    document.getElementById('note').textContent = ok
+      ? 'Change --tone on any section: only the custom property changes, and the card restyles itself.'
+      : 'This browser does not support style queries yet, so every card keeps the default look.';
+  </script>
+</body>
+</html>
