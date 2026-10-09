@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 14-1 (final): A Form With Aligned Columns</title>
+  <style>
+    /* The form owns the two columns: label width is decided once, for all fieldsets */
+    .form { inline-size: min(520px, 100%); display: grid; grid-template-columns: max-content 1fr; gap: 16px 12px; }
+    .group {
+      /* Span both columns of the form and reuse them */
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: subgrid;
+      gap: 8px 12px;
+      align-items: center;
+      margin: 0;
+      padding: 12px 16px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+    /* The heading takes a whole row of the group */
+    .group h2 { grid-column: 1 / -1; margin: 0; font-size: 15px; }
+    label { font-size: 14px; color: var(--muted); }
+    input { padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--fg); }
+  </style>
+</head>
+<body class="demo">
+  <form class="form">
+    <div class="group" role="group" aria-labelledby="g1">
+      <h2 id="g1">Contact</h2>
+      <label for="n">Name</label><input id="n" autocomplete="name">
+      <label for="e">Email</label><input id="e" type="email" autocomplete="email">
+    </div>
+    <div class="group" role="group" aria-labelledby="g2">
+      <h2 id="g2">Emergency contact</h2>
+      <label for="en">Contact person</label><input id="en">
+      <label for="ep">Phone number</label><input id="ep" type="tel">
+    </div>
+  </form>
+</body>
+</html>

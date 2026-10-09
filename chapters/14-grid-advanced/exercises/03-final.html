@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 14-3 (final): A Scrolling Row of Cards</title>
+  <style>
+    .shelf {
+      inline-size: min(560px, 100%);
+      display: grid;
+      /* New items create new columns, not new rows */
+      grid-auto-flow: column;
+      /* Every implicit column is 160px, so a row of cards never squeezes */
+      grid-auto-columns: 160px;
+      gap: 12px;
+      margin: 0;
+      padding: 0 0 8px;
+      list-style: none;
+      overflow-x: auto;
+    }
+    .shelf li { padding: 14px; border-radius: 10px; background: var(--surface); border: 1px solid var(--border); }
+    .shelf h2 { margin: 0 0 4px; font-size: 15px; }
+    .shelf p { margin: 0; font-size: 13px; color: var(--muted); }
+  </style>
+</head>
+<body class="demo">
+  <ul class="shelf" aria-label="Recommended trails">
+    <li><h2>Lake Loop</h2><p>6 km · easy</p></li>
+    <li><h2>North Ridge</h2><p>12 km · hard</p></li>
+    <li><h2>Pine Valley</h2><p>9 km · moderate</p></li>
+    <li><h2>Old Mill</h2><p>4 km · easy</p></li>
+    <li><h2>Eagle Rock</h2><p>15 km · hard</p></li>
+    <li><h2>Sunset Point</h2><p>3 km · easy</p></li>
+  </ul>
+</body>
+</html>

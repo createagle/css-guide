@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>14-2 grid-auto-flow and Masonry</title>
+  <style>
+    .stage { width: min(760px, 100%); flex-direction: column; align-items: stretch; }
+    .board {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-auto-rows: 64px;
+      gap: 8px;
+      padding: 8px;
+      border: 2px dashed var(--accent);
+      border-radius: 10px;
+      min-block-size: 240px;
+    }
+    .board > div {
+      display: grid;
+      place-items: center;
+      border-radius: 6px;
+      font: 600 15px var(--mono);
+      color: oklch(25% 0.05 250);
+      background: oklch(84% 0.08 calc(var(--i) * 37deg));
+    }
+    .wide { grid-column: span 2; }
+    .tall { grid-row: span 2; }
+    .big  { grid-column: span 2; grid-row: span 2; }
+    /* Masonry: items have their own heights and drop into the shortest column */
+    .board.lanes { display: grid-lanes; grid-auto-rows: auto; }
+    .board.lanes > div { block-size: calc(40px + var(--hgt) * 1px); }
+    .board.lanes .wide, .board.lanes .tall, .board.lanes .big { grid-column: auto; grid-row: auto; }
+    .note { font-size: 13px; color: var(--muted); margin: 0; }
+  </style>
+</head>
+<body class="demo">
+  <div class="controls">
+    <label class="control">grid-auto-flow
+      <select id="flow">
+        <option value="row">row</option>
+        <option value="row dense">row dense</option>
+        <option value="column">column</option>
+        <option value="column dense">column dense</option>
+        <option value="lanes">display: grid-lanes (masonry)</option>
+      </select>
+    </label>
+  </div>
+  <div class="stage">
+    <div class="board" id="board"></div>
+    <p class="note" id="note"></p>
+  </div>
+  <script>
+    const shapes = ['', 'wide', '', 'tall', 'big', '', 'wide', '', '', 'tall', '', 'wide'];
+    const board = document.getElementById('board');
+    board.innerHTML = shapes.map((s, i) => `<div class="${s}" style="--i: ${i}; --hgt: ${(i * 53) % 90}">${i + 1}</div>`).join('');
+    const lanesOK = CSS.supports('display', 'grid-lanes');
+    function update() {
+      const v = document.getElementById('flow').value;
+      const lanes = v === 'lanes';
+      board.classList.toggle('lanes', lanes && lanesOK);
+      board.style.gridAutoFlow = lanes ? '' : v;
+      // Columns flow needs a fixed number of rows to wrap into
+      board.style.gridTemplateRows = v.startsWith('column') ? 'repeat(4, 64px)' : '';
+      document.getElementById('note').textContent = lanes
+        ? (lanesOK ? 'display: grid-lanes: each item drops into the currently shortest column, keeping its own height.'
+                   : 'This browser does not support display: grid-lanes yet, so the regular grid is shown instead.')
+        : `grid-auto-flow: ${v}. Numbers show the HTML order${v.includes('dense') ? ' — dense moves later items back into earlier holes.' : '; holes stay where an item did not fit.'}`;
+    }
+    document.getElementById('flow').addEventListener('input', update);
+    update();
+  </script>
+</body>
+</html>

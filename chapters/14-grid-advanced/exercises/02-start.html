@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 14-2 (start): Text Over an Image</title>
+  <style>
+    .hero { position: relative; inline-size: min(560px, 100%); border-radius: 12px; overflow: clip; }
+    .hero .art { block-size: 220px; background: linear-gradient(160deg in oklch, oklch(75% 0.12 220), oklch(45% 0.12 280)); }
+    .hero .caption {
+      position: absolute;
+      top: 150px;
+      left: 0;
+      right: 0;
+      padding: 16px;
+      color: white;
+      background: linear-gradient(to top, oklch(15% 0.03 280 / 0.8), oklch(15% 0.03 280 / 0));
+    }
+    .hero h2 { margin: 0 0 4px; font-size: 22px; }
+    .hero p { margin: 0; font-size: 14px; }
+  </style>
+</head>
+<body class="demo">
+  <figure class="hero" style="margin: 0">
+    <div class="art" role="img" aria-label="Mountains at dusk"></div>
+    <figcaption class="caption">
+      <h2>Night hike to the summit hut</h2>
+      <p>Leave at sunset, arrive under the stars. Headlamps and warm layers are provided, and the hut keeper serves hot soup on arrival.</p>
+    </figcaption>
+  </figure>
+</body>
+</html>

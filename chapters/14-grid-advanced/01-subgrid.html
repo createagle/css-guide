@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>14-1 Subgrid Card Alignment</title>
+  <style>
+    .stage { width: min(880px, 100%); flex-direction: column; align-items: stretch; }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr));
+      gap: 16px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .card {
+      display: grid;
+      gap: 8px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--bg);
+    }
+    /* With subgrid: every card spans four rows of the outer grid and shares them */
+    .cards.sub .card {
+      grid-row: span 4;
+      grid-template-rows: subgrid;
+    }
+    .card h2 { margin: 0; font-size: 16px; line-height: 1.3; }
+    .card .thumb { block-size: 80px; border-radius: 8px; background: linear-gradient(135deg in oklch, oklch(80% 0.1 var(--h)), oklch(65% 0.15 calc(var(--h) + 60))); }
+    .card p { margin: 0; font-size: 14px; color: var(--muted); }
+    .card a { align-self: end; padding: 6px 10px; border-radius: 8px; background: var(--accent); color: white; text-decoration: none; text-align: center; font-size: 14px; }
+    /* Tint each row so the alignment across cards is visible */
+    .show-rows .card > :nth-child(1) { outline: 2px dashed oklch(70% 0.15 250 / 0.7); outline-offset: 2px; }
+    .show-rows .card > :nth-child(3) { outline: 2px dashed oklch(70% 0.15 150 / 0.7); outline-offset: 2px; }
+  </style>
+</head>
+<body class="demo">
+  <div class="controls">
+    <label class="control"><input type="checkbox" id="sub" checked> .card { grid-template-rows: subgrid }</label>
+    <label class="control"><input type="checkbox" id="rows" checked> outline the title and text rows</label>
+  </div>
+  <div class="stage">
+    <ul class="cards sub show-rows" id="cards">
+      <li class="card"><h2>Lake Loop</h2><div class="thumb" style="--h: 220"></div><p>An easy circuit around the water.</p><a href="#">View trail</a></li>
+      <li class="card"><h2>North Ridge Traverse via the Old Shepherd Path</h2><div class="thumb" style="--h: 140"></div><p>Long and exposed. Bring water, a map and a jacket for the wind on the ridge.</p><a href="#">View trail</a></li>
+      <li class="card"><h2>Pine Valley</h2><div class="thumb" style="--h: 60"></div><p>Shady forest paths with two small bridges and a picnic area.</p><a href="#">View trail</a></li>
+    </ul>
+    <pre class="code" id="code"></pre>
+  </div>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    function update() {
+      const sub = $('sub').checked;
+      $('cards').classList.toggle('sub', sub);
+      $('cards').classList.toggle('show-rows', $('rows').checked);
+      $('code').textContent = sub
+        ? `.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }\n.card  { display: grid; grid-row: span 4; grid-template-rows: subgrid; }`
+        : `.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }\n.card  { display: grid; }  /* each card sizes its own rows */`;
+    }
+    document.querySelectorAll('input').forEach((el) => el.addEventListener('input', update));
+    update();
+  </script>
+</body>
+</html>
