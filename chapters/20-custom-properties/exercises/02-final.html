@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 20-2 (final): A Pointer Spotlight</title>
+  <style>
+    .card {
+      inline-size: min(420px, 100%);
+      padding: 28px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      /* The script only provides the pointer position; CSS draws the light */
+      background:
+        radial-gradient(circle 160px at var(--x, 50%) var(--y, 50%), oklch(75% 0.12 250 / 0.35), transparent 70%),
+        var(--surface);
+    }
+    .card h2 { margin: 0 0 8px; }
+    .card p { margin: 0; color: var(--muted); }
+  </style>
+</head>
+<body class="demo">
+  <article class="card" id="card">
+    <h2>Night walk</h2>
+    <p>Move the pointer over this card. A soft light should follow it.</p>
+  </article>
+  <script>
+    const card = document.getElementById('card');
+    card.addEventListener('pointermove', (e) => {
+      const r = card.getBoundingClientRect();
+      const x = e.clientX - r.left;
+      const y = e.clientY - r.top;
+      // Two custom properties are the whole interface between script and style
+      card.style.setProperty('--x', x + 'px');
+      card.style.setProperty('--y', y + 'px');
+    });
+  </script>
+</body>
+</html>

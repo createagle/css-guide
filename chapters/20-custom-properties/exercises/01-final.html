@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 20-1 (final): A Button API</title>
+  <style>
+    .row { display: flex; flex-wrap: wrap; gap: 10px; }
+    /* The component reads its look from a few custom properties, each with a default */
+    .btn {
+      --_base: var(--btn-tone, oklch(55% 0.15 250));
+      --_tone: var(--_base);
+      padding: 8px 16px;
+      border-radius: var(--btn-radius, 8px);
+      border: 2px solid var(--_tone);
+      background: var(--btn-bg, var(--_tone));
+      color: var(--btn-text, white);
+      font: inherit;
+      cursor: pointer;
+    }
+    /* Hover darkens the base colour; --_tone never refers to itself, so there is no cycle */
+    .btn:hover { --_tone: color-mix(in oklch, var(--_base), black 15%); }
+    .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    /* Variants only change the inputs */
+    .btn-danger { --btn-tone: oklch(55% 0.19 25); }
+    .btn-ghost { --btn-bg: transparent; --btn-text: var(--fg); }
+    .btn-ghost:hover { --btn-bg: color-mix(in oklch, var(--_base) 12%, transparent); --_tone: var(--_base); }
+    /* And a new variant costs one line */
+    .btn-pill { --btn-radius: 99px; --btn-tone: oklch(55% 0.14 160); }
+  </style>
+</head>
+<body class="demo">
+  <div class="row">
+    <button class="btn" type="button">Save</button>
+    <button class="btn btn-danger" type="button">Delete</button>
+    <button class="btn btn-ghost" type="button">Cancel</button>
+    <button class="btn btn-pill" type="button">Follow</button>
+  </div>
+</body>
+</html>

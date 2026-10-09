@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 20-3 (final): A Gradient That Transitions</title>
+  <style>
+    /* Register the two stop colours as <color>, so the browser knows how to interpolate them */
+    @property --c1 { syntax: "<color>"; inherits: false; initial-value: oklch(60% 0.18 280); }
+    @property --c2 { syntax: "<color>"; inherits: false; initial-value: oklch(65% 0.17 220); }
+    .cta {
+      padding: 14px 28px;
+      border: 0;
+      border-radius: 12px;
+      color: white;
+      font: 600 18px/1 system-ui, sans-serif;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--c1), var(--c2));
+      /* Transition the custom properties, not the background */
+      transition: --c1 0.4s, --c2 0.4s;
+    }
+    .cta:hover, .cta:focus-visible { --c1: oklch(65% 0.19 340); --c2: oklch(70% 0.17 40); }
+    .cta:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+    @media (prefers-reduced-motion: reduce) { .cta { transition: none; } }
+  </style>
+</head>
+<body class="demo">
+  <button class="cta" type="button">Start your trip</button>
+</body>
+</html>

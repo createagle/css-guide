@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>20-1 Theme Tuner</title>
+  <style>
+    .controls { max-width: 820px; }
+    .stage { width: min(860px, 100%); flex-direction: column; flex-wrap: nowrap; align-items: stretch; }
+    /* The whole theme is four numbers. Everything below derives from them. */
+    .theme {
+      --hue: 250;
+      --chroma: 0.14;
+      --radius: 10px;
+      --space: 12px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+      gap: var(--space);
+    }
+    /* A local override: this section only changes the hue, and inherits the rest */
+    .theme .promo { --hue: 30; }
+    /* Derived colours are declared where they are used, so each card resolves them with its own --hue */
+    .card {
+      --brand: oklch(55% var(--chroma) var(--hue));
+      --brand-soft: oklch(94% calc(var(--chroma) / 3) var(--hue));
+      --brand-ink: oklch(30% calc(var(--chroma) / 2) var(--hue));
+      display: grid;
+      gap: var(--space);
+      padding: calc(var(--space) * 1.5);
+      border-radius: var(--radius);
+      background: var(--brand-soft);
+      color: var(--brand-ink);
+    }
+    @media (prefers-color-scheme: dark) {
+      .card {
+        --brand: oklch(72% var(--chroma) var(--hue));
+        --brand-soft: oklch(30% calc(var(--chroma) / 3) var(--hue));
+        --brand-ink: oklch(92% calc(var(--chroma) / 3) var(--hue));
+      }
+    }
+    .card h2 { margin: 0; font-size: 18px; }
+    .card p, .card label { margin: 0; font-size: 14px; }
+    .badge { justify-self: start; padding: 2px 10px; border-radius: 99px; font-size: 12px; background: var(--brand); color: white; }
+    .row { display: flex; flex-wrap: wrap; gap: 8px; }
+    .btn { padding: 6px 14px; border-radius: calc(var(--radius) * 0.6); border: 2px solid var(--brand); font: inherit; font-size: 14px; cursor: pointer; }
+    .btn.primary { background: var(--brand); color: white; }
+    .btn.ghost { background: transparent; color: var(--brand-ink); }
+    .card input { padding: 6px 8px; border-radius: calc(var(--radius) * 0.6); border: 1px solid var(--brand); background: var(--bg); color: var(--fg); font: inherit; font-size: 14px; }
+    .btn:focus-visible, .card input:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+    @media (prefers-color-scheme: dark) { .badge, .btn.primary { color: oklch(20% 0.02 var(--hue)); } }
+  </style>
+</head>
+<body class="demo">
+  <div class="controls">
+    <label class="control">--hue <input type="range" id="hue" min="0" max="360" value="250"> <output id="hue-out"></output></label>
+    <label class="control">--chroma <input type="range" id="chroma" min="0" max="0.3" step="0.01" value="0.14"> <output id="chroma-out"></output></label>
+    <label class="control">--radius <input type="range" id="radius" min="0" max="24" value="10"> <output id="radius-out"></output></label>
+    <label class="control">--space <input type="range" id="space" min="6" max="24" value="12"> <output id="space-out"></output></label>
+  </div>
+  <div class="stage">
+    <div class="theme" id="theme">
+      <section class="card" aria-labelledby="t1">
+        <span class="badge">New</span>
+        <h2 id="t1">Autumn walks</h2>
+        <p>Six guided routes through the colours of the season.</p>
+        <div class="row"><button class="btn primary" type="button">Book</button><button class="btn ghost" type="button">Details</button></div>
+      </section>
+      <section class="card" aria-labelledby="t2">
+        <h2 id="t2">Newsletter</h2>
+        <label for="email">Email</label>
+        <input id="email" type="email" autocomplete="email" placeholder="you@example.com">
+        <div class="row"><button class="btn primary" type="button">Subscribe</button></div>
+      </section>
+      <section class="card promo" aria-labelledby="t3">
+        <span class="badge">.promo { --hue: 30 }</span>
+        <h2 id="t3">Winter sale</h2>
+        <p>Only the hue is overridden here; chroma, radius and spacing still come from the theme.</p>
+        <div class="row"><button class="btn primary" type="button">Shop</button></div>
+      </section>
+    </div>
+    <pre class="code" id="code"></pre>
+  </div>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const units = { hue: '', chroma: '', radius: 'px', space: 'px' };
+    function update() {
+      const lines = [];
+      for (const [name, unit] of Object.entries(units)) {
+        const value = $(name).value + unit;
+        // JavaScript only writes the raw values; CSS does all the colour and spacing work
+        $('theme').style.setProperty('--' + name, value);
+        $(name + '-out').textContent = value;
+        lines.push(`  --${name}: ${value};`);
+      }
+      $('code').textContent = `element.style.setProperty('--hue', …)\n\n.theme {\n${lines.join('\n')}\n}`;
+    }
+    document.querySelectorAll('input[type="range"]').forEach((el) => el.addEventListener('input', update));
+    update();
+  </script>
+</body>
+</html>

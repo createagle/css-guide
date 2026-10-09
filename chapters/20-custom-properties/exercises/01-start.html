@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 20-1 (start): A Button API</title>
+  <style>
+    .row { display: flex; flex-wrap: wrap; gap: 10px; }
+    .btn {
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: 2px solid oklch(55% 0.15 250);
+      background: oklch(55% 0.15 250);
+      color: white;
+      font: inherit;
+      cursor: pointer;
+    }
+    .btn:hover { background: oklch(48% 0.15 250); border-color: oklch(48% 0.15 250); }
+    .btn-danger { border: 2px solid oklch(55% 0.19 25); background: oklch(55% 0.19 25); color: white; }
+    .btn-danger:hover { background: oklch(48% 0.19 25); border-color: oklch(48% 0.19 25); }
+    .btn-ghost { border: 2px solid oklch(55% 0.15 250); background: transparent; color: var(--fg); }
+    .btn-ghost:hover { background: oklch(55% 0.15 250 / 0.12); border-color: oklch(55% 0.15 250); }
+    .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  </style>
+</head>
+<body class="demo">
+  <div class="row">
+    <button class="btn" type="button">Save</button>
+    <button class="btn btn-danger" type="button">Delete</button>
+    <button class="btn btn-ghost" type="button">Cancel</button>
+  </div>
+</body>
+</html>
