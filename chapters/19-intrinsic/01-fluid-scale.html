@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>19-1 Fluid Type Scale Generator</title>
+  <style>
+    .controls { max-width: 900px; }
+    .controls input[type="number"] { inline-size: 5.5em; }
+    .stage { width: min(1000px, 100%); flex-direction: column; flex-wrap: nowrap; align-items: stretch; }
+    /* The preview is a size container, so the same formula can use cqi and follow the slider */
+    .preview {
+      container-type: inline-size;
+      inline-size: calc(var(--pw) * 1px);
+      max-inline-size: 100%;
+      /* No padding or border on the container itself: its content box is exactly the slider width */
+      outline: 2px dashed var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .preview-inner { padding: 12px 16px; }
+    .preview p { margin: 0 0 6px; line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .preview p span { font: 11px var(--mono); color: var(--muted); margin-inline-end: 8px; }
+    table { inline-size: 100%; border-collapse: collapse; font: 12px var(--mono); }
+    th, td { padding: 4px 8px; border-block-end: 1px solid var(--border); text-align: end; }
+    th:first-child, td:first-child { text-align: start; }
+  </style>
+</head>
+<body class="demo">
+  <div class="controls">
+    <label class="control">viewport min <input type="number" id="vmin" value="320" min="200" max="900" step="10"></label>
+    <label class="control">max <input type="number" id="vmax" value="1280" min="600" max="2400" step="10"></label>
+    <label class="control">base size min <input type="number" id="bmin" value="16" min="10" max="30"></label>
+    <label class="control">max <input type="number" id="bmax" value="20" min="10" max="40"></label>
+    <label class="control">ratio min
+      <select id="rmin"><option value="1.125">1.125</option><option value="1.2" selected>1.2</option><option value="1.25">1.25</option><option value="1.333">1.333</option></select>
+    </label>
+    <label class="control">max
+      <select id="rmax"><option value="1.2">1.2</option><option value="1.25">1.25</option><option value="1.333" selected>1.333</option><option value="1.5">1.5</option></select>
+    </label>
+    <label class="control">preview width <input type="range" id="pw" min="320" max="1000" step="10" value="640"> <output id="pw-out"></output></label>
+  </div>
+  <div class="stage" id="stage">
+    <div class="preview"><div class="preview-inner" id="preview"></div></div>
+    <table>
+      <thead><tr><th scope="col">Step</th><th scope="col">At min viewport</th><th scope="col">At max viewport</th><th scope="col">In the preview</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <pre class="code" id="code"></pre>
+  </div>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const steps = [-1, 0, 1, 2, 3, 4, 5];
+    const round = (n) => Math.round(n * 1000) / 1000;
+    function clampFor(minPx, maxPx, vmin, vmax, unit) {
+      // A straight line through (vmin, minPx) and (vmax, maxPx): size = intercept + slope × width
+      const slope = (maxPx - minPx) / (vmax - vmin);
+      const intercept = minPx - slope * vmin;
+      const lo = Math.min(minPx, maxPx) / 16, hi = Math.max(minPx, maxPx) / 16;
+      return `clamp(${round(lo)}rem, ${round(intercept / 16)}rem + ${round(slope * 100)}${unit}, ${round(hi)}rem)`;
+    }
+    function update() {
+      const vmin = +$('vmin').value, vmax = +$('vmax').value;
+      const bmin = +$('bmin').value, bmax = +$('bmax').value;
+      const rmin = +$('rmin').value, rmax = +$('rmax').value;
+      const pw = +$('pw').value;
+      $('pw-out').textContent = pw + 'px';
+      $('stage').style.setProperty('--pw', pw);
+      const lines = [':root {'];
+      $('preview').innerHTML = '';
+      $('rows').innerHTML = '';
+      [...steps].reverse().forEach((n) => {
+        const minPx = bmin * rmin ** n, maxPx = bmax * rmax ** n;
+        lines.push(`  --step-${n < 0 ? 'm' + -n : n}: ${clampFor(minPx, maxPx, vmin, vmax, 'vi')};`);
+        const p = document.createElement('p');
+        p.style.fontSize = clampFor(minPx, maxPx, vmin, vmax, 'cqi');
+        p.innerHTML = `<span>step ${n}</span>Walk in the hills`;
+        $('preview').append(p);
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${n}</td><td>${minPx.toFixed(1)}px</td><td>${maxPx.toFixed(1)}px</td><td></td>`;
+        tr.dataset.step = n;
+        $('rows').append(tr);
+      });
+      lines.push('}');
+      $('code').textContent = lines.join('\n');
+      // Read back what the browser actually computed inside the preview
+      requestAnimationFrame(() => {
+        const ps = [...$('preview').children];
+        [...$('rows').children].forEach((tr, i) => { tr.lastElementChild.textContent = parseFloat(getComputedStyle(ps[i]).fontSize).toFixed(1) + 'px'; });
+      });
+    }
+    document.querySelectorAll('input, select').forEach((el) => el.addEventListener('input', update));
+    update();
+  </script>
+</body>
+</html>

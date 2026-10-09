@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 19-2 (final): Photos in Cards</title>
+  <style>
+    .cards { inline-size: min(760px, 100%); margin: 0; padding: 0; list-style: none; display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(min(200px, 100%), 1fr)); }
+    .cards li { border-radius: 12px; overflow: clip; background: var(--surface); border: 1px solid var(--border); }
+    .cards h2 { margin: 10px 12px 4px; font-size: 15px; }
+    .cards p { margin: 0 12px 12px; font-size: 13px; color: var(--muted); }
+    .cards img {
+      display: block;
+      inline-size: 100%;
+      /* The same shape for every card, whatever the shape of the photo */
+      aspect-ratio: 4 / 3;
+      block-size: auto;
+      /* Fill the box and crop the rest instead of stretching */
+      object-fit: cover;
+    }
+    /* The sun in the tall photo is near the top: keep that part in view */
+    .cards img.tall { object-position: 50% 20%; }
+  </style>
+</head>
+<body class="demo">
+  <ul class="cards">
+    <li><img src="img/panorama.jpg" width="900" height="300" alt="Wide view of green hills under an evening sky"><h2>Ridge Panorama</h2><p>A wide view from the top.</p></li>
+    <li><img class="tall" src="img/tower.jpg" width="400" height="600" alt="Dark hills and a low sun in a tall photo"><h2>Watchtower</h2><p>A tall photo of the evening.</p></li>
+    <li><img src="img/meadow.jpg" width="500" height="500" alt="Square photo of a meadow and a pale sun"><h2>Meadow</h2><p>A square photo.</p></li>
+  </ul>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>19-2 Layouts Without Media Queries</title>
+  <style>
+    .controls { max-width: 760px; }
+    .stage { width: min(920px, 100%); flex-direction: column; flex-wrap: nowrap; align-items: stretch; gap: 18px; }
+    .case { inline-size: calc(var(--w) * 1px); max-inline-size: 100%; }
+    .case .head { display: flex; justify-content: space-between; gap: 8px; margin: 0 0 6px; font: 12px var(--mono); color: var(--muted); }
+    .box { padding: 10px; border-radius: 8px; font-size: 13px; background: color-mix(in oklch, var(--accent) 16%, var(--bg)); border: 1px solid color-mix(in oklch, var(--accent) 40%, var(--bg)); }
+    .frame { padding: 8px; border: 2px dashed var(--border); border-radius: 10px; }
+    /* 1. Grid: as many columns of at least --min as fit */
+    .grid { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(min(var(--min), 100%), 1fr)); }
+    /* 2. Flex: items start at --min, wrap, and grow to fill each row */
+    .flex { display: flex; flex-wrap: wrap; gap: 8px; }
+    .flex > * { flex: 1 1 var(--min); }
+    /* 3. Sidebar: side by side while the main column keeps at least 55%, stacked otherwise */
+    .sidebar { display: flex; flex-wrap: wrap; gap: 8px; }
+    .sidebar > aside { flex: 1 1 10rem; }
+    .sidebar > main { flex: 999 1 0; min-inline-size: 55%; }
+    /* 4. A label column as wide as the longest label, but never more than 9rem */
+    .fit { display: grid; grid-template-columns: fit-content(9rem) 1fr; gap: 6px 10px; align-items: center; }
+    .fit .k { font-weight: 600; }
+  </style>
+</head>
+<body class="demo">
+  <div class="controls">
+    <label class="control">container width <input type="range" id="w" min="200" max="900" step="10" value="620"> <output id="w-out"></output></label>
+    <label class="control">--min <input type="range" id="min" min="80" max="260" step="10" value="150"> <output id="min-out"></output></label>
+  </div>
+  <div class="stage" id="stage">
+    <section class="case" aria-label="Grid with auto-fit and minmax">
+      <p class="head"><span>1 · repeat(auto-fit, minmax(min(--min, 100%), 1fr))</span><span data-info="grid"></span></p>
+      <div class="frame"><div class="grid" id="grid"><div class="box">1</div><div class="box">2</div><div class="box">3</div><div class="box">4</div><div class="box">5</div></div></div>
+    </section>
+    <section class="case" aria-label="Wrapping flex row">
+      <p class="head"><span>2 · flex: 1 1 --min; flex-wrap: wrap</span></p>
+      <div class="frame"><div class="flex"><div class="box">1</div><div class="box">2</div><div class="box">3</div><div class="box">4</div><div class="box">5</div></div></div>
+    </section>
+    <section class="case" aria-label="Sidebar that wraps">
+      <p class="head"><span>3 · sidebar: flex 999 + min-inline-size: 55%</span><span data-info="sidebar"></span></p>
+      <div class="frame"><div class="sidebar" id="sidebar"><aside class="box">Sidebar</aside><main class="box">Main content keeps at least 55% of the row; when it cannot, the sidebar moves above it.</main></div></div>
+    </section>
+    <section class="case" aria-label="Label column with fit-content">
+      <p class="head"><span>4 · grid-template-columns: fit-content(9rem) 1fr</span></p>
+      <div class="frame"><div class="fit">
+        <span class="k">Distance</span><span class="box">12 km</span>
+        <span class="k">Time</span><span class="box">5 hours 10 minutes</span>
+        <span class="k">Starting point and parking</span><span class="box">Village church; free parking behind the school</span>
+      </div></div>
+    </section>
+  </div>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    function update() {
+      const stage = $('stage');
+      stage.style.setProperty('--w', $('w').value);
+      stage.style.setProperty('--min', $('min').value + 'px');
+      $('w-out').textContent = $('w').value + 'px';
+      $('min-out').textContent = $('min').value + 'px';
+      requestAnimationFrame(() => {
+        const cols = getComputedStyle($('grid')).gridTemplateColumns.split(' ').length;
+        document.querySelector('[data-info="grid"]').textContent = `${cols} column${cols > 1 ? 's' : ''}`;
+        const [aside, main] = $('sidebar').children;
+        document.querySelector('[data-info="sidebar"]').textContent = aside.getBoundingClientRect().top === main.getBoundingClientRect().top ? 'side by side' : 'stacked';
+      });
+    }
+    document.querySelectorAll('input').forEach((el) => el.addEventListener('input', update));
+    addEventListener('resize', update);
+    update();
+  </script>
+</body>
+</html>

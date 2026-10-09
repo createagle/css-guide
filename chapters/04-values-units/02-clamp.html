@@ -6,7 +6,7 @@
   <link rel="stylesheet" href="../../assets/style.css">
   <title>4-2 clamp(), min() and max() Simulator</title>
   <style>
-    .stage { width: min(960px, 100%); flex-direction: column; align-items: center; }
+    .stage { width: min(960px, 100%); flex-direction: column; flex-wrap: nowrap; align-items: center; }
     /* The "viewport": a box whose width the slider controls.
        Inside it, cqi works like vw does on a real page (chapter 18 explains cqi). */
     .viewport { container-type: inline-size; width: var(--w, 600px); max-width: 100%; border: 2px solid var(--accent); border-radius: 10px; padding: 16px; overflow: hidden; }

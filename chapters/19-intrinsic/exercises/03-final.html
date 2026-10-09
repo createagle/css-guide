@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 19-3 (final): A Sidebar That Wraps</title>
+  <style>
+    .demo-wrap { inline-size: min(900px, 100%); display: grid; grid-template-columns: 1fr 300px; gap: 16px; align-items: start; }
+    @media (width < 40em) { .demo-wrap { grid-template-columns: 1fr; } }
+    .area { padding: 8px; border: 2px dashed var(--border); border-radius: 10px; }
+    .area > .label { margin: 0 0 6px; }
+    .media aside, .media main { padding: 10px; border-radius: 8px; font-size: 14px; background: var(--surface); border: 1px solid var(--border); }
+    /* Side by side while main keeps at least half the width; otherwise the sidebar wraps above it */
+    .media { display: flex; flex-wrap: wrap; gap: 8px; }
+    .media aside { flex: 1 1 9rem; }
+    .media main { flex: 999 1 0; min-inline-size: 50%; }
+  </style>
+</head>
+<body class="demo">
+  <div class="demo-wrap">
+    <section class="area" aria-label="Wide area"><p class="label">Wide area</p><div class="media"><aside>Trail facts: 12 km, 5 h, hard</aside><main>The North Ridge is the classic long walk of the region, with views over three valleys and a steep start from the old mill.</main></div></section>
+    <section class="area" aria-label="Narrow area"><p class="label">Narrow area</p><div class="media"><aside>Trail facts: 12 km, 5 h, hard</aside><main>The North Ridge is the classic long walk of the region, with views over three valleys and a steep start from the old mill.</main></div></section>
+  </div>
+</body>
+</html>

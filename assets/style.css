@@ -64,7 +64,7 @@ output { color: var(--fg); font-variant-numeric: tabular-nums; }
   max-width: 100%;
 }
 .panel > h2:first-child, .panel > .label:first-child { margin-top: 0; }
-.label { font-size: 12px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); margin: 0 0 8px; }
+.label { font-size: 12px; font-weight: 600; color: var(--muted); margin: 0 0 8px; }
 pre.code {
   margin: 0;
   padding: 12px 14px;

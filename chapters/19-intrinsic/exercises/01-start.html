@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 19-1 (start): A Fluid Heading</title>
+  <style>
+    .hero { inline-size: min(900px, 100%); padding: 24px; border-radius: 14px; background: var(--surface); border: 1px solid var(--border); }
+    .hero p { margin: 8px 0 0; color: var(--muted); max-inline-size: 60ch; }
+    /* Three fixed sizes: the heading jumps at each breakpoint */
+    .hero h1 { margin: 0; line-height: 1.1; font-size: 24px; }
+    @media (width >= 40em) { .hero h1 { font-size: 34px; } }
+    @media (width >= 64em) { .hero h1 { font-size: 46px; } }
+  </style>
+</head>
+<body class="demo">
+  <header class="hero">
+    <h1>Walks for every season</h1>
+    <p>Resize the window slowly from narrow to wide and watch the size of the heading.</p>
+  </header>
+</body>
+</html>

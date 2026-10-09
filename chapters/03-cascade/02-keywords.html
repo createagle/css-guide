@@ -9,7 +9,7 @@
     @import url("../../assets/style.css") layer(shared);
     @layer shared, base, override;
 
-    .stage { width: min(820px, 100%); flex-direction: column; align-items: stretch; }
+    .stage { width: min(820px, 100%); flex-direction: column; flex-wrap: nowrap; align-items: stretch; }
     .samples { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
     .samples figure { margin: 0; }
 
