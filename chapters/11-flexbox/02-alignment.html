@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>11-2 Flexbox Alignment at a Glance</title>
+  <style>
+    .stage { width: min(960px, 100%); flex-direction: column; align-items: stretch; gap: 20px; }
+    .row { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+    figure { margin: 0; }
+    figcaption { font: 12px var(--mono); color: var(--muted); margin-block-start: 4px; }
+    .box {
+      display: flex;
+      gap: 4px;
+      padding: 4px;
+      border: 1px dashed var(--accent);
+      border-radius: 6px;
+      background: var(--surface);
+    }
+    .row-dir .box { block-size: 90px; }
+    .row-dir #justify .box { block-size: 44px; }
+    .col-dir .box { flex-direction: column; block-size: 150px; }
+    .box span {
+      min-inline-size: 22px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: color-mix(in oklch, var(--accent) 25%, var(--bg));
+      font-size: 13px;
+    }
+    /* Different sizes so baseline and stretch are visible */
+    .box span:nth-child(2) { font-size: 22px; }
+    .box span:nth-child(3) { padding-block: 10px; }
+  </style>
+</head>
+<body class="demo">
+  <div class="controls">
+    <label class="control">flex-direction
+      <select id="dir"><option value="row-dir">row</option><option value="col-dir">column</option></select>
+    </label>
+  </div>
+  <div class="stage" id="stage">
+    <section>
+      <p class="label">justify-content: distributes items along the main axis</p>
+      <div class="row" id="justify"></div>
+    </section>
+    <section>
+      <p class="label">align-items: places items on the cross axis</p>
+      <div class="row" id="align"></div>
+    </section>
+  </div>
+  <script>
+    const items = '<span>a</span><span>Bg</span><span>c</span>';
+    const fill = (id, prop, values) => {
+      document.getElementById(id).innerHTML = values.map((v) =>
+        `<figure><div class="box" style="${prop}: ${v}">${items}</div><figcaption>${v}</figcaption></figure>`).join('');
+    };
+    fill('justify', 'justify-content', ['flex-start', 'center', 'flex-end', 'space-between', 'space-around', 'space-evenly']);
+    fill('align', 'align-items', ['stretch', 'flex-start', 'center', 'flex-end', 'baseline']);
+    const stage = document.getElementById('stage');
+    const dir = document.getElementById('dir');
+    const update = () => { stage.className = 'stage ' + dir.value; };
+    dir.addEventListener('input', update);
+    update();
+  </script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>11-1 Flexbox Playground</title>
+  <style>
+    .controls { max-width: 900px; }
+    .stage { width: min(900px, 100%); flex-direction: column; align-items: stretch; }
+    .frame { display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto 1fr; gap: 4px 8px; }
+    .axis { font: 12px var(--mono); color: var(--muted); }
+    .axis b { color: var(--accent); }
+    .axis-main { grid-column: 2; }
+    .axis-cross { grid-row: 2; writing-mode: vertical-rl; text-align: center; }
+    /* Keep the arrow pointing the way it is drawn inside vertical text */
+    .axis-cross b { text-orientation: upright; }
+    .container {
+      grid-column: 2;
+      grid-row: 2;
+      display: flex;
+      inline-size: calc(var(--w, 100) * 1%);
+      block-size: 260px;
+      padding: 8px;
+      border: 2px dashed var(--accent);
+      border-radius: 10px;
+      background: var(--surface);
+      overflow: auto;
+    }
+    .item {
+      padding: 8px 12px;
+      border-radius: 6px;
+      background: color-mix(in oklch, var(--accent) 22%, var(--bg));
+      border: 1px solid color-mix(in oklch, var(--accent) 50%, var(--bg));
+      font-size: 14px;
+    }
+    .item:nth-child(3n + 2) { font-size: 20px; }
+    .item:nth-child(3n) { padding-block: 16px; }
+  </style>
+</head>
+<body class="demo">
+  <div class="controls">
+    <label class="control">flex-direction
+      <select id="flex-direction"><option>row</option><option>row-reverse</option><option>column</option><option>column-reverse</option></select>
+    </label>
+    <label class="control">flex-wrap
+      <select id="flex-wrap"><option>nowrap</option><option selected>wrap</option><option>wrap-reverse</option></select>
+    </label>
+    <label class="control">justify-content
+      <select id="justify-content"><option>flex-start</option><option>center</option><option>flex-end</option><option>space-between</option><option>space-around</option><option>space-evenly</option></select>
+    </label>
+    <label class="control">align-items
+      <select id="align-items"><option>stretch</option><option>flex-start</option><option>center</option><option>flex-end</option><option>baseline</option></select>
+    </label>
+    <label class="control">align-content
+      <select id="align-content"><option>normal</option><option>flex-start</option><option>center</option><option>flex-end</option><option>space-between</option><option>space-around</option><option>stretch</option></select>
+    </label>
+    <label class="control">gap <input type="range" id="gap" min="0" max="32" value="8"> <output id="gap-out"></output></label>
+    <label class="control">items <input type="range" id="count" min="1" max="10" value="6"> <output id="count-out"></output></label>
+    <label class="control">container width <input type="range" id="width" min="30" max="100" value="100"> <output id="width-out"></output></label>
+  </div>
+  <div class="stage">
+    <div class="frame">
+      <span></span>
+      <div class="axis axis-main" id="main-axis"></div>
+      <div class="axis axis-cross" id="cross-axis"></div>
+      <div class="container" id="box"></div>
+    </div>
+    <pre class="code" id="code"></pre>
+  </div>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const words = ['One', 'Two items', 'Three', 'Four four four', 'Five', 'Six', 'Seven sevens', 'Eight', 'Nine', 'Ten'];
+    const props = ['flex-direction', 'flex-wrap', 'justify-content', 'align-items', 'align-content'];
+    const arrows = { row: '→', 'row-reverse': '←', column: '↓', 'column-reverse': '↑' };
+    function update() {
+      const box = $('box');
+      const n = Number($('count').value);
+      box.innerHTML = words.slice(0, n).map((w, i) => `<div class="item">${i + 1}. ${w}</div>`).join('');
+      props.forEach((p) => box.style.setProperty(p, $(p).value));
+      box.style.gap = $('gap').value + 'px';
+      box.style.setProperty('--w', $('width').value);
+      $('gap-out').textContent = $('gap').value + 'px';
+      $('count-out').textContent = n;
+      $('width-out').textContent = $('width').value + '%';
+
+      const dir = $('flex-direction').value, isRow = dir.startsWith('row');
+      const wrapRev = $('flex-wrap').value === 'wrap-reverse';
+      const cross = isRow ? (wrapRev ? '↑' : '↓') : (wrapRev ? '←' : '→');
+      // Label the axes along the edges they follow
+      $('main-axis').innerHTML = isRow ? `main axis <b>${arrows[dir]}</b> &nbsp; justify-content` : `cross axis <b>${cross}</b> &nbsp; align-items / align-content`;
+      $('cross-axis').innerHTML = isRow ? `cross axis <b>${cross}</b> &nbsp; align-items` : `main axis <b>${arrows[dir]}</b> &nbsp; justify-content`;
+      $('code').textContent = `.container {\n  display: flex;\n${props.map((p) => `  ${p}: ${$(p).value};`).join('\n')}\n  gap: ${$('gap').value}px;\n}`;
+    }
+    document.querySelectorAll('input, select').forEach((el) => el.addEventListener('input', update));
+    update();
+  </script>
+</body>
+</html>

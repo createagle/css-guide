@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 11-3 (start): A Tag Cloud</title>
+  <style>
+    .tags {
+      inline-size: min(420px, 100%);
+      block-size: 240px;
+      margin: 0;
+      padding: 12px;
+      list-style: none;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      text-align: center;
+    }
+    .tags li {
+      display: inline-block;
+      margin: 0 8px 8px 0;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: color-mix(in oklch, var(--accent) 15%, var(--bg));
+      font-size: 14px;
+    }
+    .tags li.big { font-size: 18px; font-weight: 600; }
+  </style>
+</head>
+<body class="demo">
+  <ul class="tags" aria-label="Tags">
+    <li class="big">hiking</li>
+    <li>lakes</li>
+    <li>family</li>
+    <li class="big">alpine</li>
+    <li>dogs welcome</li>
+    <li>loop</li>
+    <li>waterfalls</li>
+    <li class="big">sunrise</li>
+    <li>easy</li>
+    <li>camping</li>
+  </ul>
+</body>
+</html>

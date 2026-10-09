@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 11-2 (final): Center It</title>
+  <style>
+    .panel-area {
+      inline-size: min(560px, 100%);
+      block-size: 320px;
+      border-radius: 12px;
+      background: var(--surface);
+      text-align: center;
+      /* Center the card on both axes, independent of its size */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .notice {
+      inline-size: 260px;
+      padding: 16px;
+      border-radius: 10px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+    }
+    .notice p { margin: 0 0 12px; }
+    .icon-btn {
+      font-size: 15px;
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--fg);
+      /* Center the icon against the text */
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .icon-btn svg { inline-size: 24px; block-size: 24px; stroke: currentColor; fill: none; stroke-width: 2; }
+  </style>
+</head>
+<body class="demo">
+  <div class="panel-area">
+    <div class="notice">
+      <p>No saved trails yet. This card should sit in the exact center of the grey area, whatever its height.</p>
+      <button class="icon-btn" type="button">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+        Add a trail
+      </button>
+    </div>
+  </div>
+</body>
+</html>
