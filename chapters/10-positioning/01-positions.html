@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>10-1 Five Kinds of Positioning</title>
+  <style>
+    .stage { width: min(900px, 100%); align-items: stretch; }
+    /* A small scrolling "page" so sticky and fixed have something to scroll against */
+    .page {
+      flex: 1 1 420px;
+      block-size: 360px;
+      overflow: auto;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0 16px;
+      background: var(--bg);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .page.positioned { position: relative; }
+    .page.transformed { transform: translateZ(0); }
+    .page p { margin: 12px 0; color: var(--muted); }
+    .target {
+      inline-size: 150px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: oklch(70% 0.15 60);
+      color: oklch(20% 0.05 60);
+      font-weight: 600;
+      font-size: 13px;
+    }
+    .side { flex: 1 1 240px; display: grid; gap: 12px; align-content: start; }
+    .readout p { margin: 0 0 6px; font-size: 13px; }
+    .readout b { font-family: var(--mono); }
+  </style>
+</head>
+<body class="demo">
+  <div class="controls">
+    <label class="control">position
+      <select id="pos">
+        <option>static</option>
+        <option selected>relative</option>
+        <option>absolute</option>
+        <option>fixed</option>
+        <option>sticky</option>
+      </select>
+    </label>
+    <label class="control">inset-block-start <input type="range" id="top" min="0" max="120" value="20"> <output id="top-out"></output></label>
+    <label class="control">inset-inline-start <input type="range" id="left" min="0" max="200" value="40"> <output id="left-out"></output></label>
+    <label class="control"><input type="checkbox" id="positioned" checked> .page { position: relative }</label>
+    <label class="control"><input type="checkbox" id="transformed"> .page { transform: translateZ(0) }</label>
+  </div>
+  <div class="stage">
+    <div class="page" id="page" tabindex="0" aria-label="Scrollable sample page">
+      <p>1. Scroll this box. The paragraphs around the orange box show whether it still takes up space.</p>
+      <p>2. Normal flow paragraph.</p>
+      <div class="target" id="target">.target</div>
+      <p>3. The paragraph right after the target.</p>
+      <p>4. Normal flow paragraph.</p>
+      <p>5. Normal flow paragraph.</p>
+      <p>6. Normal flow paragraph.</p>
+      <p>7. Normal flow paragraph.</p>
+      <p>8. Normal flow paragraph.</p>
+      <p>9. Normal flow paragraph.</p>
+      <p>10. Normal flow paragraph.</p>
+      <p>11. Normal flow paragraph.</p>
+      <p>12. The end.</p>
+    </div>
+    <div class="side">
+      <div class="panel readout" id="readout"></div>
+      <pre class="code" id="code"></pre>
+    </div>
+  </div>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const notes = {
+      static: ['Stays in normal flow', 'Inset properties are ignored', 'Not positioned'],
+      relative: ['Keeps its space in the flow', 'Shifted visually from where it would be', 'Itself'],
+      absolute: ['Taken out of the flow: paragraph 3 moves up', 'Placed inside its containing block', null],
+      fixed: ['Taken out of the flow', 'Placed against the viewport; does not scroll', null],
+      sticky: ['Keeps its space in the flow', 'Sticks once the scroller reaches the inset', 'Nearest scrolling box: .page']
+    };
+    function update() {
+      const pos = $('pos').value, top = $('top').value, left = $('left').value;
+      const positioned = $('positioned').checked, transformed = $('transformed').checked;
+      $('top-out').textContent = top + 'px';
+      $('left-out').textContent = left + 'px';
+      $('page').classList.toggle('positioned', positioned);
+      $('page').classList.toggle('transformed', transformed);
+      Object.assign($('target').style, { position: pos, insetBlockStart: top + 'px', insetInlineStart: left + 'px' });
+
+      // Which box the insets are measured from
+      let cb = notes[pos][2];
+      if (pos === 'absolute') cb = positioned || transformed ? '.page (nearest positioned or transformed ancestor)' : 'the initial containing block (the document)';
+      if (pos === 'fixed') cb = transformed ? '.page, because it has a transform' : 'the viewport';
+      $('readout').innerHTML = `<p class="label">position: ${pos}</p>
+        <p>${notes[pos][0]}</p><p>${notes[pos][1]}</p>
+        <p>Offsets measured from: <b>${cb}</b></p>`;
+      $('code').textContent = `.target {\n  position: ${pos};\n  inset-block-start: ${top}px;   /* top */\n  inset-inline-start: ${left}px; /* left */\n}`;
+    }
+    document.querySelectorAll('input, select').forEach((el) => el.addEventListener('input', update));
+    update();
+  </script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 10-2 (final): Section Headers That Stick</title>
+  <style>
+    .scroller {
+      inline-size: min(360px, 100%);
+      block-size: 320px;
+      overflow: auto;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+    /* overflow: clip still cuts the corners but, unlike hidden, does not make a scroll container */
+    .group { overflow: clip; border-radius: 8px; margin: 8px; background: var(--surface); }
+    .group h2 {
+      position: sticky;
+      /* Sticky needs an inset: stick when the header reaches the top of the scroller */
+      inset-block-start: 0;
+      margin: 0;
+      padding: 8px 12px;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      background: color-mix(in oklch, var(--accent) 20%, var(--bg));
+    }
+    .group ul { margin: 0; padding: 0; list-style: none; }
+    .group li { padding: 10px 12px; border-block-start: 1px solid var(--border); }
+  </style>
+</head>
+<body class="demo">
+  <div class="scroller" tabindex="0" aria-label="Contacts">
+    <section class="group"><h2>A</h2><ul><li>Ada</li><li>Alan</li><li>Alice</li><li>Amir</li><li>Anna</li></ul></section>
+    <section class="group"><h2>B</h2><ul><li>Bao</li><li>Beatriz</li><li>Ben</li><li>Bilal</li><li>Bo</li></ul></section>
+    <section class="group"><h2>C</h2><ul><li>Chen</li><li>Chloe</li><li>Cyrus</li><li>Clara</li><li>Cora</li></ul></section>
+  </div>
+</body>
+</html>

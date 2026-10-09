@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 10-1 (final): A Badge on the Avatar</title>
+  <style>
+    .people { display: flex; gap: 24px; }
+    .avatar {
+      /* The avatar becomes the containing block for its badge */
+      position: relative;
+      inline-size: 64px;
+      block-size: 64px;
+      border-radius: 50%;
+      background: oklch(75% 0.12 200);
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      color: oklch(25% 0.05 200);
+    }
+    .badge {
+      position: absolute;
+      /* Logical insets: the corner flips in right-to-left pages; negative values hang it off the edge */
+      inset-block-start: -4px;
+      inset-inline-end: -4px;
+      min-inline-size: 22px;
+      padding: 2px 6px;
+      border-radius: 999px;
+      background: oklch(58% 0.21 25);
+      color: white;
+      font-size: 12px;
+      font-weight: 700;
+      text-align: center;
+      /* A ring in the page color separates the badge from the avatar */
+      outline: 2px solid var(--bg);
+    }
+  </style>
+</head>
+<body class="demo">
+  <div class="people">
+    <div class="avatar">AM<span class="badge">3</span></div>
+    <div class="avatar">JL<span class="badge">12</span></div>
+  </div>
+</body>
+</html>

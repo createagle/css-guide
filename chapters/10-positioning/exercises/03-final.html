@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 10-3 (final): The Menu Behind the Banner</title>
+  <style>
+    body.demo { justify-content: flex-start; }
+    .site { inline-size: min(640px, 100%); border: 1px solid var(--border); border-radius: 12px; overflow: clip; }
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 16px;
+      background: var(--bg);
+      border-block-end: 1px solid var(--border);
+    }
+    .account { position: relative; }
+    .account button { font-size: 14px; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); color: var(--fg); }
+    .menu {
+      position: absolute;
+      inset-block-start: calc(100% + 6px);
+      inset-inline-end: 0;
+      z-index: 9999;
+      inline-size: 180px;
+      margin: 0;
+      padding: 6px 0;
+      list-style: none;
+      border-radius: 8px;
+      background: oklch(30% 0.03 260);
+      color: white;
+      box-shadow: 0 8px 24px oklch(0% 0 0 / 0.3);
+    }
+    .menu li { padding: 6px 14px; font-size: 14px; }
+    /* A banner whose label is layered over its image */
+    .hero { position: relative; z-index: 2; block-size: 200px; background: linear-gradient(135deg in oklch, #2563eb, #ec4899); }
+    .hero p { position: absolute; inset: auto 16px 16px; margin: 0; color: white; font-size: 24px; font-weight: 700; }
+    .content { padding: 16px; color: var(--muted); }
+    /* main becomes its own stacking context: the banner's z-index only competes inside it,
+       and main as a whole paints below the sticky header (z-index: 1) */
+    main { isolation: isolate; }
+  </style>
+</head>
+<body class="demo">
+  <div class="site">
+    <header class="header">
+      <strong>Trailhead</strong>
+      <div class="account">
+        <button type="button" aria-expanded="true" aria-controls="menu">Account</button>
+        <ul class="menu" id="menu"><li>Profile</li><li>Saved trails</li><li>Settings</li><li>Sign out</li></ul>
+      </div>
+    </header>
+    <main>
+      <div class="hero"><p>Spring trails are open</p></div>
+      <p class="content">The account menu above should sit on top of this banner.</p>
+    </main>
+  </div>
+</body>
+</html>

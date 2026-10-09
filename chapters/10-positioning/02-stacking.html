@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>10-2 Why z-index Does Not Work</title>
+  <style>
+    .stage { width: min(900px, 100%); align-items: flex-start; }
+    .board { flex: 1 1 380px; position: relative; block-size: 300px; padding: 16px; background: var(--surface); border-radius: 12px; }
+    .card {
+      position: relative;
+      inline-size: 220px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 14px;
+    }
+    .a { background: oklch(85% 0.08 250); color: oklch(25% 0.05 250); }
+    .b { background: oklch(86% 0.1 150); color: oklch(25% 0.05 150); margin: -12px 0 0 120px; block-size: 140px; }
+    /* The menu wants to be on top of everything */
+    .menu {
+      position: absolute;
+      inset-block-start: 100%;
+      inset-inline-start: 24px;
+      z-index: 999;
+      inline-size: 180px;
+      margin: 4px 0 0;
+      padding: 8px 0;
+      list-style: none;
+      border-radius: 8px;
+      background: oklch(30% 0.03 260);
+      color: white;
+      box-shadow: 0 6px 20px oklch(0% 0 0 / 0.3);
+    }
+    .menu li { padding: 6px 14px; }
+    .side { flex: 1 1 260px; display: grid; gap: 12px; }
+    .tree { font: 13px/1.7 var(--mono); }
+    .tree .ctx { color: var(--accent); font-weight: 600; }
+  </style>
+</head>
+<body class="demo">
+  <div class="controls">
+    <label class="control">card A gets
+      <select id="a">
+        <option value="">nothing extra</option>
+        <option value="z-index: 1">z-index: 1</option>
+        <option value="transform: translateX(0)">transform</option>
+        <option value="opacity: 0.99">opacity: 0.99</option>
+        <option value="filter: blur(0)">filter</option>
+        <option value="isolation: isolate">isolation: isolate</option>
+      </select>
+    </label>
+    <label class="control">card B z-index
+      <select id="b">
+        <option value="auto">auto</option>
+        <option value="0">0</option>
+        <option value="1" selected>1</option>
+        <option value="2">2</option>
+      </select>
+    </label>
+  </div>
+  <div class="stage">
+    <div class="board">
+      <div class="card a" id="cardA">
+        Card A
+        <ul class="menu" aria-label="Menu, z-index 999">
+          <li>Edit</li><li>Duplicate</li><li>Share</li><li>Delete</li>
+        </ul>
+      </div>
+      <div class="card b" id="cardB">Card B</div>
+    </div>
+    <div class="side">
+      <pre class="code" id="code"></pre>
+      <div class="panel tree" id="tree"></div>
+    </div>
+  </div>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    function update() {
+      const a = $('a').value, b = $('b').value;
+      $('cardA').style.cssText = a;
+      $('cardB').style.zIndex = b;
+      const aCtx = a !== '';
+      // A stacking context created without z-index paints at the z-index: 0 level
+      const aLevel = a === 'z-index: 1' ? 1 : 0;
+      // Ask the browser what is painted where the menu and card B overlap
+      const m = document.querySelector('.menu').getBoundingClientRect(), r = $('cardB').getBoundingClientRect();
+      const x = (Math.max(m.left, r.left) + Math.min(m.right, r.right)) / 2;
+      const y = (Math.max(m.top, r.top) + Math.min(m.bottom, r.bottom)) / 2;
+      const winner = document.querySelector('.menu').contains(document.elementFromPoint(x, y)) ? 'menu' : 'B';
+      $('code').textContent = `.card-a { position: relative;${a ? ' ' + a + ';' : ''} }\n.menu   { position: absolute; z-index: 999; }\n.card-b { position: relative; z-index: ${b}; }`;
+      const menuLine = aCtx
+        ? `├─ <span class="ctx">Card A</span> (stacking context, level ${aLevel})\n│   └─ menu z-index 999 <i>(only inside A)</i>`
+        : '├─ Card A (no stacking context)\n├─ menu z-index 999';
+      $('tree').innerHTML = `<p class="label">Stacking contexts</p><div style="white-space:pre">root\n${menuLine}\n└─ Card B z-index ${b}</div>
+        <p style="margin:8px 0 0">On top: <b>${winner === 'menu' ? 'the menu' : 'card B'}</b></p>`;
+    }
+    document.querySelectorAll('select').forEach((el) => el.addEventListener('input', update));
+    update();
+  </script>
+</body>
+</html>
