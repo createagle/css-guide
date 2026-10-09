@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>3-2 The Five Global Keywords</title>
+  <style>
+    /* The shared demo styles go into their own layer, so they never outrank the layers below */
+    @import url("../../assets/style.css") layer(shared);
+    @layer shared, base, override;
+
+    .stage { width: min(820px, 100%); flex-direction: column; align-items: stretch; }
+    .samples { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+    .samples figure { margin: 0; }
+
+    /* The parent every sample sits in: these values are what "inherit" finds */
+    .parent { color: #be123c; font-family: Georgia, serif; font-size: 15px; border: 1px dashed var(--border); border-radius: 8px; padding: 12px; min-height: 96px; }
+
+    /* The site's own styles live in a "base" layer: this is what "revert-layer" goes back to */
+    @layer base {
+      .target.btn { background: #1d4ed8; color: white; border: 0; border-radius: 999px; padding: 8px 18px; font: 600 14px system-ui, sans-serif; }
+      .target.list { list-style: square; padding-left: 1.2em; margin: 0; color: #0f766e; }
+      .target.heading { margin: 0; font: 700 20px system-ui, sans-serif; color: var(--fg); text-transform: uppercase; letter-spacing: .05em; }
+    }
+  </style>
+  <!-- The script writes "@layer override { .target { all: <keyword>; } }" here -->
+  <style id="live"></style>
+</head>
+<body class="demo">
+  <div class="controls">
+    <fieldset style="display: flex; flex-wrap: wrap; gap: 6px 16px; border: 0; margin: 0; padding: 0">
+      <legend class="label" style="float: left; margin: 0 8px 0 0">all:</legend>
+      <label class="control"><input type="radio" name="kw" value="" checked> (none)</label>
+      <label class="control"><input type="radio" name="kw" value="initial"> initial</label>
+      <label class="control"><input type="radio" name="kw" value="inherit"> inherit</label>
+      <label class="control"><input type="radio" name="kw" value="unset"> unset</label>
+      <label class="control"><input type="radio" name="kw" value="revert"> revert</label>
+      <label class="control"><input type="radio" name="kw" value="revert-layer"> revert-layer</label>
+    </fieldset>
+  </div>
+  <div class="stage">
+    <div class="samples">
+      <figure>
+        <div class="parent"><button type="button" class="target btn">Save draft</button></div>
+        <figcaption>&lt;button&gt;</figcaption>
+      </figure>
+      <figure>
+        <div class="parent"><ul class="target list"><li>Flour</li><li>Water</li><li>Salt</li></ul></div>
+        <figcaption>&lt;ul&gt;</figcaption>
+      </figure>
+      <figure>
+        <div class="parent"><h2 class="target heading">Weekend plan</h2></div>
+        <figcaption>&lt;h2&gt;</figcaption>
+      </figure>
+    </div>
+    <pre class="code" id="css"></pre>
+  </div>
+  <script>
+    const live = document.getElementById('live');
+    const css = document.getElementById('css');
+    function apply(kw) {
+      const rule = kw ? `@layer override {\n  .target { all: ${kw}; }\n}` : '/* no override: the base layer applies */';
+      live.textContent = kw ? rule : '';
+      css.textContent = rule;
+    }
+    document.querySelectorAll('input[name="kw"]').forEach((radio) =>
+      radio.addEventListener('change', () => apply(radio.value)));
+    apply('');
+  </script>
+</body>
+</html>

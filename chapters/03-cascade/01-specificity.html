@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>3-1 Specificity Calculator</title>
+  <style>
+    .stage { width: min(880px, 100%); flex-direction: column; align-items: stretch; }
+    .rules { display: grid; gap: 12px; }
+    .rule { display: grid; grid-template-columns: 1.5em 1fr auto; gap: 10px; align-items: center; }
+    .rule input { font: 14px var(--mono); padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--fg); min-width: 0; }
+    .rule .swatch { width: 1.5em; height: 1.5em; border-radius: 4px; }
+    .score { display: flex; gap: 4px; font: 600 14px var(--mono); }
+    .score span { display: grid; place-items: center; min-width: 2.2em; padding: 4px 6px; border: 1px solid var(--border); border-radius: 6px; }
+    .score small { display: block; font: 10px system-ui, sans-serif; color: var(--muted); }
+    .win .score span { border-color: var(--accent); }
+    .verdict { margin: 0; font-size: 15px; }
+    #markup { font-size: 13px; }
+    #target { font-weight: 700; }
+  </style>
+  <!-- The two rules, written for real by the script -->
+  <style id="live"></style>
+</head>
+<body class="demo">
+  <div class="stage">
+    <div class="rules">
+      <div class="rule" id="row-a">
+        <span class="swatch" style="background: #2563eb" aria-hidden="true"></span>
+        <input id="sel-a" value="#content .note" aria-label="Selector A (blue)" spellcheck="false">
+        <div class="score" id="score-a"></div>
+      </div>
+      <div class="rule" id="row-b">
+        <span class="swatch" style="background: #ea580c" aria-hidden="true"></span>
+        <input id="sel-b" value="article.post div p.lead[data-kind]" aria-label="Selector B (orange)" spellcheck="false">
+        <div class="score" id="score-b"></div>
+      </div>
+    </div>
+    <p class="verdict" id="verdict" aria-live="polite"></p>
+    <div class="panel">
+      <p class="label">The element both rules try to color</p>
+      <pre class="code" id="markup">&lt;article class="post"&gt;
+  &lt;div id="content"&gt;
+    &lt;p id="target" class="note lead" data-kind="tip"&gt;…&lt;/p&gt;
+  &lt;/div&gt;
+&lt;/article&gt;</pre>
+      <article class="post">
+        <div id="content">
+          <p id="target" class="note lead" data-kind="tip">Which color am I?</p>
+        </div>
+      </article>
+    </div>
+  </div>
+  <script>
+    // Specificity as [ids, classes, types], following Selectors Level 4
+    const LEGACY_PSEUDO_ELEMENTS = ['before', 'after', 'first-line', 'first-letter'];
+
+    function splitList(s) {
+      const parts = []; let depth = 0, start = 0;
+      for (let i = 0; i < s.length; i++) {
+        if ('([' .includes(s[i])) depth++;
+        else if (')]'.includes(s[i])) depth--;
+        else if (s[i] === ',' && depth === 0) { parts.push(s.slice(start, i)); start = i + 1; }
+      }
+      parts.push(s.slice(start));
+      return parts.map((p) => p.trim()).filter(Boolean);
+    }
+    const add = (x, y) => [x[0] + y[0], x[1] + y[1], x[2] + y[2]];
+    const max = (list) => list.map(specificity).reduce((m, s) => (compare(s, m) > 0 ? s : m), [0, 0, 0]);
+    function compare(x, y) { for (let i = 0; i < 3; i++) if (x[i] !== y[i]) return x[i] - y[i]; return 0; }
+
+    function readParens(s, i) {           // s[i] === '(' ; returns [inner, indexAfter]
+      let depth = 0, j = i;
+      for (; j < s.length; j++) { if (s[j] === '(') depth++; else if (s[j] === ')' && --depth === 0) break; }
+      return [s.slice(i + 1, j), j + 1];
+    }
+
+    function specificity(sel) {
+      let s = [0, 0, 0], i = 0;
+      const ident = () => { const m = /^-?[_a-zA-Z -￿][-\w -￿]*/.exec(sel.slice(i)); i += m ? m[0].length : 1; return m ? m[0] : ''; };
+      while (i < sel.length) {
+        const ch = sel[i];
+        if (ch === '#') { i++; ident(); s[0]++; }
+        else if (ch === '.') { i++; ident(); s[1]++; }
+        else if (ch === '[') { i = sel.indexOf(']', i) + 1 || sel.length; s[1]++; }
+        else if (ch === ':' && sel[i + 1] === ':') { i += 2; ident(); s[2]++; if (sel[i] === '(') i = readParens(sel, i)[1]; }
+        else if (ch === ':') {
+          i++; const name = ident().toLowerCase();
+          let inner = null;
+          if (sel[i] === '(') { [inner, i] = readParens(sel, i); }
+          if (['is', 'not', 'has'].includes(name)) s = add(s, max(splitList(inner)));
+          else if (name === 'where') { /* always zero */ }
+          else if (['nth-child', 'nth-last-child'].includes(name) && / of /.test(inner)) s = add(add(s, [0, 1, 0]), max(splitList(inner.split(/ of /)[1])));
+          else if (LEGACY_PSEUDO_ELEMENTS.includes(name)) s[2]++;
+          else s[1]++;
+        }
+        else if (/[a-zA-Z]/.test(ch)) { ident(); s[2]++; }
+        else i++;                         // combinators, whitespace, *
+      }
+      return s;
+    }
+
+    const score = (el, s) => {
+      el.innerHTML = ['ID', 'CLASS', 'TYPE'].map((label, k) => `<span>${s[k]}<small>${label}</small></span>`).join('');
+    };
+
+    function run() {
+      const a = document.getElementById('sel-a').value.trim();
+      const b = document.getElementById('sel-b').value.trim();
+      const verdict = document.getElementById('verdict');
+      // The CSS parser itself decides what is valid, pseudo-elements included
+      const probe = new CSSStyleSheet();
+      const valid = (x) => { if (!x) return false; try { probe.insertRule(`${x} {}`); probe.deleteRule(0); return true; } catch { return false; } };
+      document.getElementById('live').textContent =
+        (valid(a) ? `${a} { color: #2563eb; }\n` : '') + (valid(b) ? `${b} { color: #ea580c; }` : '');
+      const target = document.getElementById('target');
+      // For a selector list, only the selectors that actually match the element count
+      const scoreFor = (list) => {
+        const all = splitList(list);
+        const hits = all.filter((x) => { try { return target.matches(x); } catch { return false; } });
+        return max(hits.length ? hits : all);
+      };
+      const sa = valid(a) ? scoreFor(a) : null;
+      const sb = valid(b) ? scoreFor(b) : null;
+      sa ? score(document.getElementById('score-a'), sa) : document.getElementById('score-a').textContent = 'invalid';
+      sb ? score(document.getElementById('score-b'), sb) : document.getElementById('score-b').textContent = 'invalid';
+      const matches = (x) => { try { return target.matches(x); } catch { return false; } };
+      const hitA = valid(a) && matches(a), hitB = valid(b) && matches(b);
+      document.getElementById('row-a').classList.toggle('win', false);
+      document.getElementById('row-b').classList.toggle('win', false);
+      if (!hitA && !hitB) { verdict.textContent = 'Neither selector matches the paragraph.'; return; }
+      if (hitA !== hitB) { verdict.textContent = `Only ${hitA ? 'A (blue)' : 'B (orange)'} matches, so it wins without a contest.`; document.getElementById(hitA ? 'row-a' : 'row-b').classList.add('win'); return; }
+      const c = compare(sa, sb);
+      const winner = c > 0 ? 'A' : 'B';
+      document.getElementById(winner === 'A' ? 'row-a' : 'row-b').classList.add('win');
+      verdict.textContent = c === 0
+        ? 'Equal specificity: the rule that comes later (B, orange) wins.'
+        : `${winner} wins on specificity: (${(c > 0 ? sa : sb).join(', ')}) beats (${(c > 0 ? sb : sa).join(', ')}).`;
+    }
+    document.querySelectorAll('.rule input').forEach((input) => input.addEventListener('input', run));
+    run();
+  </script>
+</body>
+</html>

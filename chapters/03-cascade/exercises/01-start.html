@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 3-1 · Start: The Button That Will Not Change</title>
+  <style>
+    /* Sidebar styles, written long ago */
+    #sidebar { width: 280px; padding: 16px 20px; border: 1px solid var(--border); border-radius: 12px; }
+    #sidebar h2 { margin-top: 0; font-size: 1.1rem; }
+    #sidebar a { color: var(--muted); text-decoration: underline; }
+
+    /* A reusable button, added later: why is its text gray and underlined? */
+    .btn {
+      display: inline-block;
+      padding: 8px 16px;
+      border-radius: 8px;
+      background: #2563eb;
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body class="demo">
+  <div class="stage">
+    <aside id="sidebar" class="sidebar">
+      <h2>Newsletter</h2>
+      <p>One email a month. Read the <a href="/archive">archive</a> first if you like.</p>
+      <a class="btn" href="/subscribe">Subscribe</a>
+    </aside>
+  </div>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 3-1 · Final: The Button That Will Not Change</title>
+  <style>
+    #sidebar { width: 280px; padding: 16px 20px; border: 1px solid var(--border); border-radius: 12px; }
+    #sidebar h2 { margin-top: 0; font-size: 1.1rem; }
+    /* :where() keeps the id out of the specificity: (0, 0, 1) instead of (1, 0, 1) */
+    :where(#sidebar) a { color: var(--muted); text-decoration: underline; }
+
+    /* (0, 1, 0) now beats the sidebar link rule */
+    .btn {
+      display: inline-block;
+      padding: 8px 16px;
+      border-radius: 8px;
+      background: #2563eb;
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body class="demo">
+  <div class="stage">
+    <aside id="sidebar" class="sidebar">
+      <h2>Newsletter</h2>
+      <p>One email a month. Read the <a href="/archive">archive</a> first if you like.</p>
+      <a class="btn" href="/subscribe">Subscribe</a>
+    </aside>
+  </div>
+</body>
+</html>
