@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 7-1 (start): Font Stack and Line Height</title>
+  <style>
+    body.demo {
+      font: 16px/24px "Helvetica Neue";
+    }
+    article { inline-size: min(560px, 100%); }
+    h1 { font-size: 40px; margin: 0 0 16px; }
+    h2 { font-size: 24px; margin: 24px 0 8px; }
+    p { margin: 0 0 12px; }
+  </style>
+</head>
+<body class="demo">
+  <article>
+    <h1>Why your headline lines crash into each other</h1>
+    <p>Body text reads comfortably at a line height of about one and a half times the font size. Headings need less.</p>
+    <h2>中文段落 · Mixed text</h2>
+    <p lang="zh-CN">中文正文的行高通常比英文更大一些，1.6 到 1.8 都很常见。字体栈里要写上中文字体，否则浏览器会自己挑一个。</p>
+  </article>
+</body>
+</html>

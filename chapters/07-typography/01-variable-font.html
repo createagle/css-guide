@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>7-1 Variable Font Axis Tuner</title>
+  <style>
+    /* One file, every weight, width and slant: the descriptors declare the ranges it covers */
+    @font-face {
+      font-family: "Roboto Flex";
+      src: url("../../assets/fonts/roboto-flex-latin.woff2") format("woff2");
+      font-weight: 100 1000;
+      font-stretch: 25% 151%;
+      font-style: oblique 0deg 10deg;
+      font-display: swap;
+    }
+    .stage { width: min(880px, 100%); flex-direction: column; align-items: stretch; }
+    .sample {
+      --wght: 400; --wdth: 100; --slnt: 0; --size: 56; --grad: 0; --opsz: 14;
+      font-family: "Roboto Flex", system-ui, sans-serif;
+      font-size: calc(var(--size) * 1px);
+      font-weight: var(--wght);
+      font-stretch: calc(var(--wdth) * 1%);
+      font-style: oblique calc(var(--slnt) * 1deg);
+      font-variation-settings: "GRAD" var(--grad);
+      line-height: 1.1;
+      margin: 0;
+      overflow-wrap: anywhere;
+      outline: none;
+    }
+    /* Manual optical size: switch off the automatic mapping and set the axis directly */
+    .sample.manual-opsz {
+      font-optical-sizing: none;
+      font-variation-settings: "GRAD" var(--grad), "opsz" var(--opsz);
+    }
+    .sample:focus-visible { outline: 2px dashed var(--accent); outline-offset: 4px; }
+    .weights { display: flex; flex-wrap: wrap; gap: 4px 16px; font-family: "Roboto Flex", system-ui, sans-serif; font-size: 28px; }
+    .weights span { display: inline-flex; flex-direction: column; align-items: center; }
+    .weights small { font: 11px var(--mono); color: var(--muted); }
+    .status { font: 12px var(--mono); color: var(--muted); margin: 0; }
+  </style>
+</head>
+<body class="demo">
+  <div class="controls">
+    <label class="control">font-weight <input type="range" id="wght" min="100" max="1000" value="400"> <output id="wght-out"></output></label>
+    <label class="control">font-stretch <input type="range" id="wdth" min="25" max="151" value="100"> <output id="wdth-out"></output></label>
+    <label class="control">oblique <input type="range" id="slnt" min="0" max="10" value="0"> <output id="slnt-out"></output></label>
+    <label class="control">font-size <input type="range" id="size" min="12" max="120" value="56"> <output id="size-out"></output></label>
+    <label class="control">"GRAD" <input type="range" id="grad" min="-200" max="150" value="0"> <output id="grad-out"></output></label>
+    <label class="control"><input type="checkbox" id="manual"> set "opsz" by hand</label>
+    <label class="control" id="opsz-row" hidden>"opsz" <input type="range" id="opsz" min="8" max="144" value="14"> <output id="opsz-out"></output></label>
+  </div>
+  <div class="stage">
+    <div class="panel">
+      <p class="sample" id="sample" contenteditable="true" spellcheck="false" aria-label="Sample text, editable">Handgloves &amp; Quiz 2025</p>
+    </div>
+    <div class="panel">
+      <p class="label">Same file, ten weights</p>
+      <div class="weights" id="weights"></div>
+    </div>
+    <pre class="code" id="code"></pre>
+    <p class="status" id="status"></p>
+  </div>
+  <script>
+    const sample = document.getElementById('sample');
+    const ids = ['wght', 'wdth', 'slnt', 'size', 'grad', 'opsz'];
+    const units = { wdth: '%', slnt: 'deg', size: 'px' };
+    document.getElementById('weights').innerHTML = Array.from({ length: 10 }, (_, i) =>
+      `<span style="font-weight:${(i + 1) * 100}">Ag<small>${(i + 1) * 100}</small></span>`).join('');
+
+    function update() {
+      const v = Object.fromEntries(ids.map((k) => [k, document.getElementById(k).value]));
+      ids.forEach((k) => {
+        sample.style.setProperty('--' + k, v[k]);
+        document.getElementById(k + '-out').textContent = v[k] + (units[k] || '');
+      });
+      const manual = document.getElementById('manual').checked;
+      sample.classList.toggle('manual-opsz', manual);
+      document.getElementById('opsz-row').hidden = !manual;
+      document.getElementById('weights').style.fontStretch = v.wdth + '%';
+      const fvs = manual ? `"GRAD" ${v.grad}, "opsz" ${v.opsz}` : `"GRAD" ${v.grad}`;
+      document.getElementById('code').textContent =
+`.sample {
+  font-family: "Roboto Flex", system-ui, sans-serif;
+  font-size: ${v.size}px;
+  font-weight: ${v.wght};
+  font-stretch: ${v.wdth}%;
+  font-style: oblique ${v.slnt}deg;${manual ? '\n  font-optical-sizing: none;' : '\n  /* font-optical-sizing: auto → "opsz" follows font-size */'}
+  font-variation-settings: ${fvs};
+}`;
+    }
+    document.querySelectorAll('input').forEach((el) => el.addEventListener('input', update));
+    update();
+
+    // Report whether the web font arrived or the fallback is showing
+    const status = document.getElementById('status');
+    status.textContent = 'Loading Roboto Flex…';
+    document.fonts.load('400 1em "Roboto Flex"').then((faces) => {
+      status.textContent = faces.length ? 'Roboto Flex loaded (variable font, 326 KB woff2).' : 'Roboto Flex unavailable: showing the system-ui fallback.';
+    }).catch(() => { status.textContent = 'Roboto Flex unavailable: showing the system-ui fallback.'; });
+  </script>
+</body>
+</html>

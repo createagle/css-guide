@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>7-2 text-wrap: balance and pretty</title>
+  <style>
+    .stage { width: min(1040px, 100%); }
+    .col { inline-size: calc(var(--w, 340) * 1px); max-inline-size: 100%; }
+    .col h2 { font-size: 24px; line-height: 1.25; margin: 0 0 12px; }
+    .col p { margin: 0; line-height: 1.6; }
+    .col h2, .col .body { background: color-mix(in oklch, var(--accent) 8%, transparent); }
+    .wrap h2, .wrap p { text-wrap: wrap; }
+    .balance h2, .balance p { text-wrap: balance; }
+    .pretty h2, .pretty p { text-wrap: pretty; }
+    .meta { font: 12px var(--mono); color: var(--muted); margin: 8px 0 0; }
+    .meta b { color: var(--fg); }
+  </style>
+</head>
+<body class="demo">
+  <div class="controls">
+    <label class="control">column width <input type="range" id="w" min="160" max="420" value="340"> <output id="w-out"></output></label>
+    <label class="control">text
+      <select id="lang">
+        <option value="en">English</option>
+        <option value="zh">中文</option>
+      </select>
+    </label>
+  </div>
+  <div class="stage" id="stage"></div>
+  <script>
+    const text = {
+      en: {
+        h: 'Variable fonts put every weight and width in a single file',
+        p: 'A headline that wraps unevenly leaves one lonely word on the last line. Balancing evens out the lines; pretty only fixes the end of a paragraph so it never finishes on a single short word.'
+      },
+      zh: {
+        h: '可变字体把所有字重和宽度都装进了一个文件',
+        p: '标题换行不均匀时，最后一行常常只剩一两个字。balance 会让各行长度接近；pretty 只调整段落末尾几行，避免最后一行只剩一个字。'
+      }
+    };
+    const modes = ['wrap', 'balance', 'pretty'];
+    const stage = document.getElementById('stage');
+
+    // Count lines and measure the last line from the layout boxes of the text
+    function lines(el) {
+      const r = document.createRange();
+      r.selectNodeContents(el);
+      const rows = new Map();
+      for (const rect of r.getClientRects()) {
+        if (!rect.width) continue;
+        const key = Math.round(rect.top);
+        const row = rows.get(key) || { left: Infinity, right: -Infinity };
+        row.left = Math.min(row.left, rect.left);
+        row.right = Math.max(row.right, rect.right);
+        rows.set(key, row);
+      }
+      const list = [...rows.values()];
+      const last = list.at(-1);
+      return { count: list.length, last: last ? Math.round(((last.right - last.left) / el.clientWidth) * 100) : 0 };
+    }
+
+    function render() {
+      const lang = document.getElementById('lang').value;
+      const w = document.getElementById('w').value;
+      document.getElementById('w-out').textContent = w + 'px';
+      stage.style.setProperty('--w', w);
+      stage.innerHTML = modes.map((m) => `
+        <figure class="col ${m}" lang="${lang === 'zh' ? 'zh-CN' : 'en'}">
+          <p class="label">text-wrap: ${m}${m === 'wrap' || CSS.supports('text-wrap', m) ? '' : ' (not supported here)'}</p>
+          <h2>${text[lang].h}</h2>
+          <p class="body">${text[lang].p}</p>
+          <p class="meta" data-meta></p>
+        </figure>`).join('');
+      stage.querySelectorAll('.col').forEach((col) => {
+        const h = lines(col.querySelector('h2')), p = lines(col.querySelector('.body'));
+        col.querySelector('[data-meta]').innerHTML =
+          `heading: <b>${h.count}</b> lines, last ${h.last}%<br>paragraph: <b>${p.count}</b> lines, last ${p.last}%`;
+      });
+    }
+    document.getElementById('w').addEventListener('input', render);
+    document.getElementById('lang').addEventListener('change', render);
+    render();
+  </script>
+</body>
+</html>

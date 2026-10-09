@@ -12,6 +12,7 @@
 index.html                     # 示例总目录（按篇、章导航），由 tools/build_index.py 生成
 assets/
   style.css                    # 公共样式：亮/暗色主题、居中演示布局、prefers-reduced-motion
+  fonts/                       # Roboto Flex 可变字体（woff2，拉丁字符子集）及其 OFL 许可证
 chapters/
   01-intro/
     README.md                  # 本章示例说明
@@ -55,4 +56,4 @@ python3 -m http.server 8000
 
 ## 许可证
 
-[MIT](LICENSE)
+[MIT](LICENSE)。`assets/fonts/` 里的 Roboto Flex 字体采用 [SIL Open Font License 1.1](assets/fonts/OFL.txt)。

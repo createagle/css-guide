@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 7-2 (start): Long Text That Stays in the Card</title>
+  <style>
+    .list { display: flex; flex-direction: column; gap: 12px; inline-size: min(320px, 100%); padding: 0; margin: 0; list-style: none; }
+    .card { border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; background: var(--bg); }
+    .card h2 { font-size: 16px; line-height: 1.4; margin: 0; }
+    .card .url { font: 12px/1.5 var(--mono); color: var(--accent); margin: 2px 0 6px; }
+    .card .desc { font-size: 14px; line-height: 1.5; color: var(--muted); margin: 0; }
+  </style>
+</head>
+<body class="demo">
+  <ul class="list">
+    <li class="card">
+      <h2>A complete guide to text-wrap, hyphens and every other line-breaking property in CSS</h2>
+      <p class="url">https://example.com/articles/css_line_breaking_text_wrap_balance_pretty_hyphens</p>
+      <p class="desc">Covers how browsers find break opportunities, why long URLs and words overflow their boxes, and which properties let you truncate a title or clamp a description to a fixed number of lines.</p>
+    </li>
+    <li class="card">
+      <h2>Variable fonts</h2>
+      <p class="url">https://example.com/fonts</p>
+      <p class="desc">One file, every weight.</p>
+    </li>
+  </ul>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 7-3 (start): A Vertical Poem Card</title>
+  <style>
+    .poem {
+      font-family: "Songti SC", "SimSun", "Noto Serif CJK SC", serif;
+      font-size: 22px;
+      line-height: 2;
+      letter-spacing: .1em;
+      padding-block: 20px;
+      padding-inline: 28px;
+      border-block-start: 4px solid oklch(55% .17 25);
+      background: var(--surface);
+      border-radius: 6px;
+    }
+    .poem h1 { font-size: 26px; margin: 0; }
+    .poem .author { color: var(--muted); font-size: 16px; margin: 0 0 12px; }
+    .poem p { margin: 0; }
+    .poem .colophon { color: var(--muted); font-size: 14px; margin-block-start: 16px; }
+  </style>
+</head>
+<body class="demo">
+  <article class="poem">
+    <h1>静夜思</h1>
+    <p class="author">李白</p>
+    <p>床前明月光，</p>
+    <p>疑是地上霜。</p>
+    <p>举头望明月，</p>
+    <p>低头思故乡。</p>
+    <p class="colophon"><span class="year">2025</span>年<span class="num">10</span>月<span class="num">9</span>日抄录</p>
+  </article>
+</body>
+</html>
