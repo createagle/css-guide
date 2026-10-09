@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 25-2 (start): A Toast That Fades In and Out</title>
+  <style>
+    .wrap { display: grid; gap: 16px; justify-items: start; }
+    .wrap button { font: inherit; }
+    .toast {
+      display: none;
+      padding: 12px 16px;
+      border-radius: 10px;
+      background: oklch(30% 0.02 260);
+      color: white;
+      box-shadow: 0 8px 24px oklch(0% 0 0 / 0.25);
+    }
+    .toast.show { display: block; }
+  </style>
+</head>
+<body class="demo">
+  <div class="wrap">
+    <button type="button" id="save">Save route</button>
+    <div class="toast" id="toast" role="status">Route saved.</div>
+  </div>
+  <script>
+    const toast = document.getElementById('toast');
+    let timer;
+    document.getElementById('save').addEventListener('click', () => {
+      toast.classList.add('show');
+      clearTimeout(timer);
+      timer = setTimeout(() => toast.classList.remove('show'), 2000);
+    });
+  </script>
+</body>
+</html>

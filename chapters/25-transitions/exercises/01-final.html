@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 25-1 (final): A Smooth Hover</title>
+  <style>
+    .btn {
+      padding: 12px 24px;
+      border: 0;
+      border-radius: 10px;
+      background: oklch(55% 0.17 260);
+      color: white;
+      font: 600 16px system-ui, sans-serif;
+      cursor: pointer;
+    }
+    .btn:hover { background: oklch(48% 0.18 260); translate: 0 -2px; box-shadow: 0 6px 16px oklch(40% 0.15 260 / 0.35); }
+    .btn:active { translate: 0 0; box-shadow: none; }
+    .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+    /* List the properties that change, rather than transition: all */
+    .btn { transition: background-color 0.2s ease-out, translate 0.2s ease-out, box-shadow 0.2s ease-out; }
+    /* Pressing should feel immediate */
+    .btn:active { transition-duration: 0.05s; }
+    @media (prefers-reduced-motion: reduce) {
+      /* Keep the colour change, drop the movement */
+      .btn:hover { translate: none; }
+    }
+  </style>
+</head>
+<body class="demo">
+  <button class="btn" type="button">Book this walk</button>
+</body>
+</html>

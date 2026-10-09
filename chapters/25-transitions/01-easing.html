@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>25-1 Easing Curves Compared</title>
+  <style>
+    .stage { width: min(900px, 100%); flex-direction: column; flex-wrap: nowrap; align-items: stretch; gap: 8px; }
+    .row { display: grid; grid-template-columns: minmax(0, 15em) 56px 1fr; gap: 12px; align-items: center; }
+    .row code { font: 12px var(--mono); overflow-wrap: anywhere; }
+    .row svg { inline-size: 56px; block-size: 56px; overflow: visible; }
+    .row svg .frame { fill: none; stroke: var(--border); }
+    .row svg .curve { fill: none; stroke: var(--accent); stroke-width: 2; }
+    /* Room on the right for curves that overshoot */
+    .track { margin-inline-end: 40px; container-type: inline-size; block-size: 32px; border-radius: 16px; background: var(--surface); border: 1px solid var(--border); }
+    .ball {
+      inline-size: 24px;
+      block-size: 24px;
+      margin: 3px;
+      border-radius: 50%;
+      background: var(--accent);
+      /* Every ball moves the same distance in the same time; only the easing differs */
+      transition: translate var(--dur, 1.2s) var(--ease);
+    }
+    .race.go .ball { translate: calc(100cqi - 30px) 0; }
+    @media (prefers-reduced-motion: reduce) {
+      /* Motion here only starts when you press Play, so it is kept, just shorter */
+      .ball { transition-duration: calc(var(--dur, 1.2s) / 2); }
+    }
+  </style>
+</head>
+<body class="demo">
+  <div class="controls">
+    <button type="button" id="play" aria-pressed="false">Play</button>
+    <label class="control">duration
+      <input type="range" id="dur" min="0.4" max="4" step="0.2" value="1.2">
+      <output id="dur-out">1.2s</output>
+    </label>
+  </div>
+  <div class="stage race" id="race"></div>
+  <script>
+    const easings = [
+      'linear',
+      'ease',
+      'ease-in',
+      'ease-out',
+      'ease-in-out',
+      'cubic-bezier(0.34, 1.56, 0.64, 1)',
+      'steps(5, end)',
+      'linear(0, 0.25 25%, 1 50%, 0.75 62.5%, 1 75%, 0.94 87.5%, 1)'
+    ];
+    const named = { ease: [0.25, 0.1, 0.25, 1], 'ease-in': [0.42, 0, 1, 1], 'ease-out': [0, 0, 0.58, 1], 'ease-in-out': [0.42, 0, 0.58, 1] };
+    // Sample a cubic Bézier: x(t) and y(t) for t in [0, 1]
+    const bezier = ([x1, y1, x2, y2]) => Array.from({ length: 41 }, (_, i) => {
+      const t = i / 40, u = 1 - t;
+      return [3 * u * u * t * x1 + 3 * u * t * t * x2 + t ** 3, 3 * u * u * t * y1 + 3 * u * t * t * y2 + t ** 3];
+    });
+    function points(e) {
+      if (e === 'linear') return [[0, 0], [1, 1]];
+      if (named[e]) return bezier(named[e]);
+      let m = e.match(/^cubic-bezier\((.*)\)$/);
+      if (m) return bezier(m[1].split(',').map(Number));
+      m = e.match(/^steps\((\d+)/);
+      if (m) {
+        const n = +m[1], p = [];
+        for (let i = 0; i < n; i++) p.push([i / n, i / n], [(i + 1) / n, i / n]);
+        return p.concat([[1, 1]]);
+      }
+      // linear(): stops with optional percentages; missing ones are spread evenly
+      const stops = e.slice(7, -1).split(',').map((s) => s.trim().split(/\s+/)).map(([v, at]) => [at ? parseFloat(at) / 100 : null, +v]);
+      stops[0][0] ??= 0; stops.at(-1)[0] ??= 1;
+      for (let i = 1; i < stops.length; i++) {
+        if (stops[i][0] !== null) continue;
+        let j = i; while (stops[j][0] === null) j++;
+        const a = stops[i - 1][0], b = stops[j][0];
+        for (let k = i; k < j; k++) stops[k][0] = a + (b - a) * (k - i + 1) / (j - i + 1);
+      }
+      return stops;
+    }
+    const race = document.getElementById('race');
+    for (const e of easings) {
+      const row = document.createElement('div');
+      row.className = 'row';
+      const d = points(e).map(([x, y], i) => `${i ? 'L' : 'M'}${(x * 56).toFixed(1)} ${(56 - y * 56).toFixed(1)}`).join(' ');
+      row.innerHTML = `<code></code><svg viewBox="0 0 56 56" aria-hidden="true"><rect class="frame" width="56" height="56"/><path class="curve" d="${d}"/></svg><div class="track"><div class="ball"></div></div>`;
+      row.querySelector('code').textContent = e;
+      row.querySelector('.ball').style.setProperty('--ease', e);
+      race.append(row);
+    }
+    const play = document.getElementById('play');
+    play.addEventListener('click', () => {
+      const on = race.classList.toggle('go');
+      play.setAttribute('aria-pressed', on);
+      play.textContent = on ? 'Back' : 'Play';
+    });
+    const dur = document.getElementById('dur');
+    dur.addEventListener('input', () => {
+      race.style.setProperty('--dur', dur.value + 's');
+      document.getElementById('dur-out').textContent = dur.value + 's';
+    });
+  </script>
+</body>
+</html>

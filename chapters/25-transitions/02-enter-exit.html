@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>25-2 Enter and Exit Transitions</title>
+  <style>
+    :root { --t: 0.25s; }
+    :root:has(#slow:checked) { --t: 1.5s; }
+    .stage { width: min(960px, 100%); display: grid; grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr)); gap: 16px; align-items: start; }
+    .panel > button, .panel .actions button { font: inherit; }
+
+    /* 1. A popover that fades and rises in, and fades out again */
+    .menu {
+      padding: 16px 20px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--bg);
+      color: var(--fg);
+      box-shadow: 0 12px 32px oklch(0% 0 0 / 0.2);
+      /* The closed state is also where the exit transition ends */
+      opacity: 0;
+      translate: 0 12px;
+      scale: 0.96;
+      transition:
+        opacity var(--t), translate var(--t), scale var(--t),
+        display var(--t) allow-discrete, overlay var(--t) allow-discrete;
+    }
+    .menu:popover-open { opacity: 1; translate: 0 0; scale: 1; }
+    /* Where the entry transition starts from, on the first frame after opening */
+    @starting-style {
+      .menu:popover-open { opacity: 0; translate: 0 12px; scale: 0.96; }
+    }
+    .menu::backdrop { background: oklch(20% 0.02 260 / 0); transition: background var(--t), display var(--t) allow-discrete, overlay var(--t) allow-discrete; }
+    .menu:popover-open::backdrop { background: oklch(20% 0.02 260 / 0.3); }
+    @starting-style { .menu:popover-open::backdrop { background: oklch(20% 0.02 260 / 0); } }
+    .menu p { margin: 0 0 12px; }
+
+    /* 2. New list items slide in */
+    .items { margin: 12px 0 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+    .items li { padding: 8px 12px; border-radius: 8px; background: var(--surface); transition: opacity var(--t), translate var(--t); }
+    @starting-style {
+      .items li { opacity: 0; translate: -16px 0; }
+    }
+
+    /* 3. details that animate to height: auto */
+    .faq { interpolate-size: allow-keywords; }
+    .faq details { border-bottom: 1px solid var(--border); }
+    .faq summary { padding: 8px 0; cursor: pointer; font-weight: 600; }
+    .faq details::details-content { block-size: 0; overflow: clip; transition: block-size var(--t), content-visibility var(--t) allow-discrete; }
+    .faq details[open]::details-content { block-size: auto; }
+    .faq details p { margin: 0 0 10px; color: var(--muted); }
+
+    @media (prefers-reduced-motion: reduce) {
+      .menu, .items li { translate: none; scale: none; }
+      @starting-style { .menu:popover-open, .items li { translate: none; scale: none; } }
+    }
+  </style>
+</head>
+<body class="demo">
+  <div class="controls">
+    <label class="control"><input type="checkbox" id="slow"> slow motion (1.5s)</label>
+  </div>
+  <div class="stage">
+    <section class="panel" aria-labelledby="h1">
+      <p class="label" id="h1">[popover] with @starting-style</p>
+      <button type="button" popovertarget="menu">Open the popover</button>
+      <div class="menu" id="menu" popover>
+        <p>Your route has been saved.</p>
+        <button type="button" popovertarget="menu" popovertargetaction="hide">Close</button>
+      </div>
+    </section>
+    <section class="panel" aria-labelledby="h2">
+      <p class="label" id="h2">inserted elements</p>
+      <div class="actions"><button type="button" id="add">Add a stop</button> <button type="button" id="clear">Clear</button></div>
+      <ul class="items" id="items" aria-live="polite"></ul>
+    </section>
+    <section class="panel faq" aria-labelledby="h3">
+      <p class="label" id="h3">details with interpolate-size</p>
+      <details><summary>How long is the loop?</summary><p>About 14 km, with two steep climbs near the start. Most people take five hours.</p></details>
+      <details><summary>Can I bring a dog?</summary><p>Yes, on a lead between March and July.</p></details>
+    </section>
+  </div>
+  <script>
+    const stops = ['Car park', 'Old bridge', 'Lake shore', 'Hill top', 'Café'];
+    let i = 0;
+    document.getElementById('add').addEventListener('click', () => {
+      const li = document.createElement('li');
+      li.textContent = stops[i++ % stops.length];
+      document.getElementById('items').append(li);
+    });
+    document.getElementById('clear').addEventListener('click', () => { document.getElementById('items').replaceChildren(); i = 0; });
+  </script>
+</body>
+</html>

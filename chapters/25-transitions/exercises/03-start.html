@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 25-3 (start): Expand to Auto Height</title>
+  <style>
+    .card { inline-size: min(420px, 100%); padding: 16px 20px; border: 1px solid var(--border); border-radius: 12px; }
+    .card h2 { margin: 0 0 8px; font-size: 18px; }
+    .card p { margin: 0 0 10px; line-height: 1.6; }
+    .more { overflow: clip; }
+    .more[data-open="false"] { block-size: 0; }
+    .card button { font: inherit; }
+  </style>
+</head>
+<body class="demo">
+  <article class="card">
+    <h2>Lake Loop</h2>
+    <p>An easy walk around the reservoir, mostly on gravel paths.</p>
+    <div class="more" id="more" data-open="false">
+      <p>The path is flat apart from a short climb to the dam. There are benches every kilometre and a café at the north car park, open from April to October.</p>
+      <p>In winter the eastern shore can flood after heavy rain; follow the signed detour through the woods.</p>
+    </div>
+    <button type="button" aria-expanded="false" aria-controls="more" id="toggle">Show more</button>
+  </article>
+  <script>
+    const btn = document.getElementById('toggle');
+    const more = document.getElementById('more');
+    btn.addEventListener('click', () => {
+      const open = more.dataset.open !== 'true';
+      more.dataset.open = open;
+      btn.setAttribute('aria-expanded', open);
+      btn.textContent = open ? 'Show less' : 'Show more';
+    });
+  </script>
+</body>
+</html>
