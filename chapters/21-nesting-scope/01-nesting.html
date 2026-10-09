@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>21-1 Nesting, Unfolded</title>
+  <style>
+    .stage { width: min(1000px, 100%); flex-direction: column; flex-wrap: nowrap; align-items: stretch; }
+    .cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr)); gap: 16px; }
+    textarea { inline-size: 100%; min-block-size: 360px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--fg); font: 13px/1.55 var(--mono); resize: vertical; }
+    pre.code { min-block-size: 200px; }
+    .preview { padding: 16px; border: 2px dashed var(--border); border-radius: 12px; }
+    .preview .dark-theme { margin-top: 12px; padding: 12px; border-radius: 10px; background: oklch(25% 0.02 260); }
+  </style>
+  <style id="user"></style>
+</head>
+<body class="demo">
+  <div class="stage">
+    <div class="cols">
+      <div>
+        <label class="label" for="src">Nested CSS (edit me)</label>
+        <textarea id="src" spellcheck="false">.card {
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+
+  & h2 { margin: 0 0 6px; font-size: 18px; }
+  .meta { margin: 0; font-size: 13px; color: var(--muted); }
+  &:hover { border-color: var(--accent); }
+  &.featured { background: var(--surface); }
+  .dark-theme & { color: white; border-color: transparent; }
+
+  a {
+    color: var(--accent);
+    &:hover { text-decoration: none; }
+  }
+
+  @media (width >= 40em) {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    & h2 { margin: 0; }
+  }
+}</textarea>
+      </div>
+      <div>
+        <p class="label">How the browser reads it</p>
+        <pre class="code" id="out" aria-live="polite"></pre>
+      </div>
+    </div>
+    <div class="preview" aria-label="Preview">
+      <article class="card featured"><h2>Lake Loop</h2><p class="meta">6 km · <a href="#">Map</a></p></article>
+      <div class="dark-theme"><article class="card"><h2>Night walk</h2><p class="meta">4 km · <a href="#">Map</a></p></article></div>
+    </div>
+  </div>
+  <script>
+    const src = document.getElementById('src');
+    const out = document.getElementById('out');
+    const userSheet = document.getElementById('user');
+    // Resolve a nested selector against its parent the way the spec does: & stands for :is(parent)
+    function resolve(selector, parent) {
+      if (!parent) return selector;
+      const p = parent.includes(',') || /\s|>|\+|~/.test(parent) ? `:is(${parent})` : parent;
+      return selector.split(',').map((s) => {
+        s = s.trim();
+        return s.includes('&') ? s.replaceAll('&', p) : `${p} ${s}`;
+      }).join(', ');
+    }
+    function walk(rules, parent, indent, lines) {
+      for (const rule of rules) {
+        if (rule instanceof CSSStyleRule) {
+          const sel = resolve(rule.selectorText, parent);
+          const own = rule.style.cssText;
+          if (own) lines.push(`${indent}${sel} { ${own} }`);
+          walk(rule.cssRules || [], sel, indent, lines);
+        } else if (rule instanceof CSSMediaRule) {
+          lines.push(`${indent}@media ${rule.conditionText} {`);
+          walk(rule.cssRules, parent, indent + '  ', lines);
+          lines.push(`${indent}}`);
+        } else if (rule.constructor.name === 'CSSNestedDeclarations') {
+          // Declarations written directly inside a nested at-rule apply to the parent selector
+          if (rule.style.cssText) lines.push(`${indent}${parent} { ${rule.style.cssText} }`);
+        }
+      }
+    }
+    function update() {
+      userSheet.textContent = src.value;
+      const lines = [];
+      try { walk(userSheet.sheet.cssRules, '', '', lines); } catch (e) { lines.push('Could not read the rules: ' + e.message); }
+      out.textContent = CSS.supports('selector(&)')
+        ? lines.join('\n') || '(no rules)'
+        : 'This browser does not support CSS nesting yet.';
+    }
+    src.addEventListener('input', update);
+    update();
+  </script>
+</body>
+</html>

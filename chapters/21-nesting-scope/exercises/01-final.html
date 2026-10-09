@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 21-1 (final): A Nested Navigation</title>
+  <style>
+    .nav {
+      inline-size: min(640px, 100%);
+      padding: 8px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+
+      ul {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+
+        /* Side by side once there is room */
+        @media (width >= 30em) { flex-direction: row; }
+      }
+
+      a {
+        display: block;
+        padding: 8px 14px;
+        border-radius: 8px;
+        color: var(--fg);
+        text-decoration: none;
+
+        &:hover { background: var(--surface); }
+        &:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+        &[aria-current="page"] { background: var(--accent); color: white; }
+      }
+    }
+  </style>
+</head>
+<body class="demo">
+  <nav class="nav" aria-label="Main">
+    <ul>
+      <li><a href="#" aria-current="page">Trails</a></li>
+      <li><a href="#">Maps</a></li>
+      <li><a href="#">Guides</a></li>
+      <li><a href="#">About</a></li>
+    </ul>
+  </nav>
+</body>
+</html>

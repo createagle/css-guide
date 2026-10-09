@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 21-2 (final): Article Links, Not Comment Links</title>
+  <style>
+    .article { inline-size: min(560px, 100%); }
+    .article h1 { margin: 0 0 8px; font-size: 24px; }
+    .article p { margin: 0 0 12px; line-height: 1.6; }
+    .comments { margin-top: 16px; padding: 12px 16px; border-radius: 10px; background: var(--surface); }
+    .comments h2 { margin: 0 0 8px; font-size: 15px; }
+    .comments p { margin: 0 0 8px; font-size: 14px; line-height: 1.5; }
+    /* From .article down to, but not into, .comments */
+    @scope (.article) to (.comments) {
+      a { color: var(--accent); font-weight: 700; text-decoration-thickness: 2px; text-underline-offset: 3px; }
+    }
+  </style>
+</head>
+<body class="demo">
+  <article class="article">
+    <h1>Three huts on the ridge</h1>
+    <p>The <a href="#">north hut</a> opens in June. Book the <a href="#">lake hut</a> early: it has only twelve beds.</p>
+    <p>Water is available at all three; the <a href="#">route map</a> shows the springs.</p>
+    <section class="comments" aria-labelledby="c">
+      <h2 id="c">Comments</h2>
+      <p>Ada: we stayed at the lake hut last week, photos are on <a href="#">my blog</a>.</p>
+      <p>Ben: the spring below the north hut was dry in August, see <a href="#">this report</a>.</p>
+    </section>
+  </article>
+</body>
+</html>

@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 21-3 (final): Nested Themes</title>
+  <style>
+    .page { inline-size: min(560px, 100%); padding: 16px; border-radius: 12px; }
+    .page p { margin: 0 0 10px; font-size: 14px; }
+    .panel { padding: 14px; border-radius: 10px; }
+    .dark { background: oklch(25% 0.03 260); }
+    .light { background: oklch(97% 0.01 250); }
+    /* Each theme only styles its own subtree, and the closest theme wins */
+    @scope (.light) {
+      p, a { color: oklch(25% 0.02 260); }
+    }
+    @scope (.dark) {
+      p, a { color: oklch(92% 0.01 260); }
+    }
+  </style>
+</head>
+<body class="demo">
+  <div class="page dark">
+    <p>The page uses the dark theme. Here is a <a href="#">link</a>.</p>
+    <div class="panel light">
+      <p>This panel uses the light theme inside the dark page. Can you read this <a href="#">link</a>?</p>
+    </div>
+  </div>
+</body>
+</html>

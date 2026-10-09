@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>21-2 Donut Scope and Proximity</title>
+  <style>
+    .controls { max-width: 760px; }
+    .stage { width: min(900px, 100%); }
+    .stage > section { flex: 1 1 360px; }
+    .stage h2.part { margin: 0 0 8px; font-size: 14px; color: var(--muted); }
+    .card { padding: 14px; border: 2px solid var(--accent); border-radius: 12px; }
+    .card > p { margin: 0 0 8px; font-size: 14px; }
+    .slot { padding: 10px; border: 2px dashed var(--muted); border-radius: 8px; font-size: 14px; }
+    .slot p { margin: 0; }
+    /* Strategy A: a plain descendant selector reaches into the slot too */
+    .mode-descendant .card a { font-weight: 700; color: var(--bad); text-decoration-thickness: 3px; }
+    /* Strategy B: a scope with only a root behaves the same */
+    @scope (.mode-root .card) {
+      a { font-weight: 700; color: var(--bad); text-decoration-thickness: 3px; }
+    }
+    /* Strategy C: a donut scope stops at .slot, so the slot's content is left alone */
+    @scope (.mode-donut .card) to (.slot) {
+      a { font-weight: 700; color: var(--bad); text-decoration-thickness: 3px; }
+    }
+
+    /* Proximity: two themes nested inside each other */
+    .theme { padding: 12px; border-radius: 10px; font-size: 14px; }
+    .theme p { margin: 0 0 8px; }
+    .light { background: oklch(97% 0.01 250); }
+    .dark { background: oklch(25% 0.03 260); }
+    /* Plain selectors: same specificity, so the rule written last wins everywhere */
+    .prox-plain .light a { color: oklch(40% 0.15 250); }
+    .prox-plain .dark a { color: oklch(85% 0.1 250); }
+    /* Scoped: when specificity ties, the closer scope root wins */
+    @scope (.prox-scope .light) { a { color: oklch(40% 0.15 250); } p { color: oklch(25% 0.02 260); } }
+    @scope (.prox-scope .dark) { a { color: oklch(85% 0.1 250); } p { color: oklch(92% 0.01 260); } }
+    .prox-plain .light p { color: oklch(25% 0.02 260); }
+    .prox-plain .dark p { color: oklch(92% 0.01 260); }
+    .note { margin: 8px 0 0; font-size: 13px; color: var(--muted); }
+  </style>
+</head>
+<body class="demo">
+  <div class="controls">
+    <label class="control">link styles
+      <select id="mode">
+        <option value="mode-descendant">.card a { … }</option>
+        <option value="mode-root">@scope (.card) { a { … } }</option>
+        <option value="mode-donut" selected>@scope (.card) to (.slot) { a { … } }</option>
+      </select>
+    </label>
+    <label class="control">themes
+      <select id="prox">
+        <option value="prox-plain">.light a, .dark a (plain)</option>
+        <option value="prox-scope" selected>@scope (.light), @scope (.dark)</option>
+      </select>
+    </label>
+  </div>
+  <div class="stage" id="stage">
+    <section aria-labelledby="p1">
+      <h2 class="part" id="p1">1 · Donut scope</h2>
+      <article class="card">
+        <p>The card's own <a href="#">link</a> and <a href="#">another link</a>.</p>
+        <div class="slot"><p>Slot content from elsewhere, with its own <a href="#">link</a> that should keep the page's default style.</p></div>
+      </article>
+    </section>
+    <section aria-labelledby="p2">
+      <h2 class="part" id="p2">2 · Scope proximity</h2>
+      <div class="theme dark">
+        <p>Dark theme with a <a href="#">link</a>.</p>
+        <div class="theme light">
+          <p>A light panel inside the dark one, with a <a href="#">link</a>.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+  <p class="note" id="note"></p>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    function update() {
+      const stage = $('stage');
+      stage.className = `stage ${$('mode').value} ${$('prox').value}`;
+    }
+    $('mode').addEventListener('input', update);
+    $('prox').addEventListener('input', update);
+    update();
+    if (!('CSSScopeRule' in window)) $('note').textContent = 'This browser does not support @scope yet, so the scoped options have no effect.';
+  </script>
+</body>
+</html>
