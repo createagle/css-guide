@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 13-1 (start): A Page Layout With Named Areas</title>
+  <style>
+    .page {
+      inline-size: min(760px, 100%);
+      min-block-size: 420px;
+      gap: 8px;
+    }
+    .page > * { padding: 12px; border-radius: 8px; background: var(--surface); font-size: 14px; }
+    .page header { font-weight: 700; }
+    .page main { background: color-mix(in oklch, var(--accent) 12%, var(--bg)); }
+  </style>
+</head>
+<body class="demo">
+  <div class="page">
+    <header>Header</header>
+    <nav aria-label="Sections">Navigation</nav>
+    <main>Main content</main>
+    <aside>Related links</aside>
+    <footer>Footer</footer>
+  </div>
+</body>
+</html>

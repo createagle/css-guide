@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 13-3 (final): A Magazine Gallery</title>
+  <style>
+    .gallery {
+      inline-size: min(640px, 100%);
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-auto-rows: 90px;
+      gap: 8px;
+    }
+    .gallery > * { margin: 0; border-radius: 8px; display: grid; place-items: center; font: 13px var(--mono); color: oklch(25% 0.04 250); }
+    .gallery .photo { background: oklch(82% 0.08 calc(var(--h) * 1deg)); }
+    /* Two columns wide and two rows tall */
+    .gallery .featured { grid-column: span 2; grid-row: span 2; }
+    /* From the first line to the last: always the full width, however many columns there are */
+    .gallery .banner { grid-column: 1 / -1; background: var(--surface); color: var(--fg); border: 1px dashed var(--border); }
+  </style>
+</head>
+<body class="demo">
+  <div class="gallery">
+    <figure class="photo featured" style="--h: 250">featured</figure>
+    <figure class="photo" style="--h: 150">2</figure>
+    <figure class="photo" style="--h: 60">3</figure>
+    <figure class="photo" style="--h: 20">4</figure>
+    <figure class="photo" style="--h: 300">5</figure>
+    <p class="banner">Summer collection · 24 new trails</p>
+    <figure class="photo" style="--h: 200">6</figure>
+    <figure class="photo" style="--h: 110">7</figure>
+  </div>
+</body>
+</html>

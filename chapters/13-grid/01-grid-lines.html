@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>13-1 Grid Lines and Areas</title>
+  <style>
+    .controls { max-width: 900px; }
+    .controls input[type="text"] { inline-size: 220px; font: 13px var(--mono); padding: 3px 6px; }
+    .stage { width: min(900px, 100%); flex-direction: column; align-items: stretch; }
+    .wrap { position: relative; padding: 28px 0 0 34px; }
+    .grid {
+      display: grid;
+      block-size: 300px;
+      padding: 0;
+      border: 2px dashed var(--accent);
+      border-radius: 4px;
+    }
+    .grid > * {
+      display: grid;
+      place-items: center;
+      border-radius: 6px;
+      font: 13px var(--mono);
+      background: color-mix(in oklch, var(--accent) 18%, var(--bg));
+      border: 1px solid color-mix(in oklch, var(--accent) 45%, var(--bg));
+    }
+    .overlay { position: absolute; inset: 0; pointer-events: none; }
+    .line { position: absolute; background: color-mix(in oklch, var(--bad) 55%, transparent); }
+    .tag { position: absolute; font: 11px var(--mono); color: var(--bad); white-space: nowrap; transform: translateX(-50%); }
+    .tag.row { transform: translateY(-50%); }
+  </style>
+</head>
+<body class="demo">
+  <div class="controls">
+    <label class="control">preset
+      <select id="preset">
+        <option value="tracks">tracks and auto-placement</option>
+        <option value="areas">named areas</option>
+        <option value="minmax">minmax() and fr</option>
+      </select>
+    </label>
+    <label class="control">gap <input type="range" id="gap" min="0" max="24" value="8"> <output id="gap-out"></output></label>
+    <label class="control">columns <input type="text" id="cols" aria-label="grid-template-columns"></label>
+    <label class="control">rows <input type="text" id="rows" aria-label="grid-template-rows"></label>
+  </div>
+  <div class="stage">
+    <div class="wrap">
+      <div class="grid" id="grid"></div>
+      <div class="overlay" id="overlay" aria-hidden="true"></div>
+    </div>
+    <pre class="code" id="code"></pre>
+  </div>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const presets = {
+      tracks: { cols: '120px 1fr 2fr', rows: '1fr 1fr', areas: '', items: ['1', '2', '3', '4', '5'] },
+      areas: { cols: '160px 1fr 120px', rows: 'auto 1fr auto',
+        areas: '"header header header" "nav main aside" "footer footer footer"',
+        items: ['header', 'nav', 'main', 'aside', 'footer'] },
+      minmax: { cols: 'repeat(3, minmax(100px, 1fr))', rows: '60px minmax(80px, auto) 1fr', areas: '', items: ['1', '2', '3', '4', '5', '6', '7'] }
+    };
+    function loadPreset() {
+      const p = presets[$('preset').value];
+      $('cols').value = p.cols;
+      $('rows').value = p.rows;
+      $('grid').innerHTML = p.items.map((t) => `<div${p.areas ? ` style="grid-area: ${t}"` : ''}>${t}</div>`).join('');
+      update();
+    }
+    function update() {
+      const p = presets[$('preset').value];
+      const g = $('grid');
+      const gap = Number($('gap').value);
+      $('gap-out').textContent = gap + 'px';
+      g.style.gridTemplateColumns = $('cols').value;
+      g.style.gridTemplateRows = $('rows').value;
+      g.style.gridTemplateAreas = p.areas || '';
+      g.style.gap = gap + 'px';
+      $('code').textContent = `.grid {\n  display: grid;\n  grid-template-columns: ${$('cols').value};\n  grid-template-rows: ${$('rows').value};${p.areas ? `\n  grid-template-areas:\n    ${p.areas.replace(/" "/g, '"\n    "')};` : ''}\n  gap: ${gap}px;\n}`;
+      drawLines(gap);
+    }
+    // Read the resolved track sizes and draw every grid line with its positive and negative number
+    function drawLines(gap) {
+      const g = $('grid'), cs = getComputedStyle(g), ov = $('overlay');
+      const cols = cs.gridTemplateColumns.split(' ').map(parseFloat).filter((n) => !isNaN(n));
+      const rows = cs.gridTemplateRows.split(' ').map(parseFloat).filter((n) => !isNaN(n));
+      const box = g.getBoundingClientRect(), wrap = ov.getBoundingClientRect();
+      const ox = box.left - wrap.left + 2, oy = box.top - wrap.top + 2;
+      let html = '';
+      const edges = (tracks) => {
+        const out = [0];
+        tracks.forEach((t, i) => out.push(out[i] + t + (i < tracks.length - 1 ? gap : 0)));
+        // A line between two tracks sits in the middle of the gap
+        return out.map((x, i) => (i === 0 || i === out.length - 1 ? x : x - gap / 2));
+      };
+      edges(cols).forEach((x, i, a) => {
+        html += `<div class="line" style="left:${ox + x - 1}px;top:${oy}px;width:2px;height:${box.height - 4}px"></div>`;
+        html += `<div class="tag" style="left:${ox + x}px;top:6px">${i + 1} / ${i - a.length}</div>`;
+      });
+      edges(rows).forEach((y, i, a) => {
+        html += `<div class="line" style="top:${oy + y - 1}px;left:${ox}px;height:2px;width:${box.width - 4}px"></div>`;
+        html += `<div class="tag row" style="top:${oy + y}px;left:0">${i + 1}/${i - a.length}</div>`;
+      });
+      ov.innerHTML = html;
+    }
+    $('preset').addEventListener('input', loadPreset);
+    ['gap', 'cols', 'rows'].forEach((id) => $(id).addEventListener('input', update));
+    addEventListener('resize', update);
+    loadPreset();
+  </script>
+</body>
+</html>

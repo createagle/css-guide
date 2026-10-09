@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 13-1 (final): A Page Layout With Named Areas</title>
+  <style>
+    .page {
+      inline-size: min(760px, 100%);
+      min-block-size: 420px;
+      gap: 8px;
+      display: grid;
+      grid-template-columns: 160px 1fr 160px;
+      /* The middle row takes all the height left over by header and footer */
+      grid-template-rows: auto 1fr auto;
+      grid-template-areas:
+        "header header header"
+        "nav    main   aside"
+        "footer footer footer";
+    }
+    .page header { grid-area: header; }
+    .page nav    { grid-area: nav; }
+    .page main   { grid-area: main; }
+    .page aside  { grid-area: aside; }
+    .page footer { grid-area: footer; }
+    .page > * { padding: 12px; border-radius: 8px; background: var(--surface); font-size: 14px; }
+    .page header { font-weight: 700; }
+    .page main { background: color-mix(in oklch, var(--accent) 12%, var(--bg)); }
+  </style>
+</head>
+<body class="demo">
+  <div class="page">
+    <header>Header</header>
+    <nav aria-label="Sections">Navigation</nav>
+    <main>Main content</main>
+    <aside>Related links</aside>
+    <footer>Footer</footer>
+  </div>
+</body>
+</html>

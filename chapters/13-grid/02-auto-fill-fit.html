@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>13-2 auto-fill vs auto-fit</title>
+  <style>
+    .stage { width: min(900px, 100%); flex-direction: column; align-items: stretch; gap: 20px; }
+    .area { position: relative; }
+    .case .label { display: flex; justify-content: space-between; }
+    .tracks, .grid {
+      display: grid;
+      grid-template-columns: repeat(var(--mode), minmax(calc(var(--min) * 1px), 1fr));
+      gap: 8px;
+      inline-size: calc(var(--w) * 1%);
+    }
+    /* The same grid drawn empty behind the items, so empty tracks show up */
+    .tracks { position: absolute; inset: 0; }
+    .tracks span { border: 1px dashed var(--muted); border-radius: 6px; }
+    .grid { position: relative; }
+    .grid div {
+      padding: 18px 8px;
+      border-radius: 6px;
+      text-align: center;
+      font: 13px var(--mono);
+      background: color-mix(in oklch, var(--accent) 22%, var(--bg));
+      border: 1px solid color-mix(in oklch, var(--accent) 50%, var(--bg));
+    }
+  </style>
+</head>
+<body class="demo">
+  <div class="controls">
+    <label class="control">items <input type="range" id="n" min="1" max="8" value="3"> <output id="n-out"></output></label>
+    <label class="control">min track <input type="range" id="min" min="80" max="220" value="120"> <output id="min-out"></output></label>
+    <label class="control">container width <input type="range" id="w" min="40" max="100" value="100"> <output id="w-out"></output></label>
+  </div>
+  <div class="stage" id="stage">
+    <section class="case" style="--mode: auto-fill">
+      <p class="label"><span>repeat(auto-fill, minmax(…, 1fr))</span><span data-count></span></p>
+      <div class="area">
+        <div class="tracks" aria-hidden="true"></div>
+        <div class="grid"></div>
+      </div>
+    </section>
+    <section class="case" style="--mode: auto-fit">
+      <p class="label"><span>repeat(auto-fit, minmax(…, 1fr))</span><span data-count></span></p>
+      <div class="area">
+        <div class="tracks" aria-hidden="true"></div>
+        <div class="grid"></div>
+      </div>
+    </section>
+  </div>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    function update() {
+      const n = Number($('n').value);
+      const stage = $('stage');
+      stage.style.setProperty('--min', $('min').value);
+      stage.style.setProperty('--w', $('w').value);
+      $('n-out').textContent = n;
+      $('min-out').textContent = $('min').value + 'px';
+      $('w-out').textContent = $('w').value + '%';
+      document.querySelectorAll('.case').forEach((c) => {
+        const grid = c.querySelector('.grid');
+        grid.innerHTML = Array.from({ length: n }, (_, i) => `<div>${i + 1}</div>`).join('');
+        // Read the tracks the browser actually created and redraw them, empty, behind the items
+        const resolved = getComputedStyle(grid).gridTemplateColumns;
+        const tracks = resolved.split(' ');
+        const empty = tracks.filter((t) => parseFloat(t) === 0).length;
+        c.querySelector('[data-count]').textContent = `${tracks.length} tracks${empty ? `, ${empty} collapsed to 0` : ''}`;
+        // Collapsed tracks (and their gaps) take no room, so only the non-empty ones are drawn
+        const visible = tracks.filter((t) => parseFloat(t) > 0);
+        const bg = c.querySelector('.tracks');
+        bg.style.gridTemplateColumns = visible.join(' ');
+        bg.innerHTML = '<span></span>'.repeat(visible.length);
+      });
+    }
+    document.querySelectorAll('input').forEach((el) => el.addEventListener('input', update));
+    addEventListener('resize', update);
+    update();
+  </script>
+</body>
+</html>
