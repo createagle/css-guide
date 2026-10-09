@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>29-2 Cross-document Transitions</title>
+  <style>
+    /* Both pages opt in; same-origin navigations between them now animate */
+    @view-transition { navigation: auto; }
+    .stage { width: min(720px, 100%); display: block; }
+    .list { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; }
+    .list a { display: grid; grid-template-columns: 120px 1fr; gap: 16px; align-items: center; padding: 8px; border: 1px solid var(--border); border-radius: 12px; color: var(--fg); text-decoration: none; }
+    .list a:hover { background: var(--surface); }
+    .list a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .thumb { aspect-ratio: 4 / 3; border-radius: 8px; }
+    .list h2 { margin: 0; font-size: 18px; inline-size: fit-content; }
+    .list p { margin: 4px 0 0; color: var(--muted); font-size: 14px; }
+    .lake { background: linear-gradient(135deg, oklch(62% 0.13 230), oklch(48% 0.12 270)); }
+    .ridge { background: linear-gradient(135deg, oklch(62% 0.13 150), oklch(48% 0.12 190)); }
+    .mill { background: linear-gradient(135deg, oklch(66% 0.13 60), oklch(50% 0.12 30)); }
+    /* The two photos have different aspect ratios: crop them to the group instead of stretching */
+    ::view-transition-old(hero), ::view-transition-new(hero) { block-size: 100%; object-fit: cover; }
+    ::view-transition-group(*) { animation-duration: 0.4s; }
+    @media (prefers-reduced-motion: reduce) {
+      ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none; }
+    }
+  </style>
+</head>
+<body class="demo">
+  <main class="stage">
+    <ul class="list">
+      <li><a href="02-cross-document-detail.html?trail=lake" data-id="lake"><div class="thumb lake"></div><div><h2>Lake Loop</h2><p>14 km · easy</p></div></a></li>
+      <li><a href="02-cross-document-detail.html?trail=ridge" data-id="ridge"><div class="thumb ridge"></div><div><h2>North Ridge</h2><p>12 km · hard</p></div></a></li>
+      <li><a href="02-cross-document-detail.html?trail=mill" data-id="mill"><div class="thumb mill"></div><div><h2>Old Mill</h2><p>6 km · easy</p></div></a></li>
+    </ul>
+  </main>
+  <script>
+    // Name the thumbnail and title of one trail, so they match the detail page's hero and heading
+    function nameTrail(id) {
+      document.querySelectorAll('.list a').forEach((a) => {
+        const on = a.dataset.id === id;
+        a.querySelector('.thumb').style.viewTransitionName = on ? 'hero' : '';
+        a.querySelector('h2').style.viewTransitionName = on ? 'title' : '';
+      });
+    }
+    // Leaving: name the link that was clicked
+    document.querySelector('.list').addEventListener('click', (e) => {
+      const a = e.target.closest('a');
+      if (a) nameTrail(a.dataset.id);
+    });
+    // Coming back: pagereveal fires before the first frame of the new page
+    window.addEventListener('pagereveal', (e) => {
+      if (!e.viewTransition) return;
+      const from = window.navigation?.activation?.from?.url;
+      if (!from) return;
+      nameTrail(new URL(from).searchParams.get('trail'));
+      e.viewTransition.finished.then(() => nameTrail(null));
+    });
+    // Returning through the back/forward cache keeps the old names; clear them
+    window.addEventListener('pageshow', (e) => { if (e.persisted) nameTrail(null); });
+  </script>
+</body>
+</html>

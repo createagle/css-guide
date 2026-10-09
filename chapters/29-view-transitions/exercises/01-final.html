@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 29-1 (final): A Smooth Theme Switch</title>
+  <style>
+    .card { inline-size: min(380px, 100%); padding: 24px; border-radius: 16px; background: oklch(97% 0.01 90); color: oklch(25% 0.02 90); border: 1px solid oklch(85% 0.02 90); display: grid; gap: 12px; }
+    .card.night { background: oklch(25% 0.03 270); color: oklch(92% 0.02 270); border-color: oklch(40% 0.04 270); }
+    .card h2 { margin: 0; font-size: 20px; }
+    .card p { margin: 0; line-height: 1.6; }
+    .card button { justify-self: start; font: inherit; }
+    /* The default cross-fade, a little slower than the 0.25s default */
+    ::view-transition-old(root), ::view-transition-new(root) { animation-duration: 0.5s; }
+    @media (prefers-reduced-motion: reduce) {
+      ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
+    }
+  </style>
+</head>
+<body class="demo">
+  <article class="card" id="card">
+    <h2>Night walk</h2>
+    <p>Meet at the car park at 9 pm. Bring a head torch and warm clothes.</p>
+    <button type="button" id="toggle" aria-pressed="false">Night mode</button>
+  </article>
+  <script>
+    const card = document.getElementById('card');
+    const btn = document.getElementById('toggle');
+    function toggle() {
+      const on = card.classList.toggle('night');
+      btn.setAttribute('aria-pressed', on);
+    }
+    btn.addEventListener('click', () => {
+      // Without support the change still happens, just without the animation
+      if (!document.startViewTransition) return toggle();
+      document.startViewTransition(toggle);
+    });
+  </script>
+</body>
+</html>

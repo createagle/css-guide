@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>29-2 Cross-document Transitions: Detail</title>
+  <style>
+    @view-transition { navigation: auto; }
+    .stage { width: min(720px, 100%); display: grid; gap: 12px; }
+    .hero { aspect-ratio: 16 / 7; border-radius: 12px; view-transition-name: hero; }
+    h2 { margin: 0; font-size: 28px; inline-size: fit-content; view-transition-name: title; }
+    p { margin: 0; line-height: 1.6; }
+    .lake { background: linear-gradient(135deg, oklch(62% 0.13 230), oklch(48% 0.12 270)); }
+    .ridge { background: linear-gradient(135deg, oklch(62% 0.13 150), oklch(48% 0.12 190)); }
+    .mill { background: linear-gradient(135deg, oklch(66% 0.13 60), oklch(50% 0.12 30)); }
+    /* The two photos have different aspect ratios: crop them to the group instead of stretching */
+    ::view-transition-old(hero), ::view-transition-new(hero) { block-size: 100%; object-fit: cover; }
+    ::view-transition-group(*) { animation-duration: 0.4s; }
+    @media (prefers-reduced-motion: reduce) {
+      ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none; }
+    }
+  </style>
+</head>
+<body class="demo">
+  <main class="stage">
+    <div class="hero" id="hero"></div>
+    <h2 id="name"></h2>
+    <p id="text"></p>
+    <p><a href="02-cross-document.html">Back to all walks</a></p>
+  </main>
+  <script>
+    const trails = {
+      lake: ['Lake Loop', '14 km. An easy walk around the reservoir, mostly on gravel paths.'],
+      ridge: ['North Ridge', '12 km. A steep climb onto the ridge, rewarded by views across three valleys.'],
+      mill: ['Old Mill', '6 km. A short riverside stroll to the restored water mill.']
+    };
+    const id = new URLSearchParams(location.search).get('trail') in trails ? new URLSearchParams(location.search).get('trail') : 'lake';
+    // This script runs before the first render, so the new page is ready when the transition starts
+    document.getElementById('hero').classList.add(id);
+    document.getElementById('name').textContent = trails[id][0];
+    document.getElementById('text').textContent = trails[id][1];
+    document.title = trails[id][0];
+  </script>
+</body>
+</html>

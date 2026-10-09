@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 29-2 (start): Reorder Without Jumping</title>
+  <style>
+    .wrap { display: grid; gap: 12px; inline-size: min(360px, 100%); }
+    .wrap button { justify-self: start; font: inherit; }
+    .list { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+    .list li { display: flex; justify-content: space-between; padding: 10px 14px; border-radius: 10px; background: var(--surface); border: 1px solid var(--border); }
+    .list span { color: var(--muted); }
+  </style>
+</head>
+<body class="demo">
+  <div class="wrap">
+    <button type="button" id="sort">Sort by distance</button>
+    <ul class="list" id="list">
+      <li>Coast Path <span>18 km</span></li>
+      <li>Old Mill <span>6 km</span></li>
+      <li>North Ridge <span>12 km</span></li>
+      <li>Castle Hill <span>7 km</span></li>
+      <li>Lake Loop <span>14 km</span></li>
+    </ul>
+  </div>
+  <script>
+    const list = document.getElementById('list');
+    const btn = document.getElementById('sort');
+    let ascending = true;
+    function sort() {
+      const items = [...list.children].sort((a, b) => (parseFloat(a.lastChild.textContent) - parseFloat(b.lastChild.textContent)) * (ascending ? 1 : -1));
+      list.append(...items);
+      btn.textContent = ascending ? 'Sort the other way' : 'Sort by distance';
+      ascending = !ascending;
+    }
+    btn.addEventListener('click', sort);
+  </script>
+</body>
+</html>

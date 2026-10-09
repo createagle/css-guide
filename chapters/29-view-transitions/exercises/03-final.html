@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 29-3 (final): Tabs That Slide</title>
+  <style>
+    .tabs { inline-size: min(440px, 100%); display: grid; gap: 12px; }
+    .tablist { display: flex; gap: 4px; }
+    .tablist button { font: inherit; padding: 6px 14px; border: 1px solid var(--border); border-radius: 99px; background: none; color: var(--fg); }
+    .tablist button[aria-selected="true"] { background: var(--accent); border-color: var(--accent); color: white; }
+    .panel { padding: 16px; border: 1px solid var(--border); border-radius: 12px; overflow: clip; }
+    .panel h2 { margin: 0 0 6px; font-size: 18px; }
+    .panel p { margin: 0; line-height: 1.6; }
+    /* Only the panel takes part; the tab buttons stay put */
+    :root { view-transition-name: none; }
+    .panel { view-transition-name: panel; }
+    ::view-transition-group(panel) { animation-duration: 0.3s; }
+    /* The type passed to startViewTransition picks the direction */
+    html:active-view-transition-type(forward) {
+      &::view-transition-old(panel) { animation: 0.3s ease-in both out-left; }
+      &::view-transition-new(panel) { animation: 0.3s ease-out both in-right; }
+    }
+    html:active-view-transition-type(back) {
+      &::view-transition-old(panel) { animation: 0.3s ease-in both out-right; }
+      &::view-transition-new(panel) { animation: 0.3s ease-out both in-left; }
+    }
+    @keyframes out-left { to { translate: -40px 0; opacity: 0; } }
+    @keyframes out-right { to { translate: 40px 0; opacity: 0; } }
+    @keyframes in-right { from { translate: 40px 0; opacity: 0; } }
+    @keyframes in-left { from { translate: -40px 0; opacity: 0; } }
+    @media (prefers-reduced-motion: reduce) {
+      ::view-transition-old(panel), ::view-transition-new(panel) { animation: none !important; }
+    }
+  </style>
+</head>
+<body class="demo">
+  <div class="tabs">
+    <div class="tablist" role="tablist" aria-label="Seasons">
+      <button type="button" role="tab" id="t0" aria-controls="panel" aria-selected="true" data-i="0">Spring</button>
+      <button type="button" role="tab" id="t1" aria-controls="panel" aria-selected="false" data-i="1">Summer</button>
+      <button type="button" role="tab" id="t2" aria-controls="panel" aria-selected="false" data-i="2">Autumn</button>
+      <button type="button" role="tab" id="t3" aria-controls="panel" aria-selected="false" data-i="3">Winter</button>
+    </div>
+    <section class="panel" id="panel" role="tabpanel" aria-labelledby="t0"></section>
+  </div>
+  <script>
+    const seasons = [["Spring", "Bluebells in the woods and lambs in the fields. Paths can be muddy."], ["Summer", "Long days and dry paths. Start early to avoid the heat on the ridge."], ["Autumn", "The beech trees turn gold. Bring a torch: it gets dark by six."], ["Winter", "Short days and icy paths. Stick to the valley routes."]];
+    const panel = document.getElementById('panel');
+    let current = 0;
+    function show(i) {
+      document.querySelectorAll('[role=tab]').forEach((b) => b.setAttribute('aria-selected', b.dataset.i == i));
+      panel.setAttribute('aria-labelledby', 't' + i);
+      panel.innerHTML = `<h2>${seasons[i][0]}</h2><p>${seasons[i][1]}</p>`;
+      current = i;
+    }
+    document.querySelector('[role=tablist]').addEventListener('click', (e) => {
+      const b = e.target.closest('[role=tab]');
+      if (!b || +b.dataset.i === current) return;
+      const i = +b.dataset.i;
+      if (!document.startViewTransition) return show(i);
+      // The type tells the CSS which way to slide
+      document.startViewTransition({ update: () => show(i), types: [i > current ? 'forward' : 'back'] });
+    });
+    show(0);
+  </script>
+</body>
+</html>

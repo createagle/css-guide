@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>29-1 List to Detail</title>
+  <style>
+    :root { --vt: 0.35s; }
+    :root:has(#slow:checked) { --vt: 1.6s; }
+    .stage { width: min(820px, 100%); display: block; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(180px, 100%), 1fr)); gap: 16px; margin: 0; padding: 0; list-style: none; }
+    .card { inline-size: 100%; display: grid; gap: 8px; padding: 0 0 12px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); color: var(--fg); font: inherit; text-align: start; cursor: pointer; overflow: hidden; }
+    .card:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .photo { aspect-ratio: 4 / 3; border-radius: 12px; background: linear-gradient(135deg, oklch(62% 0.13 var(--h)), oklch(48% 0.12 calc(var(--h) + 40))); }
+    .card .photo { border-radius: 12px 12px 0 0; }
+    .card h2 { margin: 0 12px; font-size: 16px; inline-size: fit-content; }
+    .card p { margin: 0 12px; font-size: 13px; color: var(--muted); }
+    .detail { display: grid; gap: 12px; }
+    .detail .photo { aspect-ratio: 16 / 7; }
+    .detail h2 { margin: 0; font-size: 28px; inline-size: fit-content; }
+    .detail p { margin: 0; line-height: 1.6; }
+    .detail button { justify-self: start; font: inherit; }
+
+    /* The detail view's photo and title carry the names; the script gives the clicked card the same names */
+    .detail .photo { view-transition-name: hero; }
+    .detail h2 { view-transition-name: title; }
+
+    /* The two photos have different aspect ratios: crop them to the group instead of stretching */
+    ::view-transition-old(hero), ::view-transition-new(hero) { block-size: 100%; object-fit: cover; }
+    ::view-transition-group(*) { animation-duration: var(--vt); }
+    ::view-transition-group(title) { animation-timing-function: ease-out; }
+    @media (prefers-reduced-motion: reduce) {
+      ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none; }
+    }
+  </style>
+</head>
+<body class="demo">
+  <div class="controls">
+    <label class="control"><input type="checkbox" id="slow"> slow motion</label>
+  </div>
+  <main class="stage" id="app"></main>
+  <script>
+    const trails = [
+      { id: 'lake', name: 'Lake Loop', km: 14, hue: 230, text: 'An easy walk around the reservoir, mostly on gravel paths, with a café at the north car park.' },
+      { id: 'ridge', name: 'North Ridge', km: 12, hue: 150, text: 'A steep climb onto the ridge, rewarded by views across three valleys. Exposed in bad weather.' },
+      { id: 'mill', name: 'Old Mill', km: 6, hue: 40, text: 'A short riverside stroll to the restored water mill. Good for families and pushchairs.' },
+      { id: 'coast', name: 'Coast Path', km: 18, hue: 200, text: 'Cliff tops, a wooded valley and a lighthouse. Check the tide times before you set off.' },
+      { id: 'forest', name: 'Forest Trail', km: 9, hue: 120, text: 'Shady paths under old beech trees, best in autumn when the leaves turn.' },
+      { id: 'castle', name: 'Castle Hill', km: 7, hue: 330, text: 'A short sharp climb to the ruins, with a picnic meadow at the top.' }
+    ];
+    const app = document.getElementById('app');
+    let current = null;
+
+    function renderList() {
+      app.innerHTML = '<ul class="grid">' + trails.map((t) =>
+        `<li><button class="card" type="button" data-id="${t.id}"><div class="photo" style="--h:${t.hue}"></div><h2>${t.name}</h2><p>${t.km} km</p></button></li>`).join('') + '</ul>';
+    }
+    function renderDetail(t) {
+      app.innerHTML = `<article class="detail"><div class="photo" style="--h:${t.hue}"></div><h2>${t.name}</h2><p>${t.km} km. ${t.text}</p><button type="button" id="back">Back to all walks</button></article>`;
+    }
+    // Give one card the shared names (or take them away again)
+    function nameCard(id, on) {
+      const card = app.querySelector(`.card[data-id="${id}"]`);
+      if (!card) return;
+      card.querySelector('.photo').style.viewTransitionName = on ? 'hero' : '';
+      card.querySelector('h2').style.viewTransitionName = on ? 'title' : '';
+    }
+    // Run a DOM update inside a view transition when the browser has one
+    function transition(update) {
+      if (!document.startViewTransition) { update(); return Promise.resolve(); }
+      return document.startViewTransition(update).finished;
+    }
+
+    app.addEventListener('click', (e) => {
+      const card = e.target.closest('.card');
+      if (card) {
+        current = trails.find((t) => t.id === card.dataset.id);
+        nameCard(current.id, true);                       // old state: the card carries the names
+        transition(() => renderDetail(current)).then(() => document.getElementById('back').focus());
+      } else if (e.target.id === 'back') {
+        const id = current.id;
+        transition(() => { renderList(); nameCard(id, true); })   // new state: the card carries them again
+          .then(() => { nameCard(id, false); app.querySelector(`.card[data-id="${id}"]`).focus(); });
+      }
+    });
+    renderList();
+  </script>
+</body>
+</html>
