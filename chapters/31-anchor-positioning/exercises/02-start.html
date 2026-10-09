@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 31-2 (start): Keep the Tooltip on Screen</title>
+  <style>
+    .row { inline-size: min(560px, 100%); display: flex; justify-content: space-between; padding: 12px; border: 1px dashed var(--border); border-radius: 12px; }
+    .row button { font: inherit; }
+    .tip { position: absolute; margin: 8px; padding: 8px 12px; inline-size: max-content; max-inline-size: 200px; border-radius: 8px; background: oklch(25% 0.02 260); color: white; font-size: 14px; display: none; }
+    .row button:is(:hover, :focus-visible) + .tip { display: block; }
+    #a { anchor-name: --a; }
+    #b { anchor-name: --b; }
+    .tip-a { position-anchor: --a; }
+    .tip-b { position-anchor: --b; }
+    /* Show each tip to the right of its button */
+    .tip { position-area: right; }
+  </style>
+</head>
+<body class="demo">
+  <div class="row">
+    <button type="button" id="a" aria-describedby="ta">Filters</button>
+    <div class="tip tip-a" id="ta" role="tooltip">Show only walks that match</div>
+    <button type="button" id="b" aria-describedby="tb">Share</button>
+    <div class="tip tip-b" id="tb" role="tooltip">Copy a link to this list of walks</div>
+  </div>
+</body>
+</html>

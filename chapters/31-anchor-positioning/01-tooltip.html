@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>31-1 A Tooltip That Flips</title>
+  <style>
+    .stage { width: min(760px, 100%); flex-direction: column; flex-wrap: nowrap; align-items: stretch; gap: 12px; }
+    /* The area is the tooltip's containing block: "does it fit?" means "does it fit in here?" */
+    .area { position: relative; block-size: 320px; overflow: clip; border: 1px dashed var(--border); border-radius: 12px; background-image: radial-gradient(var(--border) 1px, transparent 1px); background-size: 24px 24px; }
+    .anchor {
+      anchor-name: --target;
+      position: absolute;
+      /* Move with inset, not translate: anchor positioning ignores transforms */
+      inset-inline-start: calc((100% - 120px) * var(--x, 50) / 100);
+      inset-block-start: calc((100% - 40px) * var(--y, 50) / 100);
+      inline-size: 120px;
+      block-size: 40px;
+      font: inherit;
+    }
+    .tip {
+      position: absolute;
+      margin: 8px;
+      padding: 8px 12px;
+      inline-size: max-content;
+      max-inline-size: 220px;
+      border-radius: 8px;
+      background: oklch(25% 0.02 260);
+      color: white;
+      font-size: 14px;
+      /* Attach to the button, then try the flipped positions when it does not fit */
+      position-anchor: --target;
+      position-area: var(--area, top);
+      position-try-fallbacks: var(--fallbacks, flip-block, flip-inline);
+    }
+    .area:not(:has(~ .controls #show:checked)) .tip { display: none; }
+    /* Older browsers: the tooltip stays in the top corner of the area */
+    @supports not (anchor-name: --a) {
+      .tip { inset: 12px auto auto 12px; }
+    }
+    .readout { margin: 0; font: 13px var(--mono); color: var(--muted); }
+  </style>
+</head>
+<body class="demo">
+  <div class="stage" id="stage">
+    <div class="area">
+      <button type="button" class="anchor" id="btn" aria-describedby="tip">Save route</button>
+      <div class="tip" id="tip" role="tooltip">Saved routes stay on this device until you sign in.</div>
+    </div>
+    <div class="controls">
+      <label class="control">button x <input type="range" id="x" min="0" max="100" value="50"></label>
+      <label class="control">button y <input type="range" id="y" min="0" max="100" value="50"></label>
+      <label class="control">position-area
+        <select id="area"><option>top</option><option>bottom</option><option>left</option><option>right</option><option>top span-right</option></select>
+      </label>
+      <label class="control">position-try-fallbacks
+        <select id="fallbacks"><option>flip-block, flip-inline</option><option>flip-block</option><option>none</option></select>
+      </label>
+      <label class="control"><input type="checkbox" id="show" checked> show tooltip</label>
+    </div>
+    <p class="readout" id="readout" aria-live="polite"></p>
+    <pre class="code" id="code"></pre>
+  </div>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const stage = $('stage');
+    function update() {
+      for (const id of ['x', 'y', 'area', 'fallbacks']) stage.style.setProperty('--' + id, $(id).value);
+      $('code').textContent = `.anchor { anchor-name: --target; }\n.tip {\n  position: absolute;\n  position-anchor: --target;\n  position-area: ${$('area').value};\n  position-try-fallbacks: ${$('fallbacks').value};\n}`;
+      requestAnimationFrame(report);
+    }
+    // Work out where the tooltip ended up relative to the button
+    function report() {
+      const a = $('btn').getBoundingClientRect(), t = $('tip').getBoundingClientRect();
+      if (!t.width) { $('readout').textContent = ''; return; }
+      const side = t.bottom <= a.top + 1 ? 'above' : t.top >= a.bottom - 1 ? 'below' : t.right <= a.left + 1 ? 'to the left of' : 'to the right of';
+      $('readout').textContent = `The tooltip is ${side} the button.`;
+    }
+    stage.addEventListener('input', update);
+    update();
+  </script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 31-3 (final): A Real Modal</title>
+  <style>
+    .list { inline-size: min(420px, 100%); margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+    .list li { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; border-radius: 10px; background: var(--surface); }
+    .list button, dialog button { font: inherit; }
+    dialog { max-inline-size: min(380px, 90vw); padding: 20px; border: 1px solid var(--border); border-radius: 14px; background: var(--bg); color: var(--fg); }
+    dialog h2 { margin: 0 0 8px; font-size: 18px; }
+    dialog p { margin: 0 0 16px; }
+    dialog form { display: flex; gap: 8px; justify-content: flex-end; }
+    dialog { border: 0; box-shadow: 0 20px 50px oklch(0% 0 0 / 0.3); }
+    /* Only a modal dialog has a backdrop */
+    dialog::backdrop { background: oklch(20% 0.03 260 / 0.5); }
+  </style>
+</head>
+<body class="demo">
+  <ul class="list">
+    <li>Lake Loop <button type="button" class="delete">Delete</button></li>
+    <li>North Ridge <button type="button" class="delete">Delete</button></li>
+  </ul>
+  <dialog id="confirm" aria-labelledby="t">
+    <h2 id="t">Delete this route?</h2>
+    <p>It will be removed from your saved routes.</p>
+    <form method="dialog"><button value="cancel" autofocus>Cancel</button><button value="delete">Delete</button></form>
+  </dialog>
+  <script>
+    const dialog = document.getElementById('confirm');
+    let row;
+    document.querySelector('.list').addEventListener('click', (e) => {
+      if (!e.target.matches('.delete')) return;
+      row = e.target.closest('li');
+      // Modal: top layer, a backdrop, the page behind becomes inert, Esc closes it
+      dialog.showModal();
+    });
+    dialog.addEventListener('close', () => { if (dialog.returnValue === 'delete') row.remove(); });
+  </script>
+</body>
+</html>

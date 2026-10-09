@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>31-2 Anchored Menus and a Modal Dialog</title>
+  <style>
+    .stage { width: min(820px, 100%); display: block; }
+    .bar { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; border: 1px solid var(--border); border-radius: 12px; }
+    .bar button { font: inherit; }
+    .list { margin: 16px 0 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+    .list li { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; border-radius: 10px; background: var(--surface); }
+
+    /* Each trigger names itself as an anchor */
+    #sort-btn { anchor-name: --sort; }
+    #account-btn { anchor-name: --account; }
+    .menu {
+      /* Popovers sit in the top layer, centred by default; undo that, then anchor */
+      inset: auto;
+      margin: 0;
+      margin-block-start: 6px;
+      padding: 6px;
+      min-inline-size: max(anchor-size(inline), 13rem);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--bg);
+      color: var(--fg);
+      box-shadow: 0 10px 30px oklch(0% 0 0 / 0.18);
+      /* Below the button, growing towards the end; flip if there is no room */
+      position-area: block-end span-inline-end;
+      position-try-fallbacks: flip-inline, flip-block, flip-block flip-inline;
+    }
+    #sort-menu { position-anchor: --sort; }
+    #account-menu { position-anchor: --account; }
+    .menu button { display: block; inline-size: 100%; padding: 8px 12px; border: 0; border-radius: 6px; background: none; color: inherit; font: inherit; text-align: start; }
+    .menu button:hover, .menu button:focus-visible { background: var(--surface); outline: none; }
+    @supports not (anchor-name: --a) {
+      /* Without anchor positioning, keep the menus near the top of the page */
+      .menu { inset: 60px 16px auto auto; }
+    }
+
+    /* A modal dialog and the backdrop it brings with it */
+    dialog { max-inline-size: min(420px, 90vw); padding: 20px; border: 0; border-radius: 14px; background: var(--bg); color: var(--fg); box-shadow: 0 20px 50px oklch(0% 0 0 / 0.3); }
+    dialog::backdrop { background: oklch(20% 0.03 260 / 0.45); backdrop-filter: blur(3px); }
+    dialog h2 { margin: 0 0 8px; font-size: 18px; }
+    dialog p { margin: 0 0 16px; }
+    dialog form { display: flex; gap: 8px; justify-content: flex-end; }
+    dialog button { font: inherit; }
+  </style>
+</head>
+<body class="demo">
+  <div class="stage">
+    <div class="bar">
+      <button type="button" id="sort-btn" popovertarget="sort-menu">Sort by ▾</button>
+      <button type="button" id="account-btn" popovertarget="account-menu">Account ▾</button>
+    </div>
+    <ul class="list">
+      <li>Lake Loop · 14 km <button type="button" class="delete">Delete</button></li>
+      <li>North Ridge · 12 km <button type="button" class="delete">Delete</button></li>
+      <li>Old Mill · 6 km <button type="button" class="delete">Delete</button></li>
+    </ul>
+  </div>
+  <div class="menu" id="sort-menu" popover>
+    <button type="button">Distance</button>
+    <button type="button">Difficulty</button>
+    <button type="button">Recently walked</button>
+  </div>
+  <div class="menu" id="account-menu" popover>
+    <button type="button">Profile and preferences</button>
+    <button type="button">Downloaded maps</button>
+    <button type="button">Sign out</button>
+  </div>
+  <dialog id="confirm" aria-labelledby="confirm-title">
+    <h2 id="confirm-title">Delete this route?</h2>
+    <p id="confirm-text"></p>
+    <form method="dialog">
+      <button value="cancel" autofocus>Cancel</button>
+      <button value="delete">Delete</button>
+    </form>
+  </dialog>
+  <script>
+    const dialog = document.getElementById('confirm');
+    let row = null;
+    document.querySelector('.list').addEventListener('click', (e) => {
+      if (!e.target.matches('.delete')) return;
+      row = e.target.closest('li');
+      document.getElementById('confirm-text').textContent = `“${row.firstChild.textContent.trim()}” will be removed from your saved routes.`;
+      // showModal(): top layer, a ::backdrop, the rest of the page made inert, Esc to close
+      dialog.showModal();
+    });
+    dialog.addEventListener('close', () => {
+      if (dialog.returnValue === 'delete' && row) row.remove();
+    });
+    // Close a menu once an item is chosen
+    document.querySelectorAll('.menu').forEach((m) => m.addEventListener('click', (e) => { if (e.target.matches('button')) m.hidePopover(); }));
+  </script>
+</body>
+</html>

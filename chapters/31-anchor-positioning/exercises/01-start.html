@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 31-1 (start): A Hint Next to Its Button</title>
+  <style>
+    .field { display: grid; gap: 6px; inline-size: min(360px, 100%); }
+    .field .row { display: flex; gap: 8px; align-items: center; }
+    .field label { font-weight: 600; }
+    .field input { flex: 1; font: inherit; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--fg); }
+    .info { inline-size: 28px; block-size: 28px; border-radius: 50%; border: 1px solid var(--border); background: var(--surface); color: var(--fg); font: 600 14px system-ui, sans-serif; }
+    .hint { max-inline-size: 260px; padding: 10px 12px; border: 0; border-radius: 8px; background: oklch(25% 0.02 260); color: white; font-size: 14px; }
+  </style>
+</head>
+<body class="demo">
+  <div class="field">
+    <label for="code">Gate code</label>
+    <div class="row">
+      <input id="code" inputmode="numeric" autocomplete="off">
+      <button type="button" class="info" popovertarget="hint" aria-label="What is the gate code?">?</button>
+    </div>
+  </div>
+  <div class="hint" id="hint" popover>The four-digit code is printed on your parking ticket, under the barcode.</div>
+</body>
+</html>
