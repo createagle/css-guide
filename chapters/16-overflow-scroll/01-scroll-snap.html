@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>16-1 Scroll Snap Carousel</title>
+  <style>
+    .controls { max-width: 760px; }
+    .stage { width: min(760px, 100%); flex-direction: column; align-items: stretch; }
+    .carousel { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 8px; }
+    .track {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: 72%;
+      gap: 12px;
+      margin: 0;
+      padding: 0 0 8px;
+      list-style: none;
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      scroll-snap-type: var(--snap-type);
+      scroll-padding-inline: calc(var(--pad) * 1px);
+      border-radius: 12px;
+    }
+    .track:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+    .track li {
+      scroll-snap-align: var(--align);
+      display: grid;
+      align-content: end;
+      block-size: 200px;
+      padding: 16px;
+      border-radius: 12px;
+      color: white;
+      background: linear-gradient(160deg in oklch, oklch(72% 0.13 calc(var(--h) * 1deg)), oklch(42% 0.12 calc(var(--h) * 1deg + 60deg)));
+    }
+    .stop .track li { scroll-snap-stop: always; }
+    .track h2 { margin: 0; font-size: 20px; }
+    .track p { margin: 0; font-size: 14px; opacity: 0.9; }
+    .carousel button {
+      inline-size: 36px;
+      block-size: 36px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--fg);
+      cursor: pointer;
+    }
+    /* Smooth scrolling only for people who have not asked for reduced motion */
+    @media (prefers-reduced-motion: no-preference) {
+      .track { scroll-behavior: smooth; }
+    }
+    .status { margin: 0; font-size: 13px; color: var(--muted); text-align: center; }
+  </style>
+</head>
+<body class="demo">
+  <div class="controls">
+    <label class="control">scroll-snap-type
+      <select id="type">
+        <option value="x mandatory">x mandatory</option>
+        <option value="x proximity">x proximity</option>
+        <option value="none">none</option>
+      </select>
+    </label>
+    <label class="control">scroll-snap-align
+      <select id="align">
+        <option value="start" selected>start</option>
+        <option value="center">center</option>
+        <option value="end">end</option>
+      </select>
+    </label>
+    <label class="control">scroll-padding-inline <input type="range" id="pad" min="0" max="48" value="0"> <output id="pad-out"></output></label>
+    <label class="control"><input type="checkbox" id="stop"> scroll-snap-stop: always</label>
+  </div>
+  <div class="stage" id="stage">
+    <section class="carousel" aria-label="Destinations">
+      <button type="button" id="prev" aria-label="Previous slide">‹</button>
+      <ul class="track" id="track" tabindex="0" aria-label="Destinations, scroll horizontally">
+        <li style="--h: 220"><h2>Fjords</h2><p>Norway · 6 days</p></li>
+        <li style="--h: 30"><h2>Canyons</h2><p>Utah · 5 days</p></li>
+        <li style="--h: 140"><h2>Rainforest</h2><p>Costa Rica · 8 days</p></li>
+        <li style="--h: 280"><h2>Glaciers</h2><p>Patagonia · 10 days</p></li>
+        <li style="--h: 80"><h2>Dunes</h2><p>Namibia · 7 days</p></li>
+      </ul>
+      <button type="button" id="next" aria-label="Next slide">›</button>
+    </section>
+    <p class="status" id="status" aria-live="polite"></p>
+  </div>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const track = $('track');
+    const slides = [...track.children];
+    function update() {
+      const stage = $('stage');
+      stage.style.setProperty('--snap-type', $('type').value);
+      stage.style.setProperty('--align', $('align').value);
+      stage.style.setProperty('--pad', $('pad').value);
+      stage.classList.toggle('stop', $('stop').checked);
+      $('pad-out').textContent = $('pad').value + 'px';
+      report();
+    }
+    // Which slide is closest to the snap position?
+    function current() {
+      const box = track.getBoundingClientRect();
+      const pad = Number($('pad').value);
+      const align = $('align').value;
+      const target = align === 'start' ? box.left + pad : align === 'end' ? box.right - pad : box.left + box.width / 2;
+      let best = 0, dist = Infinity;
+      slides.forEach((s, i) => {
+        const r = s.getBoundingClientRect();
+        const p = align === 'start' ? r.left : align === 'end' ? r.right : r.left + r.width / 2;
+        if (Math.abs(p - target) < dist) { dist = Math.abs(p - target); best = i; }
+      });
+      return best;
+    }
+    function report() {
+      const i = current();
+      $('status').textContent = `Slide ${i + 1} of ${slides.length}: ${slides[i].querySelector('h2').textContent} · scrollLeft ${Math.round(track.scrollLeft)}px`;
+    }
+    function go(step) {
+      const i = Math.min(slides.length - 1, Math.max(0, current() + step));
+      // scrollIntoView respects scroll-snap-align and scroll-padding; behavior follows the CSS scroll-behavior
+      slides[i].scrollIntoView({ block: 'nearest', inline: $('align').value });
+    }
+    $('prev').addEventListener('click', () => go(-1));
+    $('next').addEventListener('click', () => go(1));
+    track.addEventListener('scroll', report, { passive: true });
+    document.querySelectorAll('select, input').forEach((el) => el.addEventListener('input', update));
+    update();
+  </script>
+</body>
+</html>

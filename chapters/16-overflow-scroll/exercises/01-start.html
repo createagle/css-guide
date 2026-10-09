@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 16-1 (start): A Wide Table</title>
+  <style>
+    .card { inline-size: min(360px, 100%); padding: 16px; border: 1px solid var(--border); border-radius: 12px; }
+    .card h2 { margin: 0 0 8px; font-size: 16px; }
+    table { border-collapse: collapse; font-size: 14px; }
+    caption { text-align: start; color: var(--muted); font-size: 13px; padding-block-end: 6px; }
+    th, td { padding: 6px 10px; border-block-end: 1px solid var(--border); text-align: end; white-space: nowrap; }
+    th:first-child, td:first-child { text-align: start; }
+  </style>
+</head>
+<body class="demo">
+  <section class="card">
+    <h2>Compare trails</h2>
+    <div class="table-wrap">
+      <table>
+        <caption id="cap">Trail comparison</caption>
+        <thead><tr><th scope="col">Trail</th><th scope="col">Distance</th><th scope="col">Ascent</th><th scope="col">Time</th><th scope="col">Difficulty</th><th scope="col">Dogs allowed</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Lake Loop</th><td>6.2 km</td><td>120 m</td><td>1 h 40</td><td>Easy</td><td>Yes</td></tr>
+          <tr><th scope="row">Pine Valley</th><td>9.0 km</td><td>310 m</td><td>2 h 50</td><td>Moderate</td><td>Yes</td></tr>
+          <tr><th scope="row">North Ridge</th><td>12.4 km</td><td>860 m</td><td>5 h 10</td><td>Hard</td><td>No</td></tr>
+          <tr><th scope="row">Old Mill</th><td>4.1 km</td><td>60 m</td><td>1 h 05</td><td>Easy</td><td>Yes</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</body>
+</html>

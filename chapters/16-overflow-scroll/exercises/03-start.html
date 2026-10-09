@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 16-3 (start): A Scrolling Panel</title>
+  <style>
+    .layout { inline-size: min(640px, 100%); display: grid; grid-template-columns: 1fr 220px; gap: 16px; align-items: start; }
+    .article p { margin: 0 0 14px; line-height: 1.7; }
+    .inbox { position: sticky; top: 16px; border: 1px solid var(--border); border-radius: 12px; }
+    .inbox h2 { margin: 0; padding: 10px 12px; font-size: 14px; border-block-end: 1px solid var(--border); }
+    .inbox ul { block-size: 220px; overflow-y: auto; margin: 0; padding: 0; list-style: none; }
+    .inbox li { padding: 8px 12px; font-size: 13px; border-block-end: 1px solid var(--border); }
+  </style>
+</head>
+<body class="demo">
+  <div class="layout">
+    <article class="article">
+      <p>Long-distance walking is less about speed and more about rhythm. Find a pace you could keep all day, and keep it on the climbs as well as on the flat. Stop before you are tired, eat before you are hungry and drink before you are thirsty.</p>
+      <p>Long-distance walking is less about speed and more about rhythm. Find a pace you could keep all day, and keep it on the climbs as well as on the flat. Stop before you are tired, eat before you are hungry and drink before you are thirsty.</p>
+      <p>Long-distance walking is less about speed and more about rhythm. Find a pace you could keep all day, and keep it on the climbs as well as on the flat. Stop before you are tired, eat before you are hungry and drink before you are thirsty.</p>
+      <p>Long-distance walking is less about speed and more about rhythm. Find a pace you could keep all day, and keep it on the climbs as well as on the flat. Stop before you are tired, eat before you are hungry and drink before you are thirsty.</p>
+      <p>Long-distance walking is less about speed and more about rhythm. Find a pace you could keep all day, and keep it on the climbs as well as on the flat. Stop before you are tired, eat before you are hungry and drink before you are thirsty.</p>
+      <p>Long-distance walking is less about speed and more about rhythm. Find a pace you could keep all day, and keep it on the climbs as well as on the flat. Stop before you are tired, eat before you are hungry and drink before you are thirsty.</p>
+      <p>Long-distance walking is less about speed and more about rhythm. Find a pace you could keep all day, and keep it on the climbs as well as on the flat. Stop before you are tired, eat before you are hungry and drink before you are thirsty.</p>
+      <p>Long-distance walking is less about speed and more about rhythm. Find a pace you could keep all day, and keep it on the climbs as well as on the flat. Stop before you are tired, eat before you are hungry and drink before you are thirsty.</p>
+      <p>Long-distance walking is less about speed and more about rhythm. Find a pace you could keep all day, and keep it on the climbs as well as on the flat. Stop before you are tired, eat before you are hungry and drink before you are thirsty.</p>
+      <p>Long-distance walking is less about speed and more about rhythm. Find a pace you could keep all day, and keep it on the climbs as well as on the flat. Stop before you are tired, eat before you are hungry and drink before you are thirsty.</p>
+    </article>
+    <aside class="inbox" aria-labelledby="inbox-title">
+      <h2 id="inbox-title">Notifications</h2>
+      <ul tabindex="0" aria-labelledby="inbox-title">
+        <li>Ada commented on your route</li>
+        <li>New trail: Eagle Rock</li>
+        <li>Weather warning for Saturday</li>
+        <li>Ben joined your group</li>
+        <li>Your photo got 12 likes</li>
+        <li>Booking confirmed: Lake hut</li>
+        <li>Reminder: pack a headlamp</li>
+        <li>Trail closed: Old Mill bridge</li>
+        <li>Mia shared a map</li>
+        <li>Group walk moved to 9:00</li>
+        <li>New badge: 100 km</li>
+        <li>Survey: how was your trip?</li>
+      </ul>
+    </aside>
+  </div>
+</body>
+</html>

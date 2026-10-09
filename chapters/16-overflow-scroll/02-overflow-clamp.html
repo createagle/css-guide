@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>16-2 Overflow and Truncation</title>
+  <style>
+    .controls { max-width: 760px; }
+    .stage { width: min(820px, 100%); }
+    .stage > figure { inline-size: calc(var(--w) * 1px); max-inline-size: 100%; }
+    .panel { padding: 12px; }
+    .panel p { margin: 0; line-height: 1.5; }
+    /* 1. The overflow property on a box with a fixed height */
+    .clip-box { block-size: 96px; overflow: var(--overflow); border: 2px dashed var(--accent); border-radius: 8px; padding: 8px; }
+    /* 2. One line, cut with an ellipsis */
+    .ellipsis { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    /* 3. Several lines, cut with an ellipsis */
+    .clamp {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: var(--lines);
+      overflow: hidden;
+    }
+    .after { margin-top: 4px; font-size: 13px; color: var(--muted); }
+  </style>
+</head>
+<body class="demo">
+  <div class="controls">
+    <label class="control">overflow
+      <select id="overflow">
+        <option value="visible">visible</option>
+        <option value="hidden">hidden</option>
+        <option value="clip">clip</option>
+        <option value="scroll">scroll</option>
+        <option value="auto" selected>auto</option>
+      </select>
+    </label>
+    <label class="control">lines <input type="range" id="lines" min="1" max="5" value="2"> <output id="lines-out"></output></label>
+    <label class="control">width <input type="range" id="w" min="160" max="260" value="240"> <output id="w-out"></output></label>
+  </div>
+  <div class="stage" id="stage">
+    <figure>
+      <div class="panel">
+        <div class="clip-box" id="clip-box" tabindex="0" aria-label="Overflow example"><p>Hidden lakes, old stone bridges and a long ridge walk with views over three valleys. Start early: the last bus back leaves at six, and the café at the top closes at four.</p></div>
+        <p class="after">Text after the box</p>
+      </div>
+      <figcaption id="cap-overflow"></figcaption>
+    </figure>
+    <figure>
+      <div class="panel"><p class="ellipsis">Hidden lakes, old stone bridges and a long ridge walk with views over three valleys.</p></div>
+      <figcaption>white-space: nowrap; overflow: hidden; text-overflow: ellipsis</figcaption>
+    </figure>
+    <figure>
+      <div class="panel"><p class="clamp">Hidden lakes, old stone bridges and a long ridge walk with views over three valleys. Start early: the last bus back leaves at six, and the café at the top closes at four.</p></div>
+      <figcaption id="cap-clamp"></figcaption>
+    </figure>
+  </div>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    function update() {
+      const stage = $('stage');
+      const ov = $('overflow').value;
+      stage.style.setProperty('--overflow', ov);
+      stage.style.setProperty('--lines', $('lines').value);
+      stage.style.setProperty('--w', $('w').value);
+      $('lines-out').textContent = $('lines').value;
+      $('w-out').textContent = $('w').value + 'px';
+      // A box that can scroll is a scroll container and should be reachable by keyboard; others should not be focusable
+      $('clip-box').tabIndex = ov === 'scroll' || ov === 'auto' ? 0 : -1;
+      $('cap-overflow').textContent = `block-size: 96px; overflow: ${ov}`;
+      $('cap-clamp').textContent = `-webkit-line-clamp: ${$('lines').value}`;
+    }
+    document.querySelectorAll('select, input').forEach((el) => el.addEventListener('input', update));
+    update();
+  </script>
+</body>
+</html>

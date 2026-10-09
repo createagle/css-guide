@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 16-2 (final): Anchors Under a Sticky Header</title>
+  <style>
+    .page { inline-size: min(520px, 100%); block-size: 360px; overflow-y: auto; border: 1px solid var(--border); border-radius: 12px; }
+    .page header { position: sticky; top: 0; padding: 14px 16px; background: var(--surface); border-block-end: 1px solid var(--border); }
+    .page nav { display: flex; gap: 16px; }
+    .page nav a { font-size: 14px; }
+    .page section { padding: 0 16px 8px; }
+    .page h2 { margin: 16px 0 8px; font-size: 18px; }
+    .page p { margin: 0 0 12px; line-height: 1.6; color: var(--muted); }
+    /* Snap positions and anchor jumps inside .page keep clear of the sticky header */
+    .page { scroll-padding-top: 64px; }
+    @media (prefers-reduced-motion: no-preference) {
+      .page { scroll-behavior: smooth; }
+    }
+  </style>
+</head>
+<body class="demo">
+  <div class="page">
+    <header><nav aria-label="Sections">
+      <a href="#gear">Gear</a>
+      <a href="#route">Route</a>
+      <a href="#food">Food</a>
+      <a href="#safety">Safety</a>
+    </nav></header>
+    <section id="gear"><h2>Gear</h2><p>Pack light: a waterproof jacket, a warm layer, a map and a headlamp cover most days.</p><p>Boots matter more than anything else. Break them in on short walks before a long trip.</p><p>A small first-aid kit and a whistle weigh almost nothing and can save a day.</p></section>
+    <section id="route"><h2>Route</h2><p>The path is marked with red and white stripes on trees and rocks.</p><p>After the bridge, keep left and follow the river for about two kilometres.</p><p>The last climb is steep but short; the hut is visible from the top.</p></section>
+    <section id="food"><h2>Food</h2><p>Eat a little every hour instead of one big lunch.</p><p>Nuts, dried fruit and bread keep well and give steady energy.</p><p>Refill your water at the spring below the hut; it is safe to drink.</p></section>
+    <section id="safety"><h2>Safety</h2><p>Check the forecast the evening before and again in the morning.</p><p>Tell someone your route and when you expect to be back.</p><p>If the weather turns, turning back is always the right choice.</p></section>
+  </div>
+</body>
+</html>
