@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>23-2 :is() Versus :where()</title>
+  <style>
+    .stage { width: min(760px, 100%); flex-direction: column; flex-wrap: nowrap; align-items: stretch; }
+    .content { padding: 20px; border: 1px dashed var(--border); border-radius: 12px; }
+    .content h2 { margin: 0 0 8px; font-size: 18px; }
+    .content p { margin: 0; line-height: 1.6; }
+    .content a { font-weight: 600; }
+    table { border-collapse: collapse; inline-size: 100%; font-size: 14px; }
+    th, td { padding: 8px 10px; border-bottom: 1px solid var(--border); text-align: start; }
+    td:first-child { font-family: var(--mono); }
+    tr.win td { background: color-mix(in oklch, var(--good) 14%, transparent); font-weight: 600; }
+  </style>
+  <style id="lab"></style>
+</head>
+<body class="demo">
+  <div class="controls">
+    <label class="control">wrapper
+      <select id="fn">
+        <option value="is">:is()</option>
+        <option value="where">:where()</option>
+      </select>
+    </label>
+    <label class="control">selector list
+      <select id="list">
+        <option>#main, .content</option>
+        <option>.content, article</option>
+        <option>article, aside</option>
+      </select>
+    </label>
+  </div>
+  <div class="stage">
+    <article id="main" class="content">
+      <h2>Walking the coast path</h2>
+      <p>The route is 14 km with two steep climbs. <a class="cta" href="#">Read the full guide</a> before you set off.</p>
+    </article>
+    <table>
+      <thead><tr><th scope="col">Rule</th><th scope="col">Specificity</th><th scope="col">Sets color to</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <pre class="code" id="code"></pre>
+  </div>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    // Count IDs, classes and type selectors in a simple compound selector
+    function spec(sel) {
+      const ids = (sel.match(/#[\w-]+/g) || []).length;
+      const classes = (sel.match(/\.[\w-]+/g) || []).length;
+      const types = (sel.replace(/[#.][\w-]+/g, '').match(/[a-z][\w-]*/gi) || []).length;
+      return [ids, classes, types];
+    }
+    const add = (a, b) => a.map((n, i) => n + b[i]);
+    const cmp = (a, b) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2];
+    function update() {
+      const fn = $('fn').value;
+      const items = $('list').value.split(',').map((s) => s.trim());
+      // :is() takes the most specific item in its list; :where() always counts as zero
+      const inner = fn === 'is' ? items.map(spec).sort(cmp).at(-1) : [0, 0, 0];
+      const rules = [
+        { sel: `:${fn}(${items.join(', ')}) a`, spec: add(inner, [0, 0, 1]), color: 'var(--bad)', name: 'red' },
+        { sel: '.cta', spec: [0, 1, 0], color: 'var(--good)', name: 'green' }
+      ];
+      // On a tie the later rule (.cta) wins
+      const winner = cmp(rules[0].spec, rules[1].spec) > 0 ? 0 : 1;
+      $('lab').textContent = rules.map((r) => `${r.sel} { color: ${r.color}; }`).join('\n');
+      $('code').textContent = rules.map((r) => `${r.sel} { color: ${r.name}; }   /* (${r.spec.join(',')}) */`).join('\n');
+      $('rows').innerHTML = '';
+      rules.forEach((r, i) => {
+        const tr = document.createElement('tr');
+        tr.className = i === winner ? 'win' : '';
+        tr.innerHTML = `<td></td><td>(${r.spec.join(',')})</td><td>${r.name}${i === winner ? ' ✓ wins' : ''}</td>`;
+        tr.firstChild.textContent = r.sel;
+        $('rows').append(tr);
+      });
+    }
+    $('fn').addEventListener('input', update);
+    $('list').addEventListener('input', update);
+    update();
+  </script>
+</body>
+</html>

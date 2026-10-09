@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 23-1 (start): Highlight the Chosen Plan</title>
+  <style>
+    .plans { margin: 0; padding: 0; border: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr)); gap: 12px; inline-size: min(640px, 100%); }
+    .plans legend { padding: 0; margin-block-end: 10px; font-weight: 600; }
+    .plan { display: grid; gap: 4px; padding: 16px; border: 2px solid var(--border); border-radius: 12px; cursor: pointer; }
+    .plan strong { font-size: 17px; }
+    .plan span { color: var(--muted); font-size: 14px; }
+  </style>
+</head>
+<body class="demo">
+  <fieldset class="plans">
+    <legend>Choose a plan</legend>
+    <label class="plan"><input type="radio" name="plan" value="basic"><strong>Basic</strong><span>1 project · $4 / month</span></label>
+    <label class="plan"><input type="radio" name="plan" value="team"><strong>Team</strong><span>10 projects · $12 / month</span></label>
+    <label class="plan"><input type="radio" name="plan" value="studio"><strong>Studio</strong><span>Unlimited · $30 / month</span></label>
+  </fieldset>
+</body>
+</html>

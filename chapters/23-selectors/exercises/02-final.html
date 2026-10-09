@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 23-2 (final): Errors After Interaction</title>
+  <style>
+    form { display: grid; gap: 14px; inline-size: min(360px, 100%); }
+    .field { display: grid; gap: 4px; }
+    .field label { font-size: 14px; font-weight: 600; }
+    .field input { font: inherit; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--fg); }
+    .error { display: none; margin: 0; font-size: 13px; color: var(--bad); }
+    button { justify-self: start; font: 600 15px system-ui, sans-serif; padding: 10px 20px; border: 0; border-radius: 10px; background: var(--accent); color: white; }
+    #done { margin: 0; color: var(--good); }
+
+    /* :user-invalid waits until the user has changed the field or tried to submit */
+    .field input:user-invalid { border-color: var(--bad); }
+    .field:has(input:user-invalid) .error { display: block; }
+  </style>
+</head>
+<body class="demo">
+  <form id="signup">
+    <div class="field">
+      <label for="email">Email</label>
+      <input id="email" type="email" required autocomplete="email">
+      <p class="error">Enter an email address like name@example.com.</p>
+    </div>
+    <div class="field">
+      <label for="pw">Password</label>
+      <input id="pw" type="password" required minlength="8" autocomplete="new-password">
+      <p class="error">Use at least 8 characters.</p>
+    </div>
+    <button type="submit">Create account</button>
+    <p id="done" role="status"></p>
+  </form>
+  <script>
+    document.getElementById('signup').addEventListener('submit', (e) => {
+      e.preventDefault();
+      document.getElementById('done').textContent = 'Account created. (Nothing was sent: this is an exercise.)';
+    });
+  </script>
+</body>
+</html>

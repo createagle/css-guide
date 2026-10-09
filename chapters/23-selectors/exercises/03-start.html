@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 23-3 (start): Stripes That Skip Hidden Rows</title>
+  <style>
+    .wrap { inline-size: min(520px, 100%); display: grid; gap: 12px; }
+    .toggle { display: flex; gap: 8px; align-items: center; font-size: 15px; }
+    table { border-collapse: collapse; inline-size: 100%; font-size: 15px; }
+    th, td { padding: 8px 12px; text-align: start; }
+    thead th { border-bottom: 2px solid var(--border); }
+    td:last-child { color: var(--muted); }
+
+    /* Stripe every other row */
+    tbody tr:nth-child(even) { background: var(--surface); }
+  </style>
+</head>
+<body class="demo">
+  <div class="wrap">
+    <label class="toggle"><input type="checkbox" id="show-done"> Show finished tasks</label>
+    <table>
+      <thead><tr><th scope="col">Task</th><th scope="col">Status</th></tr></thead>
+      <tbody>
+        <tr class="done" hidden><td>Book the campsite</td><td>Done</td></tr>
+        <tr><td>Check the tide times</td><td>Open</td></tr>
+        <tr class="done" hidden><td>Buy a new map</td><td>Done</td></tr>
+        <tr><td>Pack the stove</td><td>Open</td></tr>
+        <tr><td>Charge the head torch</td><td>Open</td></tr>
+        <tr class="done" hidden><td>Print the tickets</td><td>Done</td></tr>
+        <tr><td>Fill the water bottles</td><td>Open</td></tr>
+        <tr><td>Tell a friend the route</td><td>Open</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <script>
+    const toggle = document.getElementById('show-done');
+    toggle.addEventListener('change', () => {
+      document.querySelectorAll('tr.done').forEach((row) => { row.hidden = !toggle.checked; });
+    });
+  </script>
+</body>
+</html>
