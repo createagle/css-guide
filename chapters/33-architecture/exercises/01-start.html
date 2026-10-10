@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 33-1 (start): Flat BEM Classes</title>
+  <style>
+    .sidebar { inline-size: 240px; padding: 12px; border: 1px solid var(--border); border-radius: 12px; }
+    .sidebar ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 2px; }
+    .sidebar ul li a { display: flex; justify-content: space-between; padding: 8px 10px; border-radius: 8px; color: var(--fg); text-decoration: none; }
+    .sidebar ul li a:hover { background: var(--surface); }
+    .sidebar ul li a.active { background: var(--surface); font-weight: 600; }
+    .sidebar ul li a span { padding: 0 8px; border-radius: 999px; background: var(--border); font-size: 13px; }
+
+    /* The upgrade link should look like a button, but it never does */
+    .upgrade { justify-content: center; margin-block-start: 8px; background: var(--accent); color: var(--bg); font-weight: 600; }
+  </style>
+</head>
+<body class="demo">
+  <nav class="sidebar" aria-label="Library">
+    <ul>
+      <li><a class="active" href="#routes" aria-current="page">Routes <span>12</span></a></li>
+      <li><a href="#saved">Saved <span>4</span></a></li>
+      <li><a href="#history">History</a></li>
+      <li><a class="upgrade" href="#upgrade">Upgrade to Pro</a></li>
+    </ul>
+  </nav>
+</body>
+</html>

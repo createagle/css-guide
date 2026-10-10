@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>33-1 One Component, Three Ways</title>
+  <style>
+    @layer tokens, components, utilities;
+
+    @layer tokens {
+      body.demo {
+        --space-2: 8px;
+        --space-4: 16px;
+        --radius: 12px;
+        --line: var(--border);
+        --highlight: oklch(62% 0.17 150);
+      }
+    }
+
+    .stage figure { inline-size: 250px; display: grid; gap: 10px; align-content: start; }
+    .stage pre.code { font-size: 11.5px; }
+
+    /* 1. BEM: block__element--modifier, one flat class per thing */
+    @layer components {
+      .route-card { display: grid; gap: var(--space-2); padding: var(--space-4); border: 1px solid var(--line); border-radius: var(--radius); }
+      .route-card__title { margin: 0; font-size: 18px; }
+      .route-card__meta { margin: 0; color: var(--muted); }
+      .route-card__tag { justify-self: start; padding: 2px 8px; border-radius: 999px; background: var(--surface); font-size: 13px; }
+      .route-card__link { font-weight: 600; }
+      .route-card--featured { border: 2px solid var(--highlight); }
+    }
+
+    /* 2. Utility-first: each class does one thing, composed in the markup */
+    @layer utilities {
+      .grid { display: grid; }
+      .gap-2 { gap: var(--space-2); }
+      .p-4 { padding: var(--space-4); }
+      .border { border: 1px solid var(--line); }
+      .border-2 { border-width: 2px; }
+      .border-highlight { border-color: var(--highlight); }
+      .rounded { border-radius: var(--radius); }
+      .rounded-full { border-radius: 999px; }
+      .m-0 { margin: 0; }
+      .text-lg { font-size: 18px; }
+      .text-sm { font-size: 13px; }
+      .text-muted { color: var(--muted); }
+      .font-bold { font-weight: 600; }
+      .bg-surface { background: var(--surface); }
+      .px-2 { padding-inline: var(--space-2); }
+      .py-0 { padding-block: 2px; }
+      .justify-self-start { justify-self: start; }
+    }
+
+    /* 3. @scope: short, plain selectors that only reach inside the card */
+    @layer components {
+      .route { display: grid; gap: var(--space-2); padding: var(--space-4); border: 1px solid var(--line); border-radius: var(--radius); }
+      .route[data-featured] { border: 2px solid var(--highlight); }
+      @scope (.route) {
+        h3 { margin: 0; font-size: 18px; }
+        p { margin: 0; color: var(--muted); }
+        .tag { justify-self: start; padding: 2px 8px; border-radius: 999px; background: var(--surface); font-size: 13px; }
+        a { font-weight: 600; }
+      }
+    }
+  </style>
+</head>
+<body class="demo">
+  <div class="controls">
+    <label class="control"><input type="checkbox" id="featured"> featured variant</label>
+  </div>
+  <div class="stage">
+    <figure>
+      <figcaption>BEM</figcaption>
+      <article class="route-card" data-way="bem">
+        <h3 class="route-card__title">Lake Loop</h3>
+        <p class="route-card__meta">14 km · 4 h</p>
+        <span class="route-card__tag">Moderate</span>
+        <a class="route-card__link" href="#lake">View route</a>
+      </article>
+      <pre class="code"></pre>
+    </figure>
+    <figure>
+      <figcaption>Utility-first</figcaption>
+      <article class="grid gap-2 p-4 border rounded" data-way="utility">
+        <h3 class="m-0 text-lg">Lake Loop</h3>
+        <p class="m-0 text-muted">14 km · 4 h</p>
+        <span class="justify-self-start px-2 py-0 rounded-full bg-surface text-sm">Moderate</span>
+        <a class="font-bold" href="#lake">View route</a>
+      </article>
+      <pre class="code"></pre>
+    </figure>
+    <figure>
+      <figcaption>@scope</figcaption>
+      <article class="route" data-way="scope">
+        <h3>Lake Loop</h3>
+        <p>14 km · 4 h</p>
+        <span class="tag">Moderate</span>
+        <a href="#lake">View route</a>
+      </article>
+      <pre class="code"></pre>
+    </figure>
+  </div>
+  <script>
+    const cards = document.querySelectorAll('article[data-way]');
+    // Each way expresses the "featured" variant differently
+    const variant = {
+      bem: (el, on) => el.classList.toggle('route-card--featured', on),
+      utility: (el, on) => { el.classList.toggle('border-2', on); el.classList.toggle('border-highlight', on); },
+      scope: (el, on) => el.toggleAttribute('data-featured', on),
+    };
+    // Print each card's real markup underneath it
+    function show() {
+      cards.forEach(card => {
+        const copy = card.cloneNode(true);
+        copy.removeAttribute('data-way');
+        const open = copy.outerHTML.slice(0, copy.outerHTML.indexOf('>') + 1);
+        const kids = [...copy.children].map(c => '  ' + c.outerHTML);
+        card.nextElementSibling.textContent = [open, ...kids, '</article>'].join('\n');
+      });
+    }
+    document.getElementById('featured').addEventListener('change', e => {
+      cards.forEach(card => variant[card.dataset.way](card, e.target.checked));
+      show();
+    });
+    show();
+  </script>
+</body>
+</html>

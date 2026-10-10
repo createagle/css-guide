@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>33-2 Three Tiers of Design Tokens</title>
+  <style>
+    /* Tier 1 · primitive tokens: the raw palette and scale, named by what they are */
+    :root {
+      --violet-600: oklch(52% 0.22 290);
+      --green-600: oklch(55% 0.15 150);
+      --orange-600: oklch(62% 0.18 50);
+      --gray-100: oklch(96% 0.005 260);
+      --gray-800: oklch(30% 0.01 260);
+      --size-1: 4px;
+      --size-2: 8px;
+      --size-3: 12px;
+      --size-4: 16px;
+      --size-6: 24px;
+    }
+
+    /* Tier 2 · semantic tokens: named by their job, pointing at primitives */
+    .theme {
+      --color-brand: var(--violet-600);
+      --color-surface: var(--gray-100);
+      --color-on-surface: var(--gray-800);
+      --space-inset: var(--size-4);
+      --space-stack: var(--size-3);
+    }
+    @media (prefers-color-scheme: dark) {
+      /* Dark mode only re-points semantic tokens; components never change */
+      .theme { --color-surface: var(--gray-800); --color-on-surface: var(--gray-100); }
+    }
+    .theme[data-brand="green"] { --color-brand: var(--green-600); }
+    .theme[data-brand="orange"] { --color-brand: var(--orange-600); }
+    .theme[data-density="compact"] { --space-inset: var(--size-2); --space-stack: var(--size-1); }
+    .theme[data-density="roomy"] { --space-inset: var(--size-6); --space-stack: var(--size-4); }
+
+    /* Tier 3 · component tokens: each component's own knobs, defaulting to semantics */
+    .button {
+      --button-bg: var(--color-brand);
+      --button-fg: white;
+      --button-pad: var(--space-stack) var(--space-inset);
+      padding: var(--button-pad);
+      border: 0;
+      border-radius: 8px;
+      background: var(--button-bg);
+      color: var(--button-fg);
+      font: inherit;
+      font-weight: 600;
+    }
+    .button.quiet { --button-bg: transparent; --button-fg: var(--color-brand); box-shadow: inset 0 0 0 2px var(--color-brand); }
+    .card {
+      --card-bg: var(--color-surface);
+      --card-fg: var(--color-on-surface);
+      --card-pad: var(--space-inset);
+      display: grid;
+      gap: var(--space-stack);
+      inline-size: 280px;
+      padding: var(--card-pad);
+      border-radius: 14px;
+      background: var(--card-bg);
+      color: var(--card-fg);
+      border-block-start: 4px solid var(--color-brand);
+    }
+    .card h3 { margin: 0; font-size: 18px; }
+    .card p { margin: 0; }
+    .card .actions { display: flex; gap: var(--space-stack); }
+
+    .readout { inline-size: 390px; }
+    .readout pre.code { font-size: 12px; }
+  </style>
+</head>
+<body class="demo">
+  <div class="controls">
+    <label class="control">brand
+      <select id="brand"><option>violet</option><option>green</option><option>orange</option></select>
+    </label>
+    <label class="control">density
+      <select id="density"><option>compact</option><option selected>regular</option><option>roomy</option></select>
+    </label>
+  </div>
+  <div class="stage">
+    <div class="theme" id="theme">
+      <article class="card">
+        <h3>Lake Loop</h3>
+        <p>14 km around the lake, with a café halfway.</p>
+        <div class="actions">
+          <button type="button" class="button">Start route</button>
+          <button type="button" class="button quiet">Save</button>
+        </div>
+      </article>
+    </div>
+    <div class="panel readout">
+      <p class="label">How the button background resolves</p>
+      <pre class="code" id="chain"></pre>
+    </div>
+  </div>
+  <script>
+    const theme = document.getElementById('theme');
+    const button = theme.querySelector('.button');
+    const prim = { violet: '--violet-600', green: '--green-600', orange: '--orange-600' };
+    const pad = { compact: ['--size-1', '--size-2'], regular: ['--size-3', '--size-4'], roomy: ['--size-4', '--size-6'] };
+    function show() {
+      const b = document.getElementById('brand').value, d = document.getElementById('density').value;
+      const root = getComputedStyle(document.documentElement);
+      const cs = getComputedStyle(button);
+      document.getElementById('chain').textContent = [
+        'background: var(--button-bg)',
+        '  → --button-bg: var(--color-brand)',
+        '  → --color-brand: var(' + prim[b] + ')',
+        '  → ' + prim[b] + ': ' + root.getPropertyValue(prim[b]).trim(),
+        '  = ' + cs.backgroundColor,
+        '',
+        'padding: var(--button-pad)',
+        '  → var(--space-stack) var(--space-inset)',
+        '  → var(' + pad[d][0] + ') var(' + pad[d][1] + ')',
+        '  = ' + cs.padding,
+      ].join('\n');
+    }
+    document.getElementById('brand').addEventListener('change', e => {
+      if (e.target.value === 'violet') delete theme.dataset.brand; else theme.dataset.brand = e.target.value;
+      show();
+    });
+    document.getElementById('density').addEventListener('change', e => {
+      if (e.target.value === 'regular') delete theme.dataset.density; else theme.dataset.density = e.target.value;
+      show();
+    });
+    show();
+  </script>
+</body>
+</html>

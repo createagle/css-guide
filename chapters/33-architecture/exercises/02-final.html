@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 33-2 (final): Tokens for a Dark Theme</title>
+  <style>
+    /* Primitive tokens: the palette */
+    :root {
+      --purple-50: oklch(97% 0.01 290);
+      --purple-200: oklch(88% 0.04 290);
+      --purple-300: oklch(75% 0.12 290);
+      --purple-600: oklch(45% 0.2 290);
+      --purple-900: oklch(25% 0.02 290);
+      --purple-950: oklch(20% 0.03 290);
+      --purple-800: oklch(32% 0.05 290);
+    }
+    /* Semantic tokens: what each colour is for */
+    :root {
+      --color-surface: var(--purple-50);
+      --color-text: var(--purple-900);
+      --color-border: var(--purple-200);
+      --color-brand: var(--purple-600);
+      --color-on-brand: var(--purple-50);
+      --color-brand-subtle: var(--purple-200);
+    }
+    /* Dark mode re-points the semantic tokens; no component rule changes */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --color-surface: var(--purple-950);
+        --color-text: var(--purple-50);
+        --color-border: var(--purple-800);
+        --color-brand: var(--purple-300);
+        --color-on-brand: var(--purple-950);
+        --color-brand-subtle: var(--purple-800);
+      }
+    }
+    .card { inline-size: 300px; display: grid; gap: 12px; padding: 20px; border-radius: 14px; background: var(--color-surface); color: var(--color-text); border: 1px solid var(--color-border); }
+    .card h3 { margin: 0; color: var(--color-brand); }
+    .card p { margin: 0; }
+    .badge { justify-self: start; padding: 2px 10px; border-radius: 999px; background: var(--color-brand-subtle); color: var(--color-brand); font-size: 13px; }
+    .button { justify-self: start; padding: 8px 16px; border: 0; border-radius: 8px; background: var(--color-brand); color: var(--color-on-brand); font: inherit; font-weight: 600; }
+  </style>
+</head>
+<body class="demo">
+  <article class="card">
+    <span class="badge">New route</span>
+    <h3>Old Mill Walk</h3>
+    <p>An easy 6 km loop along the river, past the old water mill.</p>
+    <button type="button" class="button">Start route</button>
+  </article>
+</body>
+</html>
