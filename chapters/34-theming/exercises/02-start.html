@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 34-2 (start): Remember the Theme</title>
+  <style>
+    :root { color-scheme: light dark; }
+    :root[data-theme="light"] { color-scheme: light; }
+    :root[data-theme="dark"] { color-scheme: dark; }
+    body.demo { background: Canvas; color: CanvasText; }
+    .toggle { padding: 8px 16px; border: 1px solid currentColor; border-radius: 999px; background: none; color: inherit; font: inherit; }
+    .note { max-inline-size: 320px; margin: 0; text-align: center; }
+  </style>
+</head>
+<body class="demo">
+  <button type="button" class="toggle" id="toggle">Switch theme</button>
+  <p class="note">Switch the theme, then reload the page.</p>
+  <script>
+    const root = document.documentElement;
+    document.getElementById('toggle').addEventListener('click', () => {
+      root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+    });
+  </script>
+</body>
+</html>

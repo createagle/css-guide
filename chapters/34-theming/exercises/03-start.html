@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 34-3 (start): Filters in Forced Colours</title>
+  <style>
+    .filters { display: flex; flex-wrap: wrap; gap: 8px; max-inline-size: 360px; }
+    .chip { padding: 6px 14px; border: 0; border-radius: 999px; background: var(--surface); color: var(--fg); font: inherit; }
+    .chip[aria-pressed="true"] { background: var(--accent); color: var(--bg); }
+    .chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  </style>
+</head>
+<body class="demo">
+  <div class="filters" role="group" aria-label="Filter routes">
+    <button type="button" class="chip" aria-pressed="true">Circular</button>
+    <button type="button" class="chip" aria-pressed="false">Dog friendly</button>
+    <button type="button" class="chip" aria-pressed="true">Under 10 km</button>
+    <button type="button" class="chip" aria-pressed="false">Café</button>
+    <button type="button" class="chip" aria-pressed="false">Step free</button>
+  </div>
+  <script>
+    document.querySelectorAll('.chip').forEach(chip => chip.addEventListener('click', () => {
+      chip.setAttribute('aria-pressed', chip.getAttribute('aria-pressed') === 'true' ? 'false' : 'true');
+    }));
+  </script>
+</body>
+</html>

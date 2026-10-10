@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>34-2 Semantic Colour Tokens in Both Schemes</title>
+  <style>
+    /* One set of semantic tokens; light-dark() picks a value per element */
+    .ui {
+      --surface: light-dark(oklch(99% 0.003 250), oklch(21% 0.012 250));
+      --surface-raised: light-dark(white, oklch(27% 0.014 250));
+      --text: light-dark(oklch(24% 0.02 250), oklch(94% 0.01 250));
+      --text-muted: light-dark(oklch(50% 0.02 250), oklch(72% 0.02 250));
+      --border: light-dark(oklch(89% 0.01 250), oklch(36% 0.015 250));
+      --brand: light-dark(oklch(50% 0.17 255), oklch(76% 0.12 255));
+      --on-brand: light-dark(white, oklch(20% 0.02 255));
+      --danger: light-dark(oklch(52% 0.19 25), oklch(74% 0.14 25));
+      --danger-subtle: light-dark(oklch(95% 0.03 25), oklch(30% 0.06 25));
+      --success: light-dark(oklch(50% 0.13 150), oklch(78% 0.13 150));
+      --success-subtle: light-dark(oklch(95% 0.04 150), oklch(29% 0.05 150));
+    }
+    /* The same markup twice, each pinned to one scheme */
+    .ui.light { color-scheme: light; }
+    .ui.dark { color-scheme: dark; }
+
+    .ui { inline-size: 320px; display: grid; gap: 12px; padding: 16px; border-radius: 14px; background: var(--surface); color: var(--text); }
+    .ui .card { display: grid; gap: 8px; padding: 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface-raised); }
+    .ui h3 { margin: 0; font-size: 16px; }
+    .ui p { margin: 0; color: var(--text-muted); font-size: 14px; }
+    .ui .actions { display: flex; gap: 8px; }
+    .ui button { padding: 6px 14px; border-radius: 8px; font: inherit; font-weight: 600; }
+    .ui .primary { border: 0; background: var(--brand); color: var(--on-brand); }
+    .ui .secondary { border: 1px solid var(--border); background: transparent; color: var(--text); }
+    .ui .alert { padding: 10px 12px; border-radius: 8px; border-inline-start: 4px solid; font-size: 14px; }
+    .ui .alert.danger { border-color: var(--danger); background: var(--danger-subtle); }
+    .ui .alert.success { border-color: var(--success); background: var(--success-subtle); }
+    .ui .ratios { margin: 0; font: 12px/1.6 var(--mono); color: var(--text-muted); white-space: pre; }
+  </style>
+</head>
+<body class="demo">
+  <div class="stage">
+    <figure>
+      <div class="ui light">
+        <div class="card">
+          <h3>Lake Loop</h3>
+          <p>14 km · 4 h · last walked in May</p>
+          <div class="actions"><button type="button" class="primary">Start</button><button type="button" class="secondary">Edit</button></div>
+        </div>
+        <div class="alert danger">The ferry is not running today.</div>
+        <div class="alert success">Route saved for offline use.</div>
+        <p class="ratios"></p>
+      </div>
+      <figcaption>color-scheme: light</figcaption>
+    </figure>
+    <figure>
+      <div class="ui dark">
+        <div class="card">
+          <h3>Lake Loop</h3>
+          <p>14 km · 4 h · last walked in May</p>
+          <div class="actions"><button type="button" class="primary">Start</button><button type="button" class="secondary">Edit</button></div>
+        </div>
+        <div class="alert danger">The ferry is not running today.</div>
+        <div class="alert success">Route saved for offline use.</div>
+        <p class="ratios"></p>
+      </div>
+      <figcaption>color-scheme: dark</figcaption>
+    </figure>
+  </div>
+  <script>
+    // Resolve a computed colour to sRGB through a 1×1 canvas, then measure WCAG contrast
+    const ctx = Object.assign(document.createElement('canvas'), { width: 1, height: 1 }).getContext('2d', { willReadFrequently: true });
+    function rgb(color) {
+      ctx.clearRect(0, 0, 1, 1);
+      ctx.fillStyle = color;
+      ctx.fillRect(0, 0, 1, 1);
+      return [...ctx.getImageData(0, 0, 1, 1).data].slice(0, 3);
+    }
+    function luminance(color) {
+      const [r, g, b] = rgb(color).map(v => { v /= 255; return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; });
+      return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    }
+    function ratio(a, b) {
+      const [x, y] = [luminance(a), luminance(b)].sort((p, q) => q - p);
+      return ((x + 0.05) / (y + 0.05)).toFixed(1) + ':1';
+    }
+    document.querySelectorAll('.ui').forEach(ui => {
+      const color = sel => getComputedStyle(ui.querySelector(sel)).color;
+      const card = getComputedStyle(ui.querySelector('.card')).backgroundColor;
+      const brand = getComputedStyle(ui.querySelector('.primary')).backgroundColor;
+      ui.querySelector('.ratios').textContent = [
+        'text on card        ' + ratio(color('.card h3'), card),
+        'muted text on card  ' + ratio(color('.card p'), card),
+        'label on brand      ' + ratio(color('.primary'), brand),
+      ].join('\n');
+    });
+  </script>
+</body>
+</html>

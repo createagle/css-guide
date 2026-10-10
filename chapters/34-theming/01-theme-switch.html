@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>34-1 A Three-way Theme Switch</title>
+  <script>
+    // Runs before the first paint, so a saved theme never flashes the wrong colours
+    try {
+      const saved = localStorage.getItem('css-guide-theme');
+      if (saved === 'light' || saved === 'dark') document.documentElement.dataset.theme = saved;
+    } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="../../assets/style.css">
+  <style>
+    /* System by default; an explicit choice overrides it */
+    :root { color-scheme: light dark; }
+    :root[data-theme="light"] { color-scheme: light; }
+    :root[data-theme="dark"] { color-scheme: dark; }
+
+    /* Every colour picks its value from the element's used color-scheme */
+    :root {
+      --page: light-dark(oklch(98% 0.005 250), oklch(18% 0.01 250));
+      --surface: light-dark(white, oklch(24% 0.012 250));
+      --ink: light-dark(oklch(25% 0.02 250), oklch(93% 0.01 250));
+      --ink-muted: light-dark(oklch(48% 0.02 250), oklch(72% 0.02 250));
+      --line: light-dark(oklch(90% 0.01 250), oklch(34% 0.015 250));
+      --brand: light-dark(oklch(50% 0.17 255), oklch(75% 0.13 255));
+      --on-brand: light-dark(white, oklch(18% 0.01 250));
+    }
+    @supports not (color: light-dark(white, black)) {
+      /* Older browsers: follow the system setting only */
+      :root { --page: oklch(98% 0.005 250); --surface: white; --ink: oklch(25% 0.02 250); --ink-muted: oklch(48% 0.02 250); --line: oklch(90% 0.01 250); --brand: oklch(50% 0.17 255); --on-brand: white; }
+      @media (prefers-color-scheme: dark) {
+        :root { --page: oklch(18% 0.01 250); --surface: oklch(24% 0.012 250); --ink: oklch(93% 0.01 250); --ink-muted: oklch(72% 0.02 250); --line: oklch(34% 0.015 250); --brand: oklch(75% 0.13 255); --on-brand: oklch(18% 0.01 250); }
+      }
+    }
+
+    body.demo { background: var(--page); color: var(--ink); transition: background-color 0.3s, color 0.3s; }
+
+    /* A segmented control built from real radio buttons */
+    .switch { display: flex; padding: 4px; margin: 0; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); }
+    .switch legend { position: absolute; clip-path: inset(50%); }
+    .switch label { position: relative; padding: 6px 14px; border-radius: 999px; color: var(--ink-muted); cursor: pointer; }
+    .switch input { position: absolute; inset: 0; margin: 0; opacity: 0; cursor: pointer; }
+    .switch label:has(:checked) { background: var(--brand); color: var(--on-brand); }
+    .switch label:has(:focus-visible) { outline: 2px solid var(--brand); outline-offset: 2px; }
+    @media (forced-colors: active) {
+      .switch label:has(:checked) { background: Highlight; color: HighlightText; forced-color-adjust: none; }
+    }
+
+    .app { inline-size: min(360px, 100%); display: grid; gap: 12px; padding: 20px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); }
+    .app h2 { margin: 0; font-size: 18px; }
+    .app p { margin: 0; color: var(--ink-muted); }
+    .app label { display: grid; gap: 4px; font-size: 14px; }
+    .app input, .app select { font: inherit; padding: 6px 8px; }
+    .app button { justify-self: start; padding: 8px 16px; border: 0; border-radius: 8px; background: var(--brand); color: var(--on-brand); font: inherit; font-weight: 600; }
+    .readout { inline-size: 280px; background: var(--surface); border-color: var(--line); }
+    .readout pre.code { background: var(--page); }
+    .readout .label { color: var(--ink-muted); }
+  </style>
+</head>
+<body class="demo">
+  <fieldset class="switch">
+    <legend>Theme</legend>
+    <label><input type="radio" name="theme" value="system"> System</label>
+    <label><input type="radio" name="theme" value="light"> Light</label>
+    <label><input type="radio" name="theme" value="dark"> Dark</label>
+  </fieldset>
+  <div class="stage">
+    <form class="app">
+      <h2>Trip settings</h2>
+      <p>Native controls, the scrollbar and these colours all follow the theme.</p>
+      <label>Start date <input type="date" value="2026-11-14"></label>
+      <label>Units <select><option>Kilometres</option><option>Miles</option></select></label>
+      <label><span><input type="checkbox" checked> Download maps for offline use</span></label>
+      <button type="button">Save</button>
+    </form>
+    <div class="panel readout">
+      <p class="label">State</p>
+      <pre class="code" id="state"></pre>
+    </div>
+  </div>
+  <script>
+    const root = document.documentElement;
+    const os = matchMedia('(prefers-color-scheme: dark)');
+    const radios = document.querySelectorAll('input[name="theme"]');
+    function current() { return root.dataset.theme || 'system'; }
+    function show() {
+      let stored = null;
+      try { stored = localStorage.getItem('css-guide-theme'); } catch (e) {}
+      document.getElementById('state').textContent = [
+        'choice:        ' + current(),
+        'localStorage:  ' + (stored ?? '(nothing)'),
+        'system prefers ' + (os.matches ? 'dark' : 'light'),
+        'color-scheme:  ' + getComputedStyle(root).colorScheme,
+        'in use:        ' + (current() === 'system' ? (os.matches ? 'dark' : 'light') : current()),
+      ].join('\n');
+    }
+    radios.forEach(r => {
+      r.checked = r.value === current();
+      r.addEventListener('change', () => {
+        // "System" removes the override instead of storing a third value
+        if (r.value === 'system') delete root.dataset.theme; else root.dataset.theme = r.value;
+        try {
+          if (r.value === 'system') localStorage.removeItem('css-guide-theme'); else localStorage.setItem('css-guide-theme', r.value);
+        } catch (e) {}
+        show();
+      });
+    });
+    os.addEventListener('change', show);
+    show();
+  </script>
+</body>
+</html>

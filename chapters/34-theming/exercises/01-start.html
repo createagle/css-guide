@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 34-1 (start): Tokens with light-dark()</title>
+  <style>
+    body.demo { background: var(--page); color: var(--ink); }
+    .card { inline-size: 320px; display: grid; gap: 10px; padding: 18px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+    .card h2 { margin: 0; font-size: 18px; }
+    .card p { margin: 0; color: var(--ink-muted); }
+    .promo { inline-size: 320px; padding: 14px 18px; border-radius: 14px; background: var(--surface); color: var(--ink); }
+    .promo a { color: var(--brand); font-weight: 600; }
+    :root {
+      --page: oklch(97% 0.005 250);
+      --surface: white;
+      --ink: oklch(25% 0.02 250);
+      --ink-muted: oklch(48% 0.02 250);
+      --line: oklch(90% 0.01 250);
+      --brand: oklch(50% 0.17 255);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --page: oklch(18% 0.01 250);
+        --surface: oklch(24% 0.012 250);
+        --ink: oklch(93% 0.01 250);
+        --ink-muted: oklch(72% 0.02 250);
+        --line: oklch(34% 0.015 250);
+        --brand: oklch(75% 0.13 255);
+      }
+    }
+    /* The promo banner must be dark in both themes, so it repeats the dark values */
+    .promo {
+      --surface: oklch(24% 0.012 250);
+      --ink: oklch(93% 0.01 250);
+      --brand: oklch(75% 0.13 255);
+    }
+  </style>
+</head>
+<body class="demo">
+  <article class="card">
+    <h2>Autumn routes</h2>
+    <p>Twelve walks picked for colour, with a café at the end of each.</p>
+  </article>
+  <aside class="promo">Walking every weekend? <a href="#pro">Try Pro free for a month</a></aside>
+</body>
+</html>
