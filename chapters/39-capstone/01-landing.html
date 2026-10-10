@@ -156,7 +156,6 @@
       .plan { display: flex; flex-direction: column; gap: 16px; padding: 24px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
       @supports (grid-template-rows: subgrid) {
         /* Name, price, list and button line up across the cards */
-        .plans { grid-auto-rows: auto; }
         .plan { display: grid; grid-row: span 4; grid-template-rows: subgrid; row-gap: 16px; }
       }
       .plan.featured { border: 2px solid var(--brand); }
