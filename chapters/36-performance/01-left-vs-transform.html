@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>36-1 Animating left vs transform</title>
+  <style>
+    .stage { flex-direction: column; flex-wrap: nowrap; align-items: stretch; inline-size: min(640px, 100%); gap: 18px; }
+    .track { position: relative; block-size: 56px; border-radius: 28px; background: var(--surface); }
+    .ball { position: absolute; inset-block-start: 8px; inset-inline-start: 8px; inline-size: 40px; block-size: 40px; border-radius: 50%; }
+
+    /* Moves by changing left: layout and paint on the main thread every frame */
+    .by-left { background: oklch(62% 0.18 40); animation: slide-left 2s ease-in-out infinite alternate; }
+    @keyframes slide-left {
+      to { left: calc(100% - 48px); }
+    }
+
+    /* Moves by changing transform: the compositor can run it on its own */
+    .by-transform { background: oklch(55% 0.15 250); animation: slide-transform 2s ease-in-out infinite alternate; }
+    @keyframes slide-transform {
+      to { transform: translateX(calc(var(--track) - 56px)); }
+    }
+    figure { margin: 0; }
+    figcaption { font-family: var(--mono); }
+  </style>
+</head>
+<body class="demo">
+  <div class="controls">
+    <label class="control"><input type="checkbox" id="busy"> block the main thread (80 ms out of every 100 ms)</label>
+    <span class="control">main-thread frames per second: <output id="fps">–</output></span>
+  </div>
+  <div class="stage">
+    <figure><div class="track"><div class="ball by-left"></div></div><figcaption>animation: left</figcaption></figure>
+    <figure><div class="track"><div class="ball by-transform"></div></div><figcaption>animation: transform</figcaption></figure>
+  </div>
+  <script>
+    // translateX() percentages refer to the ball, so pass the track width in
+    const setTrack = () => document.querySelectorAll('.track').forEach(t => t.style.setProperty('--track', t.clientWidth + 'px'));
+    setTrack();
+    addEventListener('resize', setTrack);
+
+    // Simulate heavy JavaScript: spin the main thread for 80 ms every 100 ms
+    let timer = null;
+    document.getElementById('busy').addEventListener('change', e => {
+      clearInterval(timer);
+      if (e.target.checked) timer = setInterval(() => { const end = performance.now() + 80; while (performance.now() < end); }, 100);
+    });
+
+    // Count how many frames the main thread manages to produce
+    let frames = 0, last = performance.now();
+    (function tick(now) {
+      frames++;
+      if (now - last >= 1000) {
+        document.getElementById('fps').value = Math.round(frames * 1000 / (now - last));
+        frames = 0; last = now;
+      }
+      requestAnimationFrame(tick);
+    })(last);
+  </script>
+</body>
+</html>

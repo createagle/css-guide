@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>36-2 content-visibility on a Long List</title>
+  <style>
+    .feed { inline-size: min(560px, 100%); block-size: 420px; overflow-y: auto; margin: 0; padding: 12px; list-style: none; border: 1px solid var(--border); border-radius: 12px; }
+    .feed li { display: grid; gap: 6px; padding: 12px 14px; margin-block-end: 10px; border-radius: 10px; background: var(--surface); }
+    .feed h3 { margin: 0; font-size: 16px; }
+    .feed p { margin: 0; color: var(--muted); font-size: 14px; }
+    .feed.narrow { padding-inline: 40px; }
+
+    /* Skip layout and paint for items that are off screen */
+    .feed.cv li {
+      content-visibility: auto;
+      /* A placeholder size, so the scrollbar is right before an item is rendered;
+         "auto" remembers the real size once it has been rendered */
+      contain-intrinsic-size: auto 112px;
+    }
+  </style>
+</head>
+<body class="demo">
+  <div class="controls">
+    <label class="control"><input type="checkbox" id="cv" checked> content-visibility: auto</label>
+    <button type="button" id="relayout">Change the width and measure</button>
+    <span class="control">layout took <output id="ms">–</output></span>
+  </div>
+  <ol class="feed cv" id="feed"></ol>
+  <script>
+    const feed = document.getElementById('feed');
+    const places = ['Lake', 'Ridge', 'Mill', 'Forest', 'Harbour', 'Quarry', 'Meadow', 'Castle'];
+    const html = [];
+    for (let i = 1; i <= 3000; i++) {
+      const place = places[i % places.length];
+      html.push(`<li><h3>${i}. ${place} Loop</h3><p>${(4 + (i * 7) % 18)} km through the ${place.toLowerCase()} and back along the old track, with a long view at the halfway point. Bring water and a jacket: the weather on the top can change quickly, and the café at the end closes at five.</p></li>`);
+    }
+    feed.innerHTML = html.join('');
+
+    // Force a full style + layout pass and time it
+    function measure() {
+      const t0 = performance.now();
+      feed.classList.toggle('narrow');
+      document.body.offsetHeight;
+      document.getElementById('ms').value = (performance.now() - t0).toFixed(1) + ' ms';
+    }
+    document.getElementById('relayout').addEventListener('click', measure);
+    document.getElementById('cv').addEventListener('change', e => {
+      feed.classList.toggle('cv', e.target.checked);
+      document.getElementById('ms').value = '–';
+    });
+  </script>
+</body>
+</html>

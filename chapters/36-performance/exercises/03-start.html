@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 36-3 (start): A Cheaper Hover Shadow</title>
+  <style>
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 18px; inline-size: min(560px, 100%); }
+    .card { position: relative; padding: 16px; border-radius: 12px; background: var(--bg); border: 1px solid var(--border); }
+    .card h3 { margin: 0 0 4px; font-size: 16px; }
+    .card p { margin: 0; color: var(--muted); font-size: 14px; }
+    /* transition: all watches every property; the big shadow repaints on every frame */
+    .card { transition: all 0.3s; }
+    .card:hover { box-shadow: 0 16px 32px oklch(0% 0 0 / 0.25); margin-top: -6px; }
+  </style>
+</head>
+<body class="demo">
+  <div class="grid">
+    <article class="card"><h3>Lake Loop</h3><p>14 km · 4 h</p></article>
+    <article class="card"><h3>North Ridge</h3><p>12 km · 5 h</p></article>
+    <article class="card"><h3>Old Mill</h3><p>6 km · 2 h</p></article>
+    <article class="card"><h3>Harbour Walk</h3><p>4 km · 1 h</p></article>
+    <article class="card"><h3>Quarry Path</h3><p>9 km · 3 h</p></article>
+    <article class="card"><h3>Castle Hill</h3><p>7 km · 3 h</p></article>
+  </div>
+</body>
+</html>

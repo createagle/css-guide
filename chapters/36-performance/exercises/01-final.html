@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 36-1 (final): A Toast That Slides on the Compositor</title>
+  <style>
+    .toast { position: fixed; inset-inline: 0; margin-inline: auto; inline-size: fit-content; padding: 10px 16px; border-radius: 10px; background: var(--fg); color: var(--bg); }
+    /* Slides in with transform and fades with opacity: both can run on the compositor */
+    .toast {
+      top: 20px;
+      opacity: 0;
+      transform: translateY(-80px);
+      transition: transform 0.4s ease, opacity 0.4s ease;
+    }
+    .toast.show { opacity: 1; transform: none; }
+  </style>
+</head>
+<body class="demo">
+  <button type="button" id="save">Save route</button>
+  <div class="toast" id="toast" role="status">Route saved for offline use</div>
+  <script>
+    const toast = document.getElementById('toast');
+    let timer;
+    document.getElementById('save').addEventListener('click', () => {
+      toast.classList.add('show');
+      clearTimeout(timer);
+      timer = setTimeout(() => toast.classList.remove('show'), 2000);
+    });
+  </script>
+</body>
+</html>

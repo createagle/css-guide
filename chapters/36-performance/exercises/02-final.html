@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 36-2 (final): Skip the Comments Nobody Can See</title>
+  <style>
+    .comments { inline-size: min(560px, 100%); margin: 0; padding: 0; list-style: none; }
+    .comments li { display: grid; gap: 4px; padding: 12px 0; border-block-end: 1px solid var(--border); }
+    .comments strong { font-size: 14px; }
+    .comments p { margin: 0; }
+    .count { position: sticky; inset-block-start: 0; padding: 8px 12px; border-radius: 8px; background: var(--surface); font-size: 14px; }
+    /* Comments below the fold are skipped until they come near the viewport */
+    .comments li {
+      content-visibility: auto;
+      contain-intrinsic-size: auto 90px;
+    }
+  </style>
+</head>
+<body class="demo">
+  <p class="count">Load time: <output id="t">–</output></p>
+  <ol class="comments" id="list"></ol>
+  <script>
+    const names = ['Ana', 'Ben', 'Chen', 'Dara', 'Eli', 'Femi', 'Gus', 'Hana'];
+    const t0 = performance.now();
+    let html = '';
+    for (let i = 1; i <= 2000; i++) {
+      html += `<li><strong>${names[i % names.length]} · comment ${i}</strong><p>We did this loop last weekend. The path past the mill was muddy after the rain, so boots are a good idea, and the café was busy, so get there before noon if you want a table.</p></li>`;
+    }
+    document.getElementById('list').innerHTML = html;
+    document.body.offsetHeight;
+    document.getElementById('t').value = (performance.now() - t0).toFixed(0) + ' ms';
+  </script>
+</body>
+</html>
