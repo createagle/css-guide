@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 39-1 (start): A Billing Switch Without JavaScript</title>
+  <style>
+    .segmented { display: inline-flex; margin: 0; padding: 3px; border: 1px solid var(--border); border-radius: 999px; font-size: 14px; }
+    .segmented label { position: relative; padding: 4px 12px; border-radius: 999px; color: var(--muted); cursor: pointer; }
+    .segmented input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+    .segmented label:has(:checked) { background: var(--accent); color: var(--bg); }
+    .segmented label:has(:focus-visible) { outline: 3px solid var(--accent); outline-offset: 2px; }
+    .visually-hidden { position: absolute; inline-size: 1px; block-size: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+    .pricing { display: grid; gap: 16px; justify-items: center; inline-size: min(560px, 100%); }
+    .plans { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 16px; inline-size: 100%; }
+    .plan { display: grid; gap: 8px; padding: 18px; border: 1px solid var(--border); border-radius: 14px; }
+    .plan h3 { margin: 0; font-size: 16px; }
+    .price { margin: 0; font-size: 28px; font-weight: 800; }
+    .price small { color: var(--muted); font-size: 13px; font-weight: 400; }
+    .price span { display: block; }
+  </style>
+</head>
+<body class="demo">
+  <section class="pricing" aria-label="Pricing">
+    <fieldset class="segmented">
+      <legend class="visually-hidden">Billing period</legend>
+      <label><input type="radio" name="billing" value="monthly" checked>Monthly</label>
+      <label><input type="radio" name="billing" value="yearly" id="yearly">Yearly</label>
+    </fieldset>
+    <div class="plans">
+      <article class="plan">
+        <h3>Explorer</h3>
+        <p class="price"><span class="monthly">$6<small> / month</small></span><span class="yearly">$58<small> / year</small></span></p>
+      </article>
+      <article class="plan">
+        <h3>Family</h3>
+        <p class="price"><span class="monthly">$10<small> / month</small></span><span class="yearly">$96<small> / year</small></span></p>
+      </article>
+    </div>
+  </section>
+</body>
+</html>

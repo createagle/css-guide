@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 39-2 (start): A Feature Card That Fits Its Slot</title>
+  <style>
+    .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 16px; inline-size: min(720px, 100%); }
+    .feature.wide { grid-column: 1 / -1; }
+    .feature-body { display: grid; align-content: start; gap: 10px; block-size: 100%; padding: 18px; border: 1px solid var(--border); border-radius: 14px; }
+    .feature-body svg { inline-size: 40px; padding: 8px; border-radius: 12px; background: color-mix(in oklch, var(--accent) 14%, transparent); color: var(--accent); }
+    .feature-body h3 { margin: 0; font-size: 16px; }
+    .feature-body p { margin: 0; color: var(--muted); font-size: 14px; }
+  </style>
+</head>
+<body class="demo">
+  <div class="features">
+    <article class="feature">
+      <div class="feature-body">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <h3>Offline maps</h3>
+        <p>Download a whole region in one tap.</p>
+      </div>
+    </article>
+    <article class="feature">
+      <div class="feature-body">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <h3>Turn-back alerts</h3>
+        <p>Get a nudge when it is time to head home.</p>
+      </div>
+    </article>
+    <article class="feature">
+      <div class="feature-body">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <h3>Honest profiles</h3>
+        <p>See every climb before you commit.</p>
+      </div>
+    </article>
+    <article class="feature wide">
+      <div class="feature-body">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <h3>Share your live location</h3>
+        <p>Send a link to someone at home. They see where you are and when you planned to be back.</p>
+      </div>
+    </article>
+  </div>
+</body>
+</html>
