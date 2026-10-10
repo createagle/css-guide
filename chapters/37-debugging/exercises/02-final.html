@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 37-2 (final): Find the Box That Will Not Shrink</title>
+  <style>
+    .list { inline-size: min(380px, 100%); margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; }
+    .item .icon { flex: none; inline-size: 32px; block-size: 32px; border-radius: 8px; background: var(--surface); display: grid; place-items: center; }
+    .item .text { flex: 1; }
+    .item .text strong { display: block; }
+    .item .text span { color: var(--muted); font-size: 13px; }
+    .item button { flex: none; }
+    /* A flex item's min-width is auto (its content), so it refuses to shrink */
+    .item .text { min-inline-size: 0; }
+    /* Then decide what the long text should do */
+    .item .text span { display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  </style>
+</head>
+<body class="demo">
+  <ul class="list">
+    <li class="item"><span class="icon" aria-hidden="true">🗺</span><span class="text"><strong>Lake Loop</strong><span>lake-loop.gpx</span></span><button type="button">Download</button></li>
+    <li class="item"><span class="icon" aria-hidden="true">🗺</span><span class="text"><strong>Coast Path</strong><span>coast_path_harbour_to_lighthouse_via_the_old_signal_station_2026.gpx</span></span><button type="button">Download</button></li>
+  </ul>
+</body>
+</html>

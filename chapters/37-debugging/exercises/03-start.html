@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 37-3 (start): The Menu Behind the Next Card</title>
+  <style>
+    .cards { display: grid; gap: 12px; inline-size: min(360px, 100%); }
+    .card { padding: 14px; border: 1px solid var(--border); border-radius: 12px; background: var(--bg); }
+    .card h3 { margin: 0 0 8px; font-size: 16px; }
+    .more { position: relative; }
+    .more [popover], .more .menu { position: absolute; inset-block-start: calc(100% + 4px); inset-inline-start: 0; z-index: 10; min-inline-size: 160px; margin: 0; padding: 6px; list-style: none; border: 1px solid var(--border); border-radius: 10px; background: var(--bg); box-shadow: 0 8px 20px oklch(0% 0 0 / 0.15); }
+    .menu[hidden] { display: none; }
+    .menu li { padding: 6px 8px; }
+    /* Cards lift a little on hover */
+    .card { transition: transform 0.2s; transform: translateY(0); }
+    .card:hover { transform: translateY(-2px); }
+  </style>
+</head>
+<body class="demo">
+  <div class="cards">
+    <article class="card">
+      <h3>Lake Loop</h3>
+      <div class="more">
+        <button type="button" aria-expanded="false" aria-controls="menu-1">More ▾</button>
+        <ul class="menu" id="menu-1" hidden><li>Share</li><li>Download GPX</li><li>Report a problem</li></ul>
+      </div>
+    </article>
+    <article class="card"><h3>North Ridge</h3><p>12 km with a long climb.</p></article>
+  </div>
+  <script>
+    const btn = document.querySelector('.more button'), menu = document.getElementById('menu-1');
+    btn.addEventListener('click', () => {
+      menu.hidden = !menu.hidden;
+      btn.setAttribute('aria-expanded', String(!menu.hidden));
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>37-2 Common Layout Bugs</title>
+  <style>
+    .stage { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); inline-size: min(860px, 100%); }
+    .bug { display: grid; gap: 10px; align-content: start; min-inline-size: 0; }
+    .bug .label { margin: 0; }
+    .bug pre.code { font-size: 12px; }
+    .bug .control { justify-self: start; }
+    .box-a { background: oklch(80% 0.1 250 / 0.5); }
+    .box-b { background: oklch(80% 0.12 60 / 0.5); }
+
+    /* The classic debugging trick: outline every box without changing layout */
+    .outline-all .demo-area * { outline: 1px solid oklch(60% 0.25 25); }
+
+    /* 1. Flex item will not shrink below its content */
+    .b1 .row { display: flex; gap: 8px; inline-size: 100%; }
+    .b1 .row > div { padding: 6px; }
+    .b1 .row .url { flex: 1; }
+    .b1.fixed .row .url { min-inline-size: 0; overflow-wrap: anywhere; }
+
+    /* 2. A 1fr column blown wide by long content */
+    .b2 .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .b2 .grid > div { padding: 6px; }
+    .b2.fixed .grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+    .b2.fixed .grid pre { overflow-x: auto; }
+    .b2 pre.wide { margin: 0; font-size: 12px; }
+
+    /* 3. A gap under an image: it sits on the text baseline */
+    .b3 .frame { border: 2px solid var(--muted); inline-size: fit-content; }
+    .b3 .frame svg { inline-size: 120px; block-size: 60px; }
+    .b3.fixed .frame svg { display: block; }
+
+    /* 4. A child's margin escapes through its parent */
+    .b4 .parent { background: oklch(80% 0.08 150 / 0.5); }
+    .b4 .child { margin-block-start: 24px; padding: 6px; }
+    .b4.fixed .parent { display: flow-root; }
+
+    /* 5. An absolute badge positioned against the wrong ancestor */
+    .b5 .area { position: relative; block-size: 110px; padding: 10px; background: var(--surface); }
+    .b5 .card { inline-size: 160px; padding: 10px; }
+    .b5 .tag { position: absolute; inset-block-start: 0; inset-inline-end: 0; padding: 2px 6px; font-size: 12px; background: var(--fg); color: var(--bg); }
+    .b5.fixed .card { position: relative; }
+
+    /* 6. z-index ignored: the menu is trapped in its parent's stacking context */
+    .b6 .area { position: relative; block-size: 110px; }
+    .b6 .toolbar { position: relative; z-index: 1; transform: translateZ(0); padding: 6px; }
+    .b6 .menu { position: absolute; inset-block-start: 100%; inset-inline-start: 6px; z-index: 100; padding: 6px 10px; }
+    .b6 .banner { position: relative; z-index: 2; margin-block-start: 6px; padding: 16px 6px; }
+    .b6.fixed .toolbar { z-index: 3; }
+  </style>
+</head>
+<body class="demo">
+  <div class="controls">
+    <label class="control"><input type="checkbox" id="outline"> outline every box</label>
+  </div>
+  <div class="stage demo-area-wrap">
+    <section class="panel bug b1" aria-label="Flex item will not shrink">
+      <p class="label">1 · flex item will not shrink</p>
+      <div class="demo-area"><div class="row"><div class="box-a">Link</div><div class="url box-b">https://example.com/routes/lake-loop-and-the-old-ferry-landing</div></div></div>
+      <label class="control"><input type="checkbox" data-fix="b1"> apply the fix</label>
+      <pre class="code">.url { min-inline-size: 0; overflow-wrap: anywhere; }</pre>
+    </section>
+    <section class="panel bug b2" aria-label="1fr column blown wide">
+      <p class="label">2 · 1fr column blown wide</p>
+      <div class="demo-area"><div class="grid"><div class="box-a"><pre class="wide">const route = loadRoute('lake-loop');</pre></div><div class="box-b">Short</div></div></div>
+      <label class="control"><input type="checkbox" data-fix="b2"> apply the fix</label>
+      <pre class="code">grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);</pre>
+    </section>
+    <section class="panel bug b3" aria-label="Gap under an image">
+      <p class="label">3 · gap under an image</p>
+      <div class="demo-area"><div class="frame"><svg viewBox="0 0 120 60" role="img" aria-label="Hills"><rect width="120" height="60" fill="oklch(75% 0.1 200)"/><path d="M0 60 40 20l25 25 20-15 35 30z" fill="oklch(50% 0.1 150)"/></svg></div></div>
+      <label class="control"><input type="checkbox" data-fix="b3"> apply the fix</label>
+      <pre class="code">svg, img { display: block; }</pre>
+    </section>
+    <section class="panel bug b4" aria-label="Margin escapes its parent">
+      <p class="label">4 · margin escapes its parent</p>
+      <div class="demo-area"><div class="parent"><div class="child box-a">I have margin-top: 24px</div></div></div>
+      <label class="control"><input type="checkbox" data-fix="b4"> apply the fix</label>
+      <pre class="code">.parent { display: flow-root; }</pre>
+    </section>
+    <section class="panel bug b5" aria-label="Badge on the wrong ancestor">
+      <p class="label">5 · badge on the wrong ancestor</p>
+      <div class="demo-area"><div class="area"><div class="card box-a">Lake Loop<span class="tag">New</span></div></div></div>
+      <label class="control"><input type="checkbox" data-fix="b5"> apply the fix</label>
+      <pre class="code">.card { position: relative; }</pre>
+    </section>
+    <section class="panel bug b6" aria-label="z-index ignored">
+      <p class="label">6 · z-index: 100 still underneath</p>
+      <div class="demo-area"><div class="area"><div class="toolbar box-a">Toolbar<div class="menu box-b">Menu (z-index: 100)</div></div><div class="banner box-a">Banner (z-index: 2)</div></div></div>
+      <label class="control"><input type="checkbox" data-fix="b6"> apply the fix</label>
+      <pre class="code">.toolbar { z-index: 3; }</pre>
+    </section>
+  </div>
+  <script>
+    document.querySelectorAll('[data-fix]').forEach(box => box.addEventListener('change', () => {
+      document.querySelector('.' + box.dataset.fix).classList.toggle('fixed', box.checked);
+    }));
+    document.getElementById('outline').addEventListener('change', e => document.body.classList.toggle('outline-all', e.target.checked));
+  </script>
+</body>
+</html>

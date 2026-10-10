@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>37-1 Progressive Enhancement with @supports</title>
+  <style>
+    .stage { flex-direction: column; flex-wrap: nowrap; align-items: center; }
+    /* Baseline for everyone: a simple grid of cards */
+    .cards { display: grid; grid-template-columns: repeat(3, 180px); gap: 16px; }
+    .card { display: grid; gap: 8px; align-content: start; padding: 14px; border: 1px solid var(--border); border-radius: 12px; }
+    .card h3 { margin: 0; font-size: 17px; line-height: 1.25; }
+    .card p { margin: 0; color: var(--muted); font-size: 14px; }
+    .card .go { align-self: end; font-weight: 600; }
+    .badge { justify-self: start; padding: 1px 8px; border-radius: 999px; background: var(--surface); font-size: 12px; }
+
+    /* Enhancement 1: subgrid lines up titles, text and links across cards */
+    @supports (grid-template-rows: subgrid) {
+      :root:not(.fallback) .card { grid-row: span 4; grid-template-rows: subgrid; gap: 8px; }
+    }
+    /* Enhancement 2: balanced line breaks in headings */
+    @supports (text-wrap: balance) {
+      :root:not(.fallback) .card h3 { text-wrap: balance; }
+    }
+    /* Enhancement 3: highlight the card that contains a "New" badge */
+    @supports selector(:has(a)) {
+      :root:not(.fallback) .card:has(.badge.new) { border-color: var(--accent); }
+    }
+    .readout { inline-size: min(572px, 100%); }
+  </style>
+</head>
+<body class="demo">
+  <div class="controls">
+    <label class="control"><input type="checkbox" id="fallback"> show the fallback</label>
+  </div>
+  <div class="stage">
+    <div class="cards">
+      <article class="card"><span class="badge new">New</span><h3>Lake Loop and the Old Ferry Landing</h3><p>14 km, flat.</p><a class="go" href="#a">View route</a></article>
+      <article class="card"><span class="badge">Popular</span><h3>North Ridge</h3><p>12 km with a long climb to the trig point and views over three valleys.</p><a class="go" href="#b">View route</a></article>
+      <article class="card"><span class="badge">Easy</span><h3>Old Mill</h3><p>6 km along the river.</p><a class="go" href="#c">View route</a></article>
+    </div>
+    <div class="panel readout">
+      <p class="label">What this browser supports</p>
+      <pre class="code" id="support"></pre>
+    </div>
+  </div>
+  <script>
+    const tests = [
+      ['@supports (grid-template-rows: subgrid)', () => CSS.supports('grid-template-rows', 'subgrid')],
+      ['@supports (text-wrap: balance)', () => CSS.supports('text-wrap', 'balance')],
+      ['@supports selector(:has(a))', () => CSS.supports('selector(:has(a))')],
+    ];
+    document.getElementById('support').textContent = tests.map(([q, t]) => (t() ? 'yes  ' : 'no   ') + q).join('\n');
+    document.getElementById('fallback').addEventListener('change', e => document.documentElement.classList.toggle('fallback', e.target.checked));
+  </script>
+</body>
+</html>
