@@ -1,0 +1,11 @@
+# Chapter 32 · Exercise Code
+
+**English** | [简体中文](README.zh-CN.md)
+
+Starter and finished versions of each exercise, all deployed on GitHub Pages for live preview. The tasks and reference answers are in the tutorial document; exercises without code are answered there only.
+
+| Exercise | Starter | Finished |
+| --- | --- | --- |
+| 1 · Custom radio cards | [Live](https://createagle.github.io/css-guide/chapters/32-forms/exercises/01-start.html) · [01-start.html](01-start.html) | [Live](https://createagle.github.io/css-guide/chapters/32-forms/exercises/01-final.html) · [01-final.html](01-final.html) |
+| 2 · Fields that fit their text | [Live](https://createagle.github.io/css-guide/chapters/32-forms/exercises/02-start.html) · [02-start.html](02-start.html) | [Live](https://createagle.github.io/css-guide/chapters/32-forms/exercises/02-final.html) · [02-final.html](02-final.html) |
+| 3 · Native controls on a dark card | [Live](https://createagle.github.io/css-guide/chapters/32-forms/exercises/03-start.html) · [03-start.html](03-start.html) | [Live](https://createagle.github.io/css-guide/chapters/32-forms/exercises/03-final.html) · [03-final.html](03-final.html) |

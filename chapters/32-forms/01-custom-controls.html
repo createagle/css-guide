@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>32-1 Custom Checkboxes and Switches</title>
+  <style>
+    body.demo { --brand: #7c3aed; }
+    .stage { align-items: stretch; }
+    .panel { inline-size: 250px; display: grid; gap: 12px; align-content: start; }
+    .row { display: flex; align-items: center; gap: 10px; }
+    .row.split { justify-content: space-between; }
+
+    /* 1. Keep the native controls, just recolour them */
+    .native {
+      color-scheme: var(--scheme, light dark);
+      /* System colours follow the panel's own color-scheme */
+      background: Canvas;
+      color: CanvasText;
+    }
+    .native :is(input, progress) { accent-color: var(--brand); }
+    .native input[type="range"], .native progress { inline-size: 100%; }
+
+    /* 2. Draw the checkbox yourself, but keep the real input */
+    .check {
+      appearance: none;
+      margin: 0;
+      flex: none;
+      inline-size: 1.25em;
+      block-size: 1.25em;
+      display: inline-grid;
+      place-content: center;
+      border: 2px solid var(--muted);
+      border-radius: 5px;
+      background: var(--bg);
+      transition: background-color 0.15s, border-color 0.15s;
+    }
+    .check::before {
+      content: "";
+      inline-size: 0.75em;
+      block-size: 0.75em;
+      background: white;
+      clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+      scale: 0;
+      transition: scale 0.15s;
+    }
+    .check:is(:checked, :indeterminate) { background: var(--brand); border-color: var(--brand); }
+    .check:checked::before { scale: 1; }
+    .check:indeterminate::before { clip-path: inset(38% 0); scale: 1; }
+
+    /* 3. A switch is a checkbox with role="switch" */
+    .switch {
+      appearance: none;
+      margin: 0;
+      flex: none;
+      inline-size: 2.75em;
+      block-size: 1.5em;
+      padding: 3px;
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      background: color-mix(in oklch, var(--muted) 55%, transparent);
+      transition: background-color 0.2s;
+    }
+    .switch::before {
+      content: "";
+      block-size: 100%;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: white;
+      box-shadow: 0 1px 3px oklch(0% 0 0 / 0.3);
+      transition: translate 0.2s;
+    }
+    .switch:checked { background: var(--brand); }
+    .switch:checked::before { translate: 1.25em 0; }
+
+    /* Shared states for both custom controls */
+    :is(.check, .switch):focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+    :is(.check, .switch):disabled { opacity: 0.45; }
+    .row:has(:disabled) { color: var(--muted); }
+
+    /* In forced-colors mode, use system colours so the state stays visible */
+    @media (forced-colors: active) {
+      .check, .switch { border: 1px solid CanvasText; }
+      .check::before, .switch::before { background: CanvasText; }
+      :is(.check, .switch):checked { background: Highlight; }
+      :is(.check, .switch):checked::before { background: HighlightText; }
+    }
+  </style>
+</head>
+<body class="demo">
+  <div class="controls">
+    <label class="control">brand colour <input type="color" id="brand" value="#7c3aed"></label>
+    <label class="control">native panel color-scheme
+      <select id="scheme">
+        <option value="light dark">light dark</option>
+        <option value="light">light</option>
+        <option value="dark">dark</option>
+      </select>
+    </label>
+    <label class="control"><input type="checkbox" id="disable"> disable all</label>
+  </div>
+  <div class="stage">
+    <fieldset class="panel native">
+      <legend class="label">accent-color</legend>
+      <label class="row"><input type="checkbox" checked> Email me updates</label>
+      <div class="row">
+        <label class="row"><input type="radio" name="unit" checked> Metric</label>
+        <label class="row"><input type="radio" name="unit"> Imperial</label>
+      </div>
+      <label>Volume <input type="range" value="60"></label>
+      <label>Download <progress max="100" value="60">60%</progress></label>
+    </fieldset>
+    <fieldset class="panel">
+      <legend class="label">appearance: none</legend>
+      <label class="row"><input type="checkbox" class="check" id="all"> All layers</label>
+      <label class="row"><input type="checkbox" class="check layer" checked> Trail maps</label>
+      <label class="row"><input type="checkbox" class="check layer"> Elevation</label>
+      <label class="row"><input type="checkbox" class="check layer" checked> Water sources</label>
+    </fieldset>
+    <fieldset class="panel">
+      <legend class="label">role="switch"</legend>
+      <label class="row split">Offline mode <input type="checkbox" class="switch" role="switch" checked></label>
+      <label class="row split">Dark map tiles <input type="checkbox" class="switch" role="switch"></label>
+      <label class="row split">Share location <input type="checkbox" class="switch" role="switch"></label>
+    </fieldset>
+  </div>
+  <script>
+    const all = document.getElementById('all');
+    const layers = [...document.querySelectorAll('.layer')];
+    // "All layers" is checked, unchecked or indeterminate depending on the others
+    function sync() {
+      const on = layers.filter(l => l.checked).length;
+      all.checked = on === layers.length;
+      all.indeterminate = on > 0 && on < layers.length;
+    }
+    all.addEventListener('change', () => { layers.forEach(l => l.checked = all.checked); sync(); });
+    layers.forEach(l => l.addEventListener('change', sync));
+    sync();
+    document.getElementById('brand').addEventListener('input', e => document.body.style.setProperty('--brand', e.target.value));
+    document.getElementById('scheme').addEventListener('change', e => document.querySelector('.native').style.setProperty('--scheme', e.target.value));
+    document.getElementById('disable').addEventListener('change', e => {
+      document.querySelectorAll('.stage input').forEach(i => i.disabled = e.target.checked);
+    });
+  </script>
+</body>
+</html>

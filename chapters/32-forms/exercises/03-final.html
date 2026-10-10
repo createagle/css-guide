@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 32-3 (final): Native Controls on a Dark Card</title>
+  <style>
+    .card {
+      inline-size: min(380px, 100%);
+      padding: 20px;
+      display: grid;
+      gap: 14px;
+      border-radius: 14px;
+      /* The card is always dark, whatever the page uses */
+      background: oklch(24% 0.02 260);
+      color: oklch(95% 0.01 260);
+    }
+    .card h2 { margin: 0; font-size: 18px; }
+    .card label { display: grid; gap: 4px; font-size: 14px; }
+    .card .row { display: flex; align-items: center; gap: 8px; }
+    .card input:not([type="checkbox"]), .card select { font: inherit; padding: 6px 8px; }
+    .list { block-size: 72px; overflow: auto; margin: 0; padding-inline-start: 1.2em; font-size: 14px; }
+    /* Tell the browser this part of the page is dark: native controls,
+       scrollbars and system colours switch to their dark versions */
+    .card {
+      color-scheme: dark;
+    }
+    .card :is(input, select) { accent-color: oklch(75% 0.15 150); }
+  </style>
+</head>
+<body class="demo">
+  <form class="card">
+    <h2>Join the night walk</h2>
+    <label>Email <input type="email" placeholder="you@example.com"></label>
+    <label>Date <input type="date" value="2026-11-14"></label>
+    <label>Group
+      <select><option>Beginners</option><option>Regulars</option><option>Fast group</option></select>
+    </label>
+    <label class="row"><input type="checkbox" checked> Bring a head torch</label>
+    <ol class="list">
+      <li>Warm layers</li><li>Water</li><li>Head torch</li><li>Spare batteries</li><li>Snacks</li><li>Phone</li>
+    </ol>
+  </form>
+</body>
+</html>

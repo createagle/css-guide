@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 32-2 (final): Fields That Fit Their Text</title>
+  <style>
+    form { display: grid; gap: 14px; inline-size: min(420px, 100%); }
+    label { display: grid; gap: 4px; font-weight: 600; }
+    .inline { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; font-weight: 400; }
+    input, textarea { font: inherit; font-weight: 400; padding: 6px 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--fg); }
+    /* Grow with the text instead of keeping a fixed size */
+    textarea {
+      field-sizing: content;
+      min-block-size: 3lh;
+      max-block-size: 10lh;
+    }
+    .inline input {
+      field-sizing: content;
+      min-inline-size: 6ch;
+      max-inline-size: 100%;
+    }
+    @supports not (field-sizing: content) {
+      /* Older browsers: a sensible fixed size the user can still drag */
+      textarea { block-size: 6lh; resize: vertical; }
+    }
+  </style>
+</head>
+<body class="demo">
+  <form>
+    <label class="inline">Trip name <input id="trip" value="Lake Loop"></label>
+    <label>Notes for the group
+      <textarea id="notes" rows="2">Meet at the car park by the old mill at 8:00. Bring water, a rain jacket and something warm for the top. The path along the ridge is narrow in places, so keep dogs on a lead. We will stop for lunch at the shelter by the lake and should be back down by about 15:30.</textarea>
+    </label>
+  </form>
+</body>
+</html>

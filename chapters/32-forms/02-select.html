@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>32-2 A Customizable Select</title>
+  <style>
+    .stage figure { display: grid; gap: 6px; inline-size: 260px; }
+    .stage label { font-weight: 600; }
+    .dot { display: inline-block; inline-size: 0.7em; block-size: 0.7em; border-radius: 50%; background: var(--c); }
+    .easy { --c: oklch(65% 0.17 150); }
+    .moderate { --c: oklch(75% 0.16 75); }
+    .hard { --c: oklch(60% 0.2 25); }
+    .expert { --c: oklch(35% 0.03 260); }
+    @media (prefers-color-scheme: dark) { .expert { --c: oklch(85% 0.02 260); } }
+    option small { color: var(--muted); }
+    select { font: inherit; }
+
+    @supports (appearance: base-select) {
+      /* Opt in for the select and its drop-down picker */
+      .custom, .custom::picker(select) { appearance: base-select; }
+
+      .custom {
+        padding: 8px 12px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: var(--bg);
+        color: var(--fg);
+      }
+      .custom:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+      /* The arrow turns over while the picker is open */
+      .custom::picker-icon { transition: rotate 0.2s; }
+      .custom:open::picker-icon { rotate: 180deg; }
+      /* The button shows a copy of the chosen option; hide its description */
+      .custom selectedcontent { display: flex; align-items: center; gap: 8px; }
+      .custom selectedcontent small { display: none; }
+
+      .custom::picker(select) {
+        margin-block-start: 6px;
+        padding: 6px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: var(--bg);
+        box-shadow: 0 12px 32px oklch(0% 0 0 / 0.18);
+        /* Fade and drop in: the picker is a popover in the top layer */
+        transition: opacity 0.2s, translate 0.2s, display 0.2s allow-discrete, overlay 0.2s allow-discrete;
+      }
+      .custom::picker(select):not(:popover-open) { opacity: 0; translate: 0 -6px; }
+      @starting-style {
+        .custom::picker(select):popover-open { opacity: 0; translate: 0 -6px; }
+      }
+
+      .custom option {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        align-items: center;
+        column-gap: 10px;
+        padding: 8px 10px;
+        border-radius: 8px;
+      }
+      .custom option small { grid-column: 2; }
+      .custom option:is(:hover, :focus-visible) { background: var(--surface); outline: none; }
+      .custom option:checked { font-weight: 600; }
+      /* The tick that marks the chosen option, moved to the end of the row */
+      .custom option::checkmark { grid-column: 3; grid-row: 1; color: var(--accent); }
+    }
+  </style>
+</head>
+<body class="demo">
+  <div class="stage">
+    <figure>
+      <label for="native">Difficulty</label>
+      <select id="native">
+        <option>Easy</option>
+        <option selected>Moderate</option>
+        <option>Hard</option>
+        <option>Expert</option>
+      </select>
+      <figcaption>appearance: auto</figcaption>
+    </figure>
+    <figure>
+      <label for="custom">Difficulty</label>
+      <select id="custom" class="custom">
+        <button><selectedcontent></selectedcontent></button>
+        <option value="easy"><span class="dot easy" aria-hidden="true"></span>Easy <small>Flat, under 5 km</small></option>
+        <option value="moderate" selected><span class="dot moderate" aria-hidden="true"></span>Moderate <small>Some climbing</small></option>
+        <option value="hard"><span class="dot hard" aria-hidden="true"></span>Hard <small>Steep, rocky paths</small></option>
+        <option value="expert"><span class="dot expert" aria-hidden="true"></span>Expert <small>Scrambling, exposure</small></option>
+      </select>
+      <figcaption>appearance: base-select</figcaption>
+    </figure>
+  </div>
+  <p class="label">value: <output id="out" for="custom">moderate</output></p>
+  <script>
+    const custom = document.getElementById('custom');
+    custom.addEventListener('change', () => document.getElementById('out').value = custom.value);
+  </script>
+</body>
+</html>
