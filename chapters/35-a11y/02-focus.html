@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>35-2 Focus Styles Compared</title>
+  <style>
+    .stage { flex-direction: column; flex-wrap: nowrap; align-items: stretch; inline-size: min(760px, 100%); }
+    .row { display: grid; grid-template-columns: 170px 1fr; align-items: center; gap: 12px; }
+    .row .label { margin: 0; font-family: var(--mono); }
+    .row .label.bad::after { content: " ✗"; }
+    .row .label.good::after { content: " ✓"; }
+    .strip { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; padding: 14px; border-radius: 10px; background: var(--strip, var(--surface)); }
+    .strip a { color: var(--strip-link, var(--accent)); }
+    .strip button { padding: 6px 14px; border: 0; border-radius: 8px; background: var(--btn, var(--accent)); color: var(--btn-ink, var(--bg)); font: inherit; }
+    body[data-bg="brand"] { --strip: oklch(50% 0.17 255); --strip-link: white; --btn: white; --btn-ink: oklch(30% 0.1 255); }
+    body[data-bg="photo"] { --strip: linear-gradient(90deg, oklch(85% 0.1 90), oklch(40% 0.12 300)); --strip-link: oklch(20% 0.05 300); --btn: oklch(25% 0.05 300); --btn-ink: white; }
+
+    /* 1. .default: no focus rules at all, whatever the browser does */
+    /* 2. Removed with nothing in its place: keyboard users are lost */
+    .removed :is(a, button):focus { outline: none; }
+    /* 3. A custom ring, only for keyboard focus */
+    .visible :is(a, button):focus { outline: none; }
+    .visible :is(a, button):focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+    /* 4. Two rings, dark and light, so one of them always stands out */
+    .double :is(a, button):focus { outline: none; }
+    .double :is(a, button):focus-visible {
+      outline: 2px solid oklch(20% 0 0);
+      outline-offset: 2px;
+      box-shadow: 0 0 0 6px white;
+    }
+    /* 5. Highlight the whole group while something inside it has focus */
+    .within:focus-within { box-shadow: 0 0 0 3px var(--accent); }
+    .within :is(a, button):focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+  </style>
+</head>
+<body class="demo">
+  <div class="controls">
+    <label class="control">background
+      <select id="bg"><option value="plain">plain</option><option value="brand">brand colour</option><option value="photo">gradient</option></select>
+    </label>
+    <span class="control">press Tab to move through the rows</span>
+  </div>
+  <div class="stage">
+    <div class="row"><p class="label">browser default</p><div class="strip default"><a href="#a1">Routes</a><a href="#a2">Saved</a><button type="button">Start</button></div></div>
+    <div class="row"><p class="label bad">outline: none</p><div class="strip removed"><a href="#b1">Routes</a><a href="#b2">Saved</a><button type="button">Start</button></div></div>
+    <div class="row"><p class="label good">:focus-visible</p><div class="strip visible"><a href="#c1">Routes</a><a href="#c2">Saved</a><button type="button">Start</button></div></div>
+    <div class="row"><p class="label good">double ring</p><div class="strip double"><a href="#d1">Routes</a><a href="#d2">Saved</a><button type="button">Start</button></div></div>
+    <div class="row"><p class="label good">:focus-within</p><div class="strip within"><a href="#e1">Routes</a><a href="#e2">Saved</a><button type="button">Start</button></div></div>
+  </div>
+  <script>
+    document.getElementById('bg').addEventListener('change', e => document.body.dataset.bg = e.target.value);
+  </script>
+</body>
+</html>

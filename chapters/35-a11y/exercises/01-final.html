@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 35-1 (final): A Skip Link That Works</title>
+  <style>
+    body.demo { justify-content: flex-start; }
+    .page { position: relative; inline-size: min(560px, 100%); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .page header { display: flex; flex-wrap: wrap; gap: 6px 14px; padding: 14px 16px; border-block-end: 1px solid var(--border); background: var(--surface); }
+    .page main { padding: 16px; }
+    .page h1 { margin: 0 0 8px; font-size: 20px; }
+    .page p { margin: 0; }
+    /* Off screen until it receives keyboard focus */
+    .skip:not(:focus) {
+      position: absolute;
+      inline-size: 1px;
+      block-size: 1px;
+      margin: -1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+    .skip:focus {
+      position: absolute;
+      inset-block-start: 8px;
+      inset-inline-start: 8px;
+      z-index: 1;
+      padding: 8px 14px;
+      border-radius: 8px;
+      background: var(--fg);
+      color: var(--bg);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body class="demo">
+  <div class="page">
+    <a class="skip" href="#content">Skip to content</a>
+    <header>
+      <a href="#routes">Routes</a><a href="#maps">Maps</a><a href="#saved">Saved</a><a href="#groups">Groups</a><a href="#events">Events</a><a href="#shop">Shop</a><a href="#help">Help</a><a href="#account">Account</a>
+    </header>
+    <main id="content" tabindex="-1">
+      <h1>Lake Loop</h1>
+      <p>14 km around the lake, with a café halfway. <a href="#start">Start the route</a></p>
+    </main>
+  </div>
+</body>
+</html>

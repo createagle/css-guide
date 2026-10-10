@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 35-3 (start): Tab Order Matches What You See</title>
+  <style>
+    form { inline-size: min(440px, 100%); display: grid; gap: 14px; padding: 18px; border: 1px solid var(--border); border-radius: 12px; }
+    label { display: grid; gap: 4px; }
+    input { font: inherit; padding: 6px 8px; }
+    .actions { display: flex; gap: 8px; }
+    .actions button { padding: 6px 14px; font: inherit; }
+    /* Reversed on screen so Back sits on the left and Send on the right */
+    .actions { flex-direction: row-reverse; }
+    .actions .back { margin-inline-end: auto; }
+  </style>
+</head>
+<body class="demo">
+  <form>
+    <label>Your name <input autocomplete="name"></label>
+    <label>Email <input type="email" autocomplete="email"></label>
+    <div class="actions">
+      <button type="submit">Send</button>
+      <button type="reset">Clear</button>
+      <button type="button" class="back">Back</button>
+    </div>
+  </form>
+</body>
+</html>

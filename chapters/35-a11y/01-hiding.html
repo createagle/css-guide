@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>35-1 Four Ways to Hide Something</title>
+  <style>
+    .stage { align-items: stretch; gap: 14px; }
+    .way { inline-size: 190px; display: grid; gap: 10px; align-content: start; }
+    .way .label { font-family: var(--mono); }
+    .slot { display: grid; gap: 6px; padding: 10px; border: 1px dashed var(--border); border-radius: 8px; font-size: 14px; }
+    .slot button { justify-self: start; }
+    .facts { margin: 0; display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; font-size: 13px; }
+    .facts dt { color: var(--muted); }
+    .facts dd { margin: 0; font-weight: 600; }
+
+    /* The four techniques, applied when the page has .hiding */
+    .hiding .display-none button { display: none; }
+    .hiding .visibility-hidden button { visibility: hidden; }
+    .hiding .opacity-0 button { opacity: 0; }
+    .hiding .visually-hidden button {
+      /* Gone from the screen, still read by screen readers and reachable with Tab */
+      position: absolute;
+      inline-size: 1px;
+      block-size: 1px;
+      margin: -1px;
+      padding: 0;
+      border: 0;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body class="demo hiding">
+  <div class="controls">
+    <label class="control"><input type="checkbox" id="apply" checked> hide the buttons</label>
+    <span class="control">focused: <output id="focused">(nothing)</output></span>
+  </div>
+  <div class="stage">
+    <section class="panel way display-none" aria-label="display: none">
+      <p class="label">display: none</p>
+      <div class="slot"><span>Before</span><button type="button">Buy tickets A</button><span>After</span></div>
+      <dl class="facts"></dl>
+    </section>
+    <section class="panel way visibility-hidden" aria-label="visibility: hidden">
+      <p class="label">visibility: hidden</p>
+      <div class="slot"><span>Before</span><button type="button">Buy tickets B</button><span>After</span></div>
+      <dl class="facts"></dl>
+    </section>
+    <section class="panel way opacity-0" aria-label="opacity: 0">
+      <p class="label">opacity: 0</p>
+      <div class="slot"><span>Before</span><button type="button">Buy tickets C</button><span>After</span></div>
+      <dl class="facts"></dl>
+    </section>
+    <section class="panel way visually-hidden" aria-label="visually hidden">
+      <p class="label">.visually-hidden</p>
+      <div class="slot"><span>Before</span><button type="button">Buy tickets D</button><span>After</span></div>
+      <dl class="facts"></dl>
+    </section>
+  </div>
+  <script>
+    // What screen readers do is fixed by the technique; the rest is measured live
+    const reads = { 'display-none': 'no', 'visibility-hidden': 'no', 'opacity-0': 'yes', 'visually-hidden': 'yes' };
+    let measuring = false;
+    function measure() {
+      measuring = true;
+      document.querySelectorAll('.way').forEach(way => {
+        const btn = way.querySelector('button');
+        const r = btn.getBoundingClientRect();
+        const before = document.activeElement;
+        btn.focus({ preventScroll: true });
+        const focusable = document.activeElement === btn;
+        if (before && before !== document.body) before.focus({ preventScroll: true }); else btn.blur();
+        const hit = r.width > 0 && document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2) === btn;
+        const seen = r.width > 2 && getComputedStyle(btn).visibility === 'visible' && getComputedStyle(btn).opacity !== '0';
+        const kind = [...way.classList].find(c => c in reads);
+        const rows = [
+          ['takes up space', r.height > 2 ? Math.round(r.height) + 'px' : 'no'],
+          ['visible', seen ? 'yes' : 'no'],
+          ['Tab reaches it', focusable ? 'yes' : 'no'],
+          ['mouse can click it', hit ? 'yes' : 'no'],
+          ['read aloud', reads[kind]],
+        ];
+        way.querySelector('.facts').innerHTML = rows.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('');
+      });
+      measuring = false;
+    }
+    document.getElementById('apply').addEventListener('change', e => {
+      document.body.classList.toggle('hiding', e.target.checked);
+      measure();
+    });
+    document.addEventListener('focusin', e => {
+      if (measuring) return;
+      document.getElementById('focused').value = e.target.textContent.trim() || e.target.id || e.target.tagName.toLowerCase();
+    });
+    measure();
+  </script>
+</body>
+</html>

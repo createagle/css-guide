@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 35-2 (start): Focus Rings on Any Surface</title>
+  <style>
+    .stack { display: grid; gap: 16px; inline-size: min(420px, 100%); }
+    .card { display: flex; gap: 12px; align-items: center; padding: 16px; border: 1px solid var(--border); border-radius: 12px; }
+    .banner { display: flex; gap: 12px; align-items: center; padding: 16px; border-radius: 12px; background: oklch(45% 0.18 280); color: white; }
+    .banner a { color: white; }
+    button { padding: 6px 14px; border: 0; border-radius: 8px; background: oklch(45% 0.18 280); color: white; font: inherit; }
+    .banner button { background: white; color: oklch(35% 0.15 280); }
+    a:hover, button:hover { text-decoration: underline; }
+    /* A reset copied from an old project */
+    :focus { outline: none; }
+  </style>
+</head>
+<body class="demo">
+  <div class="stack">
+    <div class="card"><a href="#details">Route details</a><button type="button">Save</button></div>
+    <div class="banner"><a href="#pro">What is in Pro?</a><button type="button">Try Pro</button></div>
+  </div>
+</body>
+</html>
