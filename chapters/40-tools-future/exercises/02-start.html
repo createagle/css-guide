@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 40-2 (start): A Fallback for @function</title>
+  <style>
+    .tags { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+    .tag { padding: 4px 12px; border: 1px solid var(--c); border-radius: 999px; font-size: 14px; }
+
+    /* The same mix written out on every tag colour rule... and then a function call that breaks older browsers */
+    @function --soft(--color, --amount: 15%) {
+      result: color-mix(in oklch, var(--color) var(--amount), transparent);
+    }
+    .tag {
+      background: color-mix(in oklch, var(--c) 15%, transparent);
+      background: --soft(var(--c));
+    }
+  </style>
+</head>
+<body class="demo">
+  <ul class="tags">
+    <li class="tag" style="--c: oklch(60% 0.17 150)">Lakes</li>
+    <li class="tag" style="--c: oklch(62% 0.16 50)">Mountains</li>
+    <li class="tag" style="--c: oklch(55% 0.18 300)">Forests</li>
+  </ul>
+</body>
+</html>

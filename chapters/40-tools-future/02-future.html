@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>40-2 Upcoming CSS, with Fallbacks</title>
+  <style>
+    .stage { align-items: stretch; }
+    figure { display: grid; grid-template-rows: 1fr auto auto; gap: 8px; inline-size: 220px; }
+    figure .panel { display: grid; align-content: center; gap: 8px; }
+    figure pre.code { font-size: 12px; }
+
+    /* 1. if(): one custom property picks the colour */
+    .alert { margin: 0; padding: 8px 10px; border-inline-start: 4px solid oklch(60% 0.03 250); border-radius: 6px; background: oklch(60% 0.03 250 / 0.12); font-size: 14px; }
+    @supports (color: if(style(--x: 1): red; else: blue)) {
+      .alert {
+        --hue: if(style(--tone: warning): 70; style(--tone: danger): 25; else: 250);
+        border-inline-start-color: oklch(62% 0.16 var(--hue));
+        background: oklch(62% 0.16 var(--hue) / 0.14);
+      }
+    }
+
+    /* 2. @function: a reusable calculation with parameters */
+    @function --soft(--color, --amount: 15%) {
+      result: color-mix(in oklch, var(--color) var(--amount), transparent);
+    }
+    .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+    .swatch { aspect-ratio: 1; border: 2px solid var(--c); border-radius: 10px; background: color-mix(in oklch, var(--c) 15%, transparent); }
+    @supports (color: --soft(red)) {
+      .swatch { background: --soft(var(--c), var(--amount)); }
+    }
+
+    /* 3. corner-shape: more than round corners */
+    .shape { block-size: 110px; border: 2px solid var(--accent); border-radius: 32px; background: color-mix(in oklch, var(--accent) 15%, transparent); corner-shape: var(--shape, round); }
+
+    /* 4. grid-lanes: masonry layout, with an ordinary grid as the fallback */
+    .lanes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; align-items: start; }
+    @supports (display: grid-lanes) {
+      .lanes { display: grid-lanes; }
+    }
+    .lanes span { border-radius: 6px; background: color-mix(in oklch, var(--accent) 30%, transparent); }
+  </style>
+</head>
+<body class="demo">
+  <div class="controls">
+    <label class="control">--soft() amount <input type="range" id="amount" min="5" max="60" value="15"> <output id="amount-out">15%</output></label>
+    <label class="control">corner-shape
+      <select id="shape"><option>round</option><option selected>squircle</option><option>bevel</option><option>scoop</option><option>notch</option><option>square</option></select>
+    </label>
+  </div>
+  <div class="stage">
+    <figure>
+      <div class="panel">
+        <p class="alert" style="--tone: info">Trail open</p>
+        <p class="alert" style="--tone: warning">Mud after rain</p>
+        <p class="alert" style="--tone: danger">Bridge closed</p>
+      </div>
+      <figcaption>if()</figcaption>
+      <pre class="code" data-test="if"></pre>
+    </figure>
+    <figure>
+      <div class="panel">
+        <div class="swatches" id="swatches" style="--amount: 15%">
+          <span class="swatch" style="--c: oklch(60% 0.17 150)"></span>
+          <span class="swatch" style="--c: oklch(62% 0.16 50)"></span>
+          <span class="swatch" style="--c: oklch(55% 0.18 300)"></span>
+        </div>
+      </div>
+      <figcaption>@function</figcaption>
+      <pre class="code" data-test="function"></pre>
+    </figure>
+    <figure>
+      <div class="panel">
+        <div class="shape" id="shape-box" style="--shape: squircle"></div>
+      </div>
+      <figcaption>corner-shape</figcaption>
+      <pre class="code" data-test="corner"></pre>
+    </figure>
+    <figure>
+      <div class="panel">
+        <div class="lanes">
+          <span style="block-size: 60px"></span><span style="block-size: 30px"></span><span style="block-size: 46px"></span>
+          <span style="block-size: 24px"></span><span style="block-size: 52px"></span><span style="block-size: 34px"></span>
+          <span style="block-size: 40px"></span><span style="block-size: 20px"></span><span style="block-size: 30px"></span>
+        </div>
+      </div>
+      <figcaption>display: grid-lanes</figcaption>
+      <pre class="code" data-test="lanes"></pre>
+    </figure>
+  </div>
+  <script>
+    const tests = {
+      if: () => CSS.supports('color', 'if(style(--x: 1): red; else: blue)'),
+      function: () => CSS.supports('color', '--soft(red)'),
+      corner: () => CSS.supports('corner-shape', 'squircle'),
+      lanes: () => CSS.supports('display', 'grid-lanes')
+    };
+    document.querySelectorAll('[data-test]').forEach(pre => {
+      const ok = tests[pre.dataset.test]();
+      pre.textContent = ok ? 'Supported here' : 'Not supported here:\nshowing the fallback';
+      pre.classList.add(ok ? 'good' : 'bad');
+    });
+    const amount = document.getElementById('amount');
+    amount.addEventListener('input', () => {
+      document.getElementById('swatches').style.setProperty('--amount', amount.value + '%');
+      document.getElementById('amount-out').textContent = amount.value + '%';
+    });
+    document.getElementById('shape').addEventListener('change', e => document.getElementById('shape-box').style.setProperty('--shape', e.target.value));
+  </script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 40-3 (final): Stagger Without Counting</title>
+  <style>
+    .wrap { display: grid; gap: 12px; justify-items: start; inline-size: min(280px, 100%); }
+    .list { display: grid; gap: 6px; inline-size: 100%; margin: 0; padding: 0; list-style: none; }
+    .list li { padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; opacity: 0; translate: -12px 0; transition: opacity 0.3s, translate 0.3s; }
+    .list.shown li { opacity: 1; translate: 0 0; }
+
+    /* Stagger: one rule for any number of items where sibling-index() exists */
+    @supports (transition-delay: calc(sibling-index() * 1ms)) {
+      .list li { transition-delay: calc(sibling-index() * 60ms); }
+    }
+    /* Everywhere else, keep the per-item rules */
+    @supports not (transition-delay: calc(sibling-index() * 1ms)) {
+      .list li:nth-child(1) { transition-delay: 60ms; }
+      .list li:nth-child(2) { transition-delay: 120ms; }
+      .list li:nth-child(3) { transition-delay: 180ms; }
+      .list li:nth-child(4) { transition-delay: 240ms; }
+      .list li:nth-child(5) { transition-delay: 300ms; }
+      .list li:nth-child(6) { transition-delay: 360ms; }
+    }
+  </style>
+</head>
+<body class="demo">
+  <div class="wrap">
+    <button type="button" aria-pressed="false" id="toggle">Show routes</button>
+    <ul class="list" id="list">
+      <li>Lake Loop</li><li>North Ridge</li><li>Old Pine Walk</li><li>Two Tarns</li><li>Summit Dash</li><li>Fern Gully</li>
+    </ul>
+  </div>
+  <script>
+    const toggle = document.getElementById('toggle'), list = document.getElementById('list');
+    toggle.addEventListener('click', () => {
+      const on = toggle.getAttribute('aria-pressed') !== 'true';
+      toggle.setAttribute('aria-pressed', String(on));
+      list.classList.toggle('shown', on);
+    });
+  </script>
+</body>
+</html>

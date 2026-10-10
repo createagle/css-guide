@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>40-1 CSS Resource Directory</title>
+  <style>
+    body.demo { justify-content: flex-start; }
+    .directory { display: grid; gap: 16px; inline-size: min(960px, 100%); }
+    .bar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+    .search { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--muted); }
+    .search input { inline-size: min(240px, 60vw); padding: 6px 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--fg); }
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; border: 0; }
+    .chips label { position: relative; padding: 4px 12px; border: 1px solid var(--border); border-radius: 999px; font-size: 13px; color: var(--muted); cursor: pointer; }
+    .chips input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+    .chips label:has(:checked) { border-color: var(--accent); background: var(--accent); color: var(--bg); }
+    .chips label:has(:focus-visible) { outline: 3px solid var(--accent); outline-offset: 2px; }
+    .visually-hidden { position: absolute; inline-size: 1px; block-size: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr)); gap: 12px; margin: 0; padding: 0; list-style: none; }
+    .item a { display: grid; gap: 4px; block-size: 100%; padding: 14px; border: 1px solid var(--border); border-block-start: 4px solid var(--cat); border-radius: 12px; color: var(--fg); text-decoration: none; transition: border-color 0.2s, translate 0.2s; }
+    .item a:hover { border-color: var(--cat); translate: 0 -2px; }
+    .item a:focus-visible { outline: 3px solid var(--cat); outline-offset: 2px; }
+    .item strong { font-size: 15px; }
+    .item .host { color: var(--cat); font: 12px/1.4 var(--mono); }
+    .item p { margin: 0; color: var(--muted); font-size: 13px; }
+    .item .tag { justify-self: start; margin-block-start: 4px; padding: 1px 8px; border-radius: 999px; background: color-mix(in oklch, var(--cat) 15%, transparent); color: var(--fg); font-size: 11px; }
+
+    /* One colour per category */
+    [data-cat="specs"] { --cat: oklch(55% 0.17 260); }
+    [data-cat="compat"] { --cat: oklch(58% 0.15 150); }
+    [data-cat="learn"] { --cat: oklch(62% 0.16 50); }
+    [data-cat="tools"] { --cat: oklch(55% 0.18 320); }
+    [data-cat="news"] { --cat: oklch(58% 0.12 200); }
+
+    /* Category filter, no script needed */
+    .directory:has(#c-specs:checked) .item:not([data-cat="specs"]),
+    .directory:has(#c-compat:checked) .item:not([data-cat="compat"]),
+    .directory:has(#c-learn:checked) .item:not([data-cat="learn"]),
+    .directory:has(#c-tools:checked) .item:not([data-cat="tools"]),
+    .directory:has(#c-news:checked) .item:not([data-cat="news"]) { display: none; }
+
+    .empty { margin: 0; color: var(--muted); font-size: 14px; text-align: center; }
+  </style>
+</head>
+<body class="demo">
+  <div class="directory">
+    <div class="bar">
+      <fieldset class="chips">
+        <legend class="visually-hidden">Category</legend>
+        <label><input type="radio" name="cat" id="c-all" checked>All</label>
+        <label><input type="radio" name="cat" id="c-specs">Specs &amp; reference</label>
+        <label><input type="radio" name="cat" id="c-compat">Compatibility</label>
+        <label><input type="radio" name="cat" id="c-learn">Learning</label>
+        <label><input type="radio" name="cat" id="c-tools">Tools</label>
+        <label><input type="radio" name="cat" id="c-news">Staying current</label>
+      </fieldset>
+      <label class="search">Search <input type="search" id="q" placeholder="e.g. baseline"></label>
+    </div>
+    <ul class="grid" id="grid">
+      <li class="item" data-cat="specs"><a href="https://drafts.csswg.org/" target="_blank" rel="noopener"><strong>CSS Working Group drafts</strong><span class="host">drafts.csswg.org</span><p>The latest editor's drafts of every CSS specification.</p><span class="tag">Specs &amp; reference</span></a></li>
+      <li class="item" data-cat="specs"><a href="https://www.w3.org/TR/css/" target="_blank" rel="noopener"><strong>CSS snapshot</strong><span class="host">w3.org/TR/css</span><p>Which modules make up "CSS" today, and how stable each one is.</p><span class="tag">Specs &amp; reference</span></a></li>
+      <li class="item" data-cat="specs"><a href="https://developer.mozilla.org/en-US/docs/Web/CSS" target="_blank" rel="noopener"><strong>MDN CSS reference</strong><span class="host">developer.mozilla.org</span><p>Every property, selector and function, with examples and compatibility tables.</p><span class="tag">Specs &amp; reference</span></a></li>
+      <li class="item" data-cat="compat"><a href="https://web.dev/baseline" target="_blank" rel="noopener"><strong>Baseline</strong><span class="host">web.dev/baseline</span><p>One label that says whether a feature works in all major browsers.</p><span class="tag">Compatibility</span></a></li>
+      <li class="item" data-cat="compat"><a href="https://webstatus.dev/" target="_blank" rel="noopener"><strong>Web Platform Status</strong><span class="host">webstatus.dev</span><p>Search features by Baseline status and track when they become available.</p><span class="tag">Compatibility</span></a></li>
+      <li class="item" data-cat="compat"><a href="https://caniuse.com/" target="_blank" rel="noopener"><strong>Can I use</strong><span class="host">caniuse.com</span><p>Detailed support tables by browser version, with known issues.</p><span class="tag">Compatibility</span></a></li>
+      <li class="item" data-cat="compat"><a href="https://wpt.fyi/interop" target="_blank" rel="noopener"><strong>Interop dashboard</strong><span class="host">wpt.fyi/interop</span><p>The yearly focus areas browsers fix together, and how far they have got.</p><span class="tag">Compatibility</span></a></li>
+      <li class="item" data-cat="learn"><a href="https://web.dev/learn/css" target="_blank" rel="noopener"><strong>Learn CSS</strong><span class="host">web.dev/learn/css</span><p>A free course that walks through CSS from the box model to animation.</p><span class="tag">Learning</span></a></li>
+      <li class="item" data-cat="learn"><a href="https://every-layout.dev/" target="_blank" rel="noopener"><strong>Every Layout</strong><span class="host">every-layout.dev</span><p>Layout primitives that adapt without breakpoints.</p><span class="tag">Learning</span></a></li>
+      <li class="item" data-cat="learn"><a href="https://developer.chrome.com/docs/css-ui" target="_blank" rel="noopener"><strong>CSS and UI</strong><span class="host">developer.chrome.com</span><p>Guides and demos for new CSS features as they ship.</p><span class="tag">Learning</span></a></li>
+      <li class="item" data-cat="tools"><a href="https://stylelint.io/" target="_blank" rel="noopener"><strong>Stylelint</strong><span class="host">stylelint.io</span><p>Find mistakes and enforce conventions in your CSS.</p><span class="tag">Tools</span></a></li>
+      <li class="item" data-cat="tools"><a href="https://lightningcss.dev/" target="_blank" rel="noopener"><strong>Lightning CSS</strong><span class="host">lightningcss.dev</span><p>Transform modern CSS for your target browsers, add prefixes and minify.</p><span class="tag">Tools</span></a></li>
+      <li class="item" data-cat="tools"><a href="https://developer.chrome.com/docs/devtools/css" target="_blank" rel="noopener"><strong>DevTools: CSS</strong><span class="host">developer.chrome.com</span><p>Inspect, debug and experiment with styles in the browser.</p><span class="tag">Tools</span></a></li>
+      <li class="item" data-cat="news"><a href="https://github.com/w3c/csswg-drafts/issues" target="_blank" rel="noopener"><strong>CSSWG issues</strong><span class="host">github.com/w3c/csswg-drafts</span><p>Where new features are proposed and argued about in the open.</p><span class="tag">Staying current</span></a></li>
+      <li class="item" data-cat="news"><a href="https://stateofcss.com/" target="_blank" rel="noopener"><strong>State of CSS</strong><span class="host">stateofcss.com</span><p>A yearly survey of which features developers know, use and miss.</p><span class="tag">Staying current</span></a></li>
+    </ul>
+    <p class="empty" id="empty" hidden>No resources match your search.</p>
+  </div>
+  <script>
+    // Free-text search; the category filter is pure CSS
+    const items = [...document.querySelectorAll('.item')];
+    const empty = document.getElementById('empty');
+    function search() {
+      const q = document.getElementById('q').value.trim().toLowerCase();
+      items.forEach(li => { li.hidden = q !== '' && !li.textContent.toLowerCase().includes(q); });
+      empty.hidden = items.some(li => !li.hidden && getComputedStyle(li).display !== 'none');
+    }
+    document.getElementById('q').addEventListener('input', search);
+    document.querySelector('.chips').addEventListener('change', search);
+  </script>
+</body>
+</html>
