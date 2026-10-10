@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 38-1 (start): Let the Brand Colour In</title>
+  <style>
+    /* The page wants the coupon button in its brand colour */
+    .brand coupon-card button { background: oklch(52% 0.2 300); }
+  </style>
+</head>
+<body class="demo">
+  <div class="brand">
+    <coupon-card>Spring sale: 20% off trail shoes</coupon-card>
+  </div>
+  <script>
+    customElements.define('coupon-card', class extends HTMLElement {
+      constructor() {
+        super();
+        this.attachShadow({ mode: 'open' }).innerHTML = `
+          <style>
+            :host { display: grid; gap: 10px; inline-size: min(280px, 100%); padding: 14px; border: 1px dashed currentColor; border-radius: 12px; }
+            button { justify-self: start; padding: 6px 14px; border: 0; border-radius: 8px; background: teal; color: white; font: inherit; }
+          </style>
+          <slot></slot>
+          <button type="button">Copy code</button>`;
+      }
+    });
+  </script>
+</body>
+</html>

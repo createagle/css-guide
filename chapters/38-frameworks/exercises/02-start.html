@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <title>Exercise 38-2 (start): Expose the Avatar</title>
+  <style>
+    /* The page wants a round avatar with a ring */
+    user-chip .avatar { border-radius: 50%; outline: 2px solid oklch(70% 0.15 60); outline-offset: 2px; }
+  </style>
+</head>
+<body class="demo">
+  <user-chip>Ada Lovelace</user-chip>
+  <script>
+    customElements.define('user-chip', class extends HTMLElement {
+      constructor() {
+        super();
+        this.attachShadow({ mode: 'open' }).innerHTML = `
+          <style>
+            :host { display: inline-flex; align-items: center; gap: 8px; padding: 4px 12px 4px 4px; border: 1px solid color-mix(in oklch, currentColor 25%, transparent); border-radius: 999px; }
+            .avatar { display: grid; place-items: center; inline-size: 32px; aspect-ratio: 1; border-radius: 6px; background: oklch(60% 0.15 250); color: white; font: 600 13px/1 system-ui, sans-serif; }
+          </style>
+          <span class="avatar" aria-hidden="true">AL</span>
+          <slot></slot>`;
+      }
+    });
+  </script>
+</body>
+</html>

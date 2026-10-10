@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>38-2 Theming a Component with ::part()</title>
+  <style>
+    .stage { align-items: flex-start; }
+    .meters { display: grid; gap: 18px; inline-size: min(340px, 100%); }
+    fieldset.control { display: flex; gap: 12px; margin: 0; padding: 0; border: 0; }
+    fieldset.control legend { float: inline-start; margin-inline-end: 4px; padding: 0; }
+    #css { inline-size: min(360px, 100%); margin: 0; }
+
+    /* Brand theme: the page reaches the parts the component chose to expose */
+    .brand upload-meter::part(track) { block-size: 14px; border-radius: 4px; background: oklch(90% 0.04 300); }
+    .brand upload-meter::part(fill) { border-radius: 4px; background: linear-gradient(to right, oklch(55% 0.2 300), oklch(65% 0.2 350)); }
+    .brand upload-meter::part(label) { font-weight: 700; color: oklch(45% 0.18 300); }
+
+    /* Minimal theme */
+    .minimal upload-meter::part(track) { block-size: 2px; border-radius: 0; }
+    .minimal upload-meter::part(fill) { border-radius: 0; background: currentColor; }
+    .minimal upload-meter::part(label) { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
+
+    /* A custom state exposed by the component, styled from outside */
+    @supports selector(:state(complete)) {
+      upload-meter:state(complete)::part(fill) { background: oklch(60% 0.16 150); }
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .brand upload-meter::part(track) { background: oklch(32% 0.06 300); }
+      .brand upload-meter::part(label) { color: oklch(80% 0.12 300); }
+    }
+  </style>
+</head>
+<body class="demo">
+  <div class="controls">
+    <fieldset class="control">
+      <legend>Page theme</legend>
+      <label><input type="radio" name="theme" value="none" checked> none</label>
+      <label><input type="radio" name="theme" value="brand"> brand</label>
+      <label><input type="radio" name="theme" value="minimal"> minimal</label>
+    </fieldset>
+    <label class="control">first meter <input type="range" id="value" min="0" max="100" value="64"></label>
+  </div>
+  <div class="stage">
+    <div class="meters" id="meters">
+      <upload-meter value="64" id="first">photos.zip</upload-meter>
+      <upload-meter value="100">notes.pdf</upload-meter>
+      <upload-meter value="18">trail-map.gpx</upload-meter>
+    </div>
+    <pre class="code" id="css"></pre>
+  </div>
+  <script>
+    class UploadMeter extends HTMLElement {
+      static observedAttributes = ['value'];
+      constructor() {
+        super();
+        this.internals = this.attachInternals();
+        const root = this.attachShadow({ mode: 'open' });
+        root.innerHTML = `
+          <style>
+            :host { display: grid; gap: 6px; color: CanvasText; font: 14px/1.4 system-ui, sans-serif; }
+            [part="label"] { display: flex; justify-content: space-between; gap: 12px; }
+            [part="track"] { block-size: 8px; border-radius: 999px; background: color-mix(in oklch, currentColor 15%, transparent); overflow: hidden; }
+            [part="fill"] { block-size: 100%; inline-size: calc(var(--value, 0) * 1%); border-radius: inherit; background: oklch(55% 0.17 250); transition: inline-size 0.3s; }
+            @media (prefers-reduced-motion: reduce) { [part="fill"] { transition: none; } }
+          </style>
+          <div part="label"><span><slot></slot></span><span class="pct"></span></div>
+          <div part="track"><div part="fill"></div></div>`;
+        this.internals.role = 'progressbar';
+      }
+      connectedCallback() { this.internals.ariaLabel = this.textContent.trim(); }
+      attributeChangedCallback() {
+        const v = Math.max(0, Math.min(100, Number(this.getAttribute('value')) || 0));
+        this.shadowRoot.querySelector('[part="fill"]').style.setProperty('--value', v);
+        this.shadowRoot.querySelector('.pct').textContent = v + '%';
+        this.internals.ariaValueNow = String(v);
+        try { v === 100 ? this.internals.states.add('complete') : this.internals.states.delete('complete'); } catch {}
+      }
+    }
+    customElements.define('upload-meter', UploadMeter);
+
+    const rules = {
+      none: '/* No page rules: the component\n   shows its own defaults */',
+      brand: 'upload-meter::part(track) {\n  block-size: 14px;\n  border-radius: 4px;\n}\nupload-meter::part(fill) {\n  background: linear-gradient(…);\n}\nupload-meter::part(label) {\n  font-weight: 700;\n}',
+      minimal: 'upload-meter::part(track) {\n  block-size: 2px;\n}\nupload-meter::part(fill) {\n  background: currentColor;\n}\nupload-meter::part(label) {\n  text-transform: uppercase;\n}'
+    };
+    const meters = document.getElementById('meters'), css = document.getElementById('css');
+    function render() {
+      const theme = document.querySelector('input[name="theme"]:checked').value;
+      meters.className = 'meters ' + theme;
+      css.textContent = rules[theme] + '\n\n/* :state(complete) supported: ' + CSS.supports('selector(:state(complete))') + ' */';
+    }
+    document.querySelectorAll('input[name="theme"]').forEach(r => r.addEventListener('change', render));
+    document.getElementById('value').addEventListener('input', e => document.getElementById('first').setAttribute('value', e.target.value));
+    render();
+  </script>
+</body>
+</html>

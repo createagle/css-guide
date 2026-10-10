@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <title>38-1 Style Encapsulation with Shadow DOM</title>
+  <style>
+    body.demo { --card-accent: oklch(55% 0.17 150); }
+    .stage { align-items: stretch; }
+    figure { display: grid; gap: 6px; inline-size: 220px; }
+
+    /* Heavy-handed page styles, as an old theme or a third-party stylesheet might have */
+    .loud h3 { color: crimson; text-transform: uppercase; letter-spacing: 0.1em; }
+    .loud p { font-style: italic; }
+    .loud button { padding: 10px 20px; border: 3px dashed crimson; border-radius: 0; background: pink; color: crimson; font: 700 16px/1 Georgia, serif; }
+
+    /* The light DOM card's own styles */
+    .card { display: grid; gap: 8px; padding: 14px; border: 1px solid var(--border); border-block-start: 4px solid var(--card-accent); border-radius: 12px; }
+    .card h3 { margin: 0; font-size: 17px; }
+    .card p { margin: 0; color: var(--muted); font-size: 14px; }
+    .card button { justify-self: start; padding: 6px 14px; border: 0; border-radius: 8px; background: var(--card-accent); color: white; font: inherit; }
+  </style>
+</head>
+<body class="demo loud">
+  <div class="controls">
+    <label class="control"><input type="checkbox" id="loud" checked> heavy page styles</label>
+    <label class="control">--card-accent
+      <select id="accent"><option value="oklch(55% 0.17 150)">green</option><option value="oklch(55% 0.2 260)">blue</option><option value="oklch(60% 0.18 40)">orange</option></select>
+    </label>
+  </div>
+  <div class="stage">
+    <figure>
+      <article class="card">
+        <h3>Lake Loop</h3>
+        <p>14 km around the lake.</p>
+        <button type="button">Start</button>
+      </article>
+      <figcaption>Light DOM</figcaption>
+    </figure>
+
+    <figure>
+      <route-card>
+        <template shadowrootmode="open">
+          <style>
+            /* :host is the custom element itself, as seen from inside */
+            :host { display: grid; gap: 8px; padding: 14px; border: 1px solid var(--border, #ccc); border-block-start: 4px solid var(--card-accent, teal); border-radius: 12px; }
+            h3 { margin: 0; font-size: 17px; }
+            p { margin: 0; opacity: 0.7; font-size: 14px; }
+            button { justify-self: start; padding: 6px 14px; border: 0; border-radius: 8px; background: var(--card-accent, teal); color: white; font: inherit; }
+          </style>
+          <h3>Lake Loop</h3>
+          <p>14 km around the lake.</p>
+          <button type="button">Start</button>
+        </template>
+      </route-card>
+      <figcaption>Shadow DOM</figcaption>
+    </figure>
+
+    <figure>
+      <route-card>
+        <template shadowrootmode="open">
+          <style>
+            :host { display: grid; gap: 8px; padding: 14px; border: 1px solid var(--border, #ccc); border-block-start: 4px solid var(--card-accent, teal); border-radius: 12px; }
+            /* ::slotted styles the light DOM children placed in a slot, with low priority */
+            ::slotted(h3) { margin: 0; font-size: 17px; }
+            p { margin: 0; opacity: 0.7; font-size: 14px; }
+            button { justify-self: start; padding: 6px 14px; border: 0; border-radius: 8px; background: var(--card-accent, teal); color: white; font: inherit; }
+          </style>
+          <slot name="title"></slot>
+          <p>14 km around the lake.</p>
+          <button type="button">Start</button>
+        </template>
+        <h3 slot="title">Lake Loop</h3>
+      </route-card>
+      <figcaption>Shadow DOM with a slotted title</figcaption>
+    </figure>
+  </div>
+  <script>
+    document.getElementById('loud').addEventListener('change', e => document.body.classList.toggle('loud', e.target.checked));
+    document.getElementById('accent').addEventListener('change', e => document.body.style.setProperty('--card-accent', e.target.value));
+  </script>
+</body>
+</html>
